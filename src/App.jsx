@@ -72,6 +72,10 @@ import LoginAdmin from "./pages/admin/LoginAdmin"; // Login របស់ Admin
 import Dashboard from "./pages/admin/Dashboard";   // Dashboard - *ត្រូវបង្កើត*
 import StudentList from "./pages/admin/StudentList"; // Student List - *ត្រូវបង្កើត*
 import ForgotPasswordAdmin from "./pages/admin/ForgotPasswordAdmin";
+import ExamRequest from "./pages/admin/ExamRequest";
+import CourseManager from "./pages/admin/CourseManager";
+import HomeworkManager from "./pages/admin/HomeworkManager";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 function App() {
   
@@ -95,8 +99,7 @@ function App() {
            ========================================= */}
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/forgot-password" element={<ForgotPasswordAdmin />} /> {/* ថែមថ្មីត្រង់នេះ */}
-
-
+   
         {/* =========================================
             3. ADMIN SYSTEM ROUTES (Protected)
            ========================================= */}
@@ -106,16 +109,17 @@ function App() {
            
            <Route path="dashboard" element={<Dashboard />} />
            <Route path="students" element={<StudentList />} />
-           
-           {/* អាចថែម Route Admin ផ្សេងទៀតនៅទីនេះ */}
-           {/* <Route path="courses" element={<CourseManager />} /> */}
+            <Route path="requests" element={<ExamRequest />} />
+           <Route path="courses" element={<CourseManager />} />
+           <Route path="homework" element={<HomeworkManager />} />
+           <Route path="settings" element={<AdminSettings    />} />
         </Route>
 
 
         {/* =========================================
             4. USER ROUTES (Protected by MainLayout)
            ========================================= */}
-        <Route element={<MainLayout />}>
+          <Route element={<MainLayout />}>
            {/* Redirect root "/" to "/home" */}
            <Route path="/" element={<Navigate to="/home" replace />} />
            

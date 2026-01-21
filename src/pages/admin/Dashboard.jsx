@@ -1,180 +1,202 @@
 import React from 'react';
-import { Users, UserPlus, Zap, BookOpen, TrendingUp, ArrowUpRight, MoreHorizontal } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Users, UserPlus, Zap, BookOpen, Download, Calendar } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+
+// 🟢 IMPORT SHADCN COMPONENTS
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // --- MOCK DATA ---
 const chartData = [
-  { name: 'Mon', students: 12 },
-  { name: 'Tue', students: 19 },
-  { name: 'Wed', students: 15 },
-  { name: 'Thu', students: 25 },
-  { name: 'Fri', students: 32 },
-  { name: 'Sat', students: 40 },
-  { name: 'Sun', students: 45 },
+  { name: 'Mon', students: 12, active: 8 },
+  { name: 'Tue', students: 19, active: 15 },
+  { name: 'Wed', students: 15, active: 12 },
+  { name: 'Thu', students: 25, active: 20 },
+  { name: 'Fri', students: 32, active: 28 },
+  { name: 'Sat', students: 40, active: 35 },
+  { name: 'Sun', students: 45, active: 40 },
 ];
 
-const topLanguages = [
-  { name: 'English', students: 650, color: '#00B4F6' },
-  { name: 'Chinese', students: 420, color: '#F59E0B' },
-  { name: 'Korean', students: 180, color: '#10B981' },
+const recentSales = [
+  { name: "Sok Dara", email: "dara@gmail.com", amount: "+$25.00", course: "English L1" },
+  { name: "Chan Maly", email: "maly@gmail.com", amount: "+$35.00", course: "Chinese Basic" },
+  { name: "Keo Visal", email: "visal@gmail.com", amount: "+$25.00", course: "English L1" },
+  { name: "Ly Bopha", email: "bopha@gmail.com", amount: "+$40.00", course: "Korean Topik" },
+  { name: "Vann Soth", email: "soth@gmail.com", amount: "+$25.00", course: "English L2" },
 ];
-
+const handlePrint = () => {
+  window.print();
+};
 export default function Dashboard() {
   return (
-    <div className="space-y-6 animate-fade-in-up pb-10">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 animate-fade-in-up pb-20">
       
-      {/* 1. Header Section (Responsive: Mobile Stack / Desktop Row) */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* 1. HEADER & ACTIONS */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-2">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800 font-khmer-os-battambang">
-            ផ្ទាំងគ្រប់គ្រង (Dashboard)
-          </h1>
-          <p className="text-xs md:text-sm text-gray-500 font-khmer-os-battambang mt-1">
-            សួស្តី! នេះជារបាយការណ៍សង្ខេបសម្រាប់ថ្ងៃនេះ។
-          </p>
+           <h2 className="text-3xl font-bold tracking-tight text-gray-900 font-khmer-os-battambang">ផ្ទាំងគ្រប់គ្រង</h2>
+           <p className="text-gray-500 font-khmer-os-battambang">ទិដ្ឋភាពទូទៅនៃសាលារៀនរបស់អ្នក។</p>
         </div>
-        
-        {/* Date Badge */}
-        <div className="bg-white border border-gray-200 text-xs md:text-sm px-4 py-2 rounded-xl shadow-sm font-medium text-gray-600 w-full md:w-auto text-center md:text-left">
-          {new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })}
-        </div>
-      </div>
-
-      {/* 2. STATS CARDS GRID (Mobile: 1 col, Tablet: 2 cols, Desktop: 4 cols) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        
-        {/* Card 1: Total Students */}
-        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group hover:shadow-md transition-all">
-           <div>
-              <p className="text-gray-500 text-[10px] md:text-xs font-bold font-khmer-os-battambang uppercase tracking-wider">សិស្សសរុប</p>
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mt-2">1,250</h3>
-              <span className="text-[10px] md:text-xs font-bold text-green-500 flex items-center gap-1 mt-1 bg-green-50 w-fit px-2 py-0.5 rounded-full">
-                <TrendingUp size={12} /> +12%
-              </span>
-           </div>
-           <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-50 rounded-full flex items-center justify-center text-[#00B4F6] group-hover:scale-110 transition-transform">
-              <Users size={20} className="md:w-6 md:h-6" />
-           </div>
-        </div>
-
-        {/* Card 2: New Students */}
-        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group hover:shadow-md transition-all">
-           <div>
-              <p className="text-gray-500 text-[10px] md:text-xs font-bold font-khmer-os-battambang uppercase tracking-wider">សិស្សថ្មីថ្ងៃនេះ</p>
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mt-2">15</h3>
-              <span className="text-[10px] md:text-xs font-bold text-blue-500 flex items-center gap-1 mt-1 bg-blue-50 w-fit px-2 py-0.5 rounded-full">
-                <ArrowUpRight size={12} /> New
-              </span>
-           </div>
-           <div className="w-10 h-10 md:w-12 md:h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform">
-              <UserPlus size={20} className="md:w-6 md:h-6" />
-           </div>
-        </div>
-
-        {/* Card 3: Top Language */}
-        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group hover:shadow-md transition-all">
-           <div>
-              <p className="text-gray-500 text-[10px] md:text-xs font-bold font-khmer-os-battambang uppercase tracking-wider">ពេញនិយម</p>
-              <h3 className="text-xl md:text-2xl font-bold text-gray-800 mt-2">English</h3>
-              <p className="text-[10px] md:text-xs text-gray-400 font-khmer-os-battambang mt-1">Level 1</p>
-           </div>
-           <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
-              <BookOpen size={20} className="md:w-6 md:h-6" />
-           </div>
-        </div>
-
-        {/* Card 4: Active Now (Gradient) */}
-        <div className="bg-gradient-to-br from-[#00B4F6] to-blue-500 p-5 md:p-6 rounded-2xl shadow-lg shadow-blue-200 flex items-center justify-between text-white relative overflow-hidden">
-           <div className="relative z-10">
-              <p className="text-blue-100 text-[10px] md:text-xs font-bold font-khmer-os-battambang uppercase tracking-wider">Online ឥឡូវនេះ</p>
-              <div className="flex items-end gap-2 mt-2">
-                 <h3 className="text-3xl md:text-4xl font-bold">42</h3>
-                 <span className="mb-1.5 text-xs md:text-sm font-medium opacity-80 font-khmer-os-battambang">នាក់</span>
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                 <span className="relative flex h-2.5 w-2.5">
-                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400 border-2 border-blue-500"></span>
-                 </span>
-                 <span className="text-[10px] md:text-xs font-bold">Live System</span>
-              </div>
-           </div>
-           <div className="absolute -right-4 -bottom-4 text-white/20">
-              <Zap size={80} className="md:w-[100px] md:h-[100px]" />
-           </div>
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" className="hidden md:flex gap-2 rounded-xl">
+             <Calendar className="mr-2 h-4 w-4" />
+             {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </Button>
+               <Button 
+         onClick={handlePrint} // 🟢 ដាក់ត្រង់នេះ
+         className="bg-[#00B4F6] hover:bg-[#009bd1] text-white rounded-xl gap-2 shadow-lg shadow-blue-200"
+         >
+         <Download className="mr-2 h-4 w-4" /> Download PDF
+         </Button>
         </div>
       </div>
 
-      {/* 3. CHARTS SECTION (Mobile: Stacked, Desktop: Side-by-Side) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* 2. TABS SECTION */}
+      <Tabs defaultValue="overview" className="space-y-4">
         
-        {/* Left Chart (Mobile: Full Width) */}
-        <div className="lg:col-span-2 bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100">
-           <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-gray-800 text-sm md:text-base font-khmer-os-battambang">កំណើនសិស្ស (Growth)</h3>
-              <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-400">
-                 <MoreHorizontal size={20} />
-              </button>
-           </div>
-           
-           {/* Responsive Container ជួយឱ្យ Chart បត់បែនតាមទំហំប្រអប់ */}
-           <div className="h-[250px] md:h-[300px] w-full">
-             <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00B4F6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#00B4F6" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 11}} />
-                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#9CA3AF', fontSize: 11}} />
-                  <Tooltip 
-                    contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
-                  />
-                  <Area type="monotone" dataKey="students" stroke="#00B4F6" strokeWidth={3} fillOpacity={1} fill="url(#colorStudents)" />
-                </AreaChart>
-             </ResponsiveContainer>
-           </div>
-        </div>
+        <TabsList className="bg-white p-1 rounded-xl border border-gray-100 shadow-sm hidden md:inline-flex">
+          <TabsTrigger value="overview" className="rounded-lg data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 font-bold">Overview</TabsTrigger>
+          <TabsTrigger value="analytics" className="rounded-lg data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 font-bold">Analytics</TabsTrigger>
+          <TabsTrigger value="students" className="rounded-lg data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 font-bold">Students</TabsTrigger>
+        </TabsList>
 
-        {/* Right Section (Mobile: Full Width) */}
-        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100">
-           <h3 className="font-bold text-gray-800 text-sm md:text-base font-khmer-os-battambang mb-6">ភាសាពេញនិយម</h3>
-           
-           <div className="space-y-6">
-              {topLanguages.map((lang, index) => (
-                <div key={index}>
-                   <div className="flex justify-between text-xs md:text-sm mb-2 font-medium">
-                      <span className="text-gray-700">{lang.name}</span>
-                      <span className="text-gray-900 font-bold">{lang.students}</span>
-                   </div>
-                   <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                      <div 
-                        className="h-2 rounded-full transition-all duration-1000 ease-out" 
-                        style={{ width: `${(lang.students / 1250) * 100}%`, backgroundColor: lang.color }}
-                      ></div>
-                   </div>
+        {/* --- OVERVIEW CONTENT --- */}
+        <TabsContent value="overview" className="space-y-4">
+          
+          {/* STATS CARDS */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            
+            {/* Total Students */}
+            <Card className="rounded-2xl shadow-sm hover:shadow-md transition-all">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-bold text-gray-500 font-khmer-os-battambang">សិស្សសរុប (Total)</CardTitle>
+                <Users className="h-4 w-4 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">1,250</div>
+                <p className="text-xs text-muted-foreground text-green-600 font-medium mt-1">
+                  +20.1% from last month
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Active Students */}
+            <Card className="rounded-2xl shadow-sm hover:shadow-md transition-all">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-bold text-gray-500 font-khmer-os-battambang">កំពុងសិក្សា (Active)</CardTitle>
+                <Zap className="h-4 w-4 text-[#00B4F6]" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-[#00B4F6]">340</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  +180 since last hour
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* New Signups */}
+            <Card className="rounded-2xl shadow-sm hover:shadow-md transition-all">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-bold text-gray-500 font-khmer-os-battambang">ចុះឈ្មោះថ្មី (New)</CardTitle>
+                <UserPlus className="h-4 w-4 text-orange-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+15</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  +19% from yesterday
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Total Courses */}
+            <Card className="rounded-2xl shadow-sm hover:shadow-md transition-all">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-bold text-gray-500 font-khmer-os-battambang">វគ្គសិក្សា (Courses)</CardTitle>
+                <BookOpen className="h-4 w-4 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">12</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  3 categories active
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* CHARTS & LISTS */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            
+            {/* LEFT: MAIN CHART (Big) */}
+            <Card className="col-span-4 rounded-2xl shadow-sm">
+              <CardHeader>
+                <CardTitle className="font-khmer-os-battambang">ស្ថិតិសិស្សចូលរៀន (Overview)</CardTitle>
+                <CardDescription>
+                  សកម្មភាពសិស្សប្រចាំសប្តាហ៍នេះ
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pl-2">
+                <div className="h-[350px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#00B4F6" stopOpacity={0.2}/>
+                          <stop offset="95%" stopColor="#00B4F6" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                      <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
+                      <Area type="monotone" dataKey="students" stroke="#00B4F6" strokeWidth={3} fillOpacity={1} fill="url(#colorStudents)" />
+                      <Area type="monotone" dataKey="active" stroke="#82ca9d" strokeWidth={3} fillOpacity={1} fill="url(#colorStudents)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
-              ))}
-           </div>
+              </CardContent>
+            </Card>
 
-           {/* Mobile-Friendly Banner */}
-           <div className="mt-8 bg-orange-50 rounded-xl p-4 border border-orange-100 flex items-start gap-3">
-              <div className="bg-orange-100 p-2 rounded-lg text-orange-500 shrink-0">
-                 <BookOpen size={18} />
-              </div>
-              <div>
-                 <h4 className="text-sm font-bold text-gray-800 font-khmer-os-battambang">English L1</h4>
-                 <p className="text-[11px] text-gray-500 mt-1 font-khmer-os-battambang leading-relaxed">
-                   វគ្គសិក្សានេះមានសន្ទុះខ្លាំងជាងគេប្រចាំសប្តាហ៍។
-                 </p>
-              </div>
-           </div>
-        </div>
+            {/* RIGHT: RECENT SALES / STUDENTS */}
+            <Card className="col-span-3 rounded-2xl shadow-sm">
+              <CardHeader>
+                <CardTitle className="font-khmer-os-battambang">ចុះឈ្មោះថ្មីៗ (Recent)</CardTitle>
+                <CardDescription>
+                  សិស្សចំនួន 15 នាក់បានចុះឈ្មោះថ្ងៃនេះ
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {recentSales.map((sale, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="h-9 w-9 bg-blue-50 text-[#00B4F6]">
+                          <AvatarFallback className="font-bold">{sale.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="space-y-1">
+                          <p className="text-sm font-bold leading-none text-gray-800">{sale.name}</p>
+                          <p className="text-xs text-gray-500">{sale.email}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                         <div className="font-bold text-sm text-green-600">{sale.amount}</div>
+                         <div className="text-[10px] text-gray-400">{sale.course}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-      </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="analytics" className="h-[400px] flex items-center justify-center text-gray-400">
+           Analytics Content Coming Soon...
+        </TabsContent>
+
+      </Tabs>
     </div>
   );
 }

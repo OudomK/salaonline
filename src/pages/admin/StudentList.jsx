@@ -1,8 +1,32 @@
 import React, { useState } from 'react';
-import { Search, FileSpreadsheet, FileText, Smartphone, Eye, ChevronLeft, ChevronRight, X, Trash2 } from "lucide-react";
+import { Search, FileSpreadsheet, FileText, Trash2, UserPen, Calendar, Signal, Filter, Check } from "lucide-react";
 import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable'; // 🟢 វិធី Import ដែលត្រឹមត្រូវបំផុត
+
+// 🟢 IMPORT SHADCN COMPONENTS
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+// 🟢 បន្ថែម Dropdown សម្រាប់ Filter
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+
+// ... (រក្សាទុក Helper Functions និង Mock Data នៅដដែល) ...
+// --- HELPER: Phone Color ---
+const getPhoneStyle = (phone) => {
+  const p = phone.replace(/\s/g, ''); 
+  if (/^(010|015|016|069|070|081|086|087|093|096|098)/.test(p)) return { bg: "bg-[#00C853]", icon: "S" };
+  if (/^(011|012|014|017|061|076|077|078|085|089|092|095|099)/.test(p)) return { bg: "bg-[#FF9800]", icon: "C" };
+  return { bg: "bg-blue-500", icon: "M" };
+};
+
+const getCourseColor = (course) => {
+    if (course.includes("English")) return "bg-pink-50 text-pink-600 border-pink-100";
+    if (course.includes("Korean")) return "bg-indigo-50 text-indigo-600 border-indigo-100";
+    if (course.includes("Chinese")) return "bg-orange-50 text-orange-600 border-orange-100";
+    return "bg-gray-50 text-gray-600";
+};
 
 // --- MOCK DATA ---
 const currentTime = new Date().getTime();
@@ -10,217 +34,239 @@ const initialStudents = Array.from({ length: 15 }, (_, i) => ({
   id: i + 1, 
   studentId: `STU${String(i + 1).padStart(3, '0')}`,
   name: i % 2 === 0 ? `Sok Dara ${i + 1}` : `Chan Maly ${i + 1}`,
-  email: `student${i + 1}@school.com`,
-  phone: `012 999 ${String(i).padStart(3, '0')}`,
+  phone: i % 2 === 0 ? `012 999 ${String(i).padStart(3, '0')}` : `016 555 ${String(i).padStart(3, '0')}`,
   course: i % 3 === 0 ? "English L1" : i % 3 === 1 ? "Korean Basic" : "Chinese L2",
-  joinedDate: "2024-01-15",
-  lastActive: i % 4 === 0 ? currentTime : currentTime - (60 * 60 * 1000), // Online/Offline
+  joinedDate: "15-Jan-2024",
+  lastActive: i % 4 === 0 ? currentTime : currentTime - (60 * 60 * 1000),
 }));
 
 export default function StudentList() {
   const [students, setStudents] = useState(initialStudents);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterCourse, setFilterCourse] = useState("All"); // 🟢 New State for Filter
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 7;
+  const itemsPerPage = 8; 
+
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  // --- FILTER & PAGINATION ---
-  const filteredStudents = students.filter(student =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.phone.includes(searchTerm)
-  );
+  // 🟢 LOGIC: Filter by Search AND Course
+  const filteredStudents = students.filter(student => {
+    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) || student.phone.includes(searchTerm);
+    const matchesCourse = filterCourse === "All" || student.course.includes(filterCourse);
+    
+    return matchesSearch && matchesCourse;
+  });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredStudents.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
-
   const isOnline = (lastActive) => (new Date().getTime() - lastActive) < 5 * 60 * 1000;
 
-  // --- EXPORT PDF (FIXED & TESTED) 🟢 ---
-  const exportToPDF = () => {
-    try {
-        const doc = new jsPDF();
-        
-        // Header
-        doc.setFontSize(18);
-        doc.text("Student List Report", 14, 20);
-        
-        doc.setFontSize(10);
-        doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 28);
-
-        // Columns & Rows
-        const tableColumn = ["#", "Name", "Email", "Phone", "Course", "Status"];
-        const tableRows = filteredStudents.map(student => [
-          student.id,
-          student.name,
-          student.email,
-          student.phone,
-          student.course,
-          isOnline(student.lastActive) ? "Online" : "Offline"
-        ]);
-
-        // Generate Table using autoTable function
-        autoTable(doc, {
-          head: [tableColumn],
-          body: tableRows,
-          startY: 35,
-          theme: 'grid',
-          headStyles: { fillColor: [41, 128, 185] }, // Blue Header
-          styles: { fontSize: 10, cellPadding: 3 },
-        });
-
-        doc.save("Student_List_Report.pdf");
-
-    } catch (error) {
-        console.error("Error exporting PDF:", error);
-        alert("មានបញ្ហាក្នុងការ Export PDF! សូមព្យាយាមម្តងទៀត។");
-    }
+  // Edit
+  const handleEdit = (student) => {
+    setSelectedStudent(student);
+    setIsEditOpen(true);
   };
 
-  // --- EXPORT EXCEL ---
+  // 🟢 Export Excel Function
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredStudents);
+    const worksheet = XLSX.utils.json_to_sheet(filteredStudents); // Export only filtered data
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
-    XLSX.writeFile(workbook, "Students.xlsx");
-  };
-
-  // --- HELPER: Badge Color ---
-  const getCourseBadgeStyle = (course) => {
-    if (course.includes("English")) return "bg-pink-100 text-pink-600 border-pink-200";
-    if (course.includes("Korean")) return "bg-purple-100 text-purple-600 border-purple-200";
-    return "bg-blue-100 text-blue-600 border-blue-200";
+    XLSX.writeFile(workbook, "Students_List.xlsx");
   };
 
   return (
     <div className="space-y-6 animate-fade-in-up pb-20">
       
-      {/* 1. HEADER (No Create Button) */}
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-           <h1 className="text-2xl font-bold text-gray-900 font-khmer-os-battambang">គ្រប់គ្រងសិស្ស (User Management)</h1>
-           <p className="text-sm text-gray-500 mt-1">Manage all students and their information</p>
+           <h1 className="text-2xl font-bold text-gray-800 font-khmer-os-battambang">គ្រប់គ្រងសិស្ស (User Management)</h1>
+           <p className="text-sm text-gray-500 font-khmer-os-battambang">គ្រប់គ្រងព័ត៌មានសិស្ស និងការទំនាក់ទំនង</p>
         </div>
-        {/* ❌ Removed Create Button */}
       </div>
 
-      {/* 2. ACTIONS BAR (Search & Export) */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center justify-between">
-         {/* Search Box */}
-         <div className="relative w-full md:w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input 
-              type="text" 
-              placeholder="Search users..." 
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#6366F1] outline-none transition-all text-sm font-medium"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-         </div>
-
-         {/* Export Buttons */}
-         <div className="flex gap-3">
-             <button onClick={exportToExcel} className="flex items-center gap-2 bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2.5 rounded-lg font-bold text-sm shadow-md shadow-green-100 transition-all">
-               <FileSpreadsheet size={18} /> Excel
-             </button>
-             <button onClick={exportToPDF} className="flex items-center gap-2 bg-[#EF4444] hover:bg-[#DC2626] text-white px-4 py-2.5 rounded-lg font-bold text-sm shadow-md shadow-red-100 transition-all">
-               <FileText size={18} /> PDF
-             </button>
-         </div>
-      </div>
-
-      {/* 3. TABLE */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-extrabold text-gray-400 uppercase tracking-wider">#</th>
-                <th className="px-6 py-4 text-left text-xs font-extrabold text-gray-400 uppercase tracking-wider">EMAIL</th>
-                <th className="px-6 py-4 text-left text-xs font-extrabold text-gray-400 uppercase tracking-wider">NAME</th>
-                <th className="px-6 py-4 text-left text-xs font-extrabold text-gray-400 uppercase tracking-wider">COURSE</th>
-                <th className="px-6 py-4 text-left text-xs font-extrabold text-gray-400 uppercase tracking-wider">PHONE</th>
-                <th className="px-6 py-4 text-left text-xs font-extrabold text-gray-400 uppercase tracking-wider">JOINED</th>
-                <th className="px-6 py-4 text-left text-xs font-extrabold text-gray-400 uppercase tracking-wider">STATUS</th>
-                <th className="px-6 py-4 text-center text-xs font-extrabold text-gray-400 uppercase tracking-wider">ACTION</th>
-              </tr>
-            </thead>
+      <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-6">
+        
+        {/* TOOLBAR */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+            <div className="relative w-full md:w-96">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Input 
+                  placeholder="ស្វែងរកតាមឈ្មោះ ឬ លេខទូរស័ព្ទ..." 
+                  className="pl-10 bg-gray-50 border-gray-200 rounded-xl h-11 focus-visible:ring-[#00B4F6] font-khmer-os-battambang"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
             
-            <tbody className="divide-y divide-gray-50">
-              {currentItems.map((student) => {
-                 const online = isOnline(student.lastActive);
-                 return (
-                  <tr key={student.id} className="hover:bg-gray-50/80 transition-colors group">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-500">{student.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-600">{student.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap"><span className="text-sm font-bold text-gray-900">{student.name}</span></td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1 rounded-lg text-xs font-extrabold border ${getCourseBadgeStyle(student.course)}`}>
-                        {student.course}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                       <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded bg-orange-100 flex items-center justify-center text-orange-600"><Smartphone size={14} /></div>
-                          <span className="text-sm font-bold text-gray-700">{student.phone}</span>
-                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.joinedDate}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {online ? (
-                         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-600">Active</span>
-                      ) : (
-                         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-400">Offline</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                       <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => setSelectedStudent(student)} className="p-2 rounded-lg bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all"><Eye size={18} /></button>
-                          <button className="p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-all"><Trash2 size={18} /></button>
-                       </div>
-                    </td>
-                  </tr>
-                 );
-              })}
-            </tbody>
-          </table>
+            <div className="flex gap-2">
+                {/* 🟢 FILTER BUTTON (With Dropdown) */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="rounded-lg gap-2 text-gray-600 border-dashed border-gray-300 h-11">
+                        <Filter size={16}/> 
+                        Filter: <span className="font-bold text-gray-900">{filterCourse}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 bg-white">
+                    <DropdownMenuLabel>Filter by Course</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setFilterCourse("All")} className="cursor-pointer justify-between">
+                      All Courses {filterCourse === "All" && <Check size={14} />}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setFilterCourse("English")} className="cursor-pointer justify-between">
+                      English {filterCourse === "English" && <Check size={14} />}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setFilterCourse("Chinese")} className="cursor-pointer justify-between">
+                      Chinese {filterCourse === "Chinese" && <Check size={14} />}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setFilterCourse("Korean")} className="cursor-pointer justify-between">
+                      Korean {filterCourse === "Korean" && <Check size={14} />}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* 🟢 EXPORT BUTTON (Fixed onClick) */}
+                <Button 
+                  onClick={exportToExcel} // ដាក់ Function ត្រង់នេះ
+                  className="bg-[#10B981] hover:bg-[#059669] text-white rounded-lg gap-2 font-bold shadow-sm shadow-green-200 h-11"
+                >
+                    <FileSpreadsheet size={18} /> Export Excel
+                </Button>
+            </div>
         </div>
 
-        {/* Pagination */}
-        <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-gray-50/50">
-           <span className="text-xs text-gray-500 font-medium">Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredStudents.length)} of {filteredStudents.length} entries</span>
-           <div className="flex items-center gap-2">
-              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 disabled:opacity-50 text-gray-600"><ChevronLeft size={16} /></button>
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 disabled:opacity-50 text-gray-600"><ChevronRight size={16} /></button>
-           </div>
+        {/* ... (TABLE CODE នៅដដែល) ... */}
+        {/* សូមដាក់កូដ Table ពីចម្លើយមុននៅទីនេះ... */}
+        <div className="rounded-xl border border-gray-100 overflow-hidden">
+          <Table>
+            <TableHeader className="bg-gray-50/50">
+              <TableRow className="border-b-gray-100">
+                <TableHead className="font-bold text-gray-400 text-xs uppercase tracking-wider pl-6 font-khmer-os-battambang">សិស្ស (Student)</TableHead>
+                <TableHead className="font-bold text-gray-400 text-xs uppercase tracking-wider font-khmer-os-battambang">លេខទូរស័ព្ទ (Phone)</TableHead>
+                <TableHead className="font-bold text-gray-400 text-xs uppercase tracking-wider font-khmer-os-battambang">វគ្គសិក្សា (Course)</TableHead>
+                <TableHead className="font-bold text-gray-400 text-xs uppercase tracking-wider font-khmer-os-battambang">ថ្ងៃចូលរៀន</TableHead>
+                <TableHead className="font-bold text-gray-400 text-xs uppercase tracking-wider text-center font-khmer-os-battambang">ស្ថានភាព</TableHead>
+                <TableHead className="font-bold text-gray-400 text-xs uppercase tracking-wider text-center font-khmer-os-battambang">សកម្មភាព</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentItems.map((student) => {
+                const carrier = getPhoneStyle(student.phone);
+                const online = isOnline(student.lastActive);
+
+                return (
+                  <TableRow key={student.id} className="border-b-gray-50 hover:bg-gray-50/50 transition-colors">
+                    
+                    {/* 1. STUDENT (Name + ID) */}
+                    <TableCell className="pl-6 py-4">
+                        <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10 bg-blue-50 text-[#00B4F6] border border-blue-100">
+                                <AvatarFallback className="font-bold text-sm">{student.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col">
+                                <span className="font-bold text-gray-800 text-sm font-khmer-os-battambang">{student.name}</span>
+                                <span className="text-[10px] text-gray-400 font-bold tracking-wide">{student.studentId}</span>
+                            </div>
+                        </div>
+                    </TableCell>
+
+                    {/* 2. PHONE BADGE */}
+                    <TableCell>
+                        <div className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-white font-bold text-[11px] shadow-sm w-fit ${carrier.bg}`}>
+                            <div className="bg-white/20 p-0.5 rounded-md">
+                                <Signal size={10} strokeWidth={3} />
+                            </div>
+                            <span className="pr-1 tracking-wide font-mono">{student.phone}</span>
+                        </div>
+                    </TableCell>
+
+                    {/* 3. COURSE BADGE */}
+                    <TableCell>
+                        <Badge variant="outline" className={`rounded-lg px-3 py-1 text-[10px] font-bold shadow-none ${getCourseColor(student.course)}`}>
+                            {student.course}
+                        </Badge>
+                    </TableCell>
+
+                    {/* 4. JOINED DATE */}
+                    <TableCell>
+                        <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
+                            <Calendar size={14} className="text-gray-300" /> {student.joinedDate}
+                        </div>
+                    </TableCell>
+
+                    {/* 5. STATUS */}
+                    <TableCell className="text-center">
+                        {online ? (
+                            <Badge className="bg-[#10B981]/10 text-[#10B981] hover:bg-[#10B981]/20 rounded-full px-3 text-[10px] font-bold shadow-none border-0">
+                                ● Active
+                            </Badge>
+                        ) : (
+                            <Badge variant="outline" className="text-gray-400 border-gray-200 rounded-full px-3 text-[10px] font-bold bg-gray-50">
+                                Offline
+                            </Badge>
+                        )}
+                    </TableCell>
+
+                    {/* 6. ACTIONS */}
+                    <TableCell className="text-center">
+                        <div className="flex items-center justify-center gap-2">
+                            <button onClick={() => handleEdit(student)} className="w-8 h-8 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-all shadow-sm">
+                                <UserPen size={14} />
+                            </button>
+                            <button className="w-8 h-8 rounded-full bg-red-50 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all shadow-sm">
+                                <Trash2 size={14} />
+                            </button>
+                        </div>
+                    </TableCell>
+
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
         </div>
+
+        {/* ... (PAGINATION CODE នៅដដែល) ... */}
+        <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-50">
+             <span className="text-xs text-gray-400 font-khmer-os-battambang">បង្ហាញ {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredStudents.length)} នៃ {filteredStudents.length}</span>
+             <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="h-8 text-xs border-gray-200 text-gray-500 rounded-lg">Back</Button>
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(Math.ceil(filteredStudents.length/itemsPerPage), p + 1))} className="h-8 text-xs border-gray-200 text-gray-500 rounded-lg">Next</Button>
+             </div>
+        </div>
+
       </div>
 
-      {/* DETAIL MODAL */}
-      {selectedStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
-           <div className="bg-white w-full max-w-md rounded-[20px] shadow-2xl overflow-hidden animate-scale-in">
-              <div className="bg-[#6366F1] p-4 flex justify-between items-center text-white">
-                 <h3 className="font-bold">Student Details</h3>
-                 <button onClick={() => setSelectedStudent(null)} className="hover:bg-white/20 p-1 rounded-full transition"><X size={20}/></button>
-              </div>
-              <div className="p-6">
-                 <div className="flex flex-col items-center mb-6">
-                    <div className="w-20 h-20 bg-indigo-50 text-[#6366F1] rounded-full flex items-center justify-center text-3xl font-bold mb-3 border-4 border-white shadow-lg">{selectedStudent.name.charAt(0)}</div>
-                    <h2 className="text-xl font-bold text-gray-800">{selectedStudent.name}</h2>
-                    <p className="text-gray-500 text-sm">{selectedStudent.email}</p>
-                 </div>
-                 <div className="space-y-3">
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-xl border border-gray-100"><span className="text-sm text-gray-500">Phone</span><span className="text-sm font-bold text-gray-800">{selectedStudent.phone}</span></div>
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-xl border border-gray-100"><span className="text-sm text-gray-500">Course</span><span className="text-sm font-bold text-[#6366F1]">{selectedStudent.course}</span></div>
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-xl border border-gray-100"><span className="text-sm text-gray-500">Status</span><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isOnline(selectedStudent.lastActive) ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}>{isOnline(selectedStudent.lastActive) ? 'Active Now' : 'Offline'}</span></div>
-                 </div>
-              </div>
-           </div>
-        </div>
-      )}
+      {/* EDIT MODAL (No Email) */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="bg-white rounded-2xl sm:max-w-[400px]">
+            <DialogHeader>
+                <DialogTitle className="font-bold text-lg font-khmer-os-battambang">កែប្រែព័ត៌មាន (Edit Student)</DialogTitle>
+                <DialogDescription>ID: {selectedStudent?.studentId}</DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+                <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 font-khmer-os-battambang">ឈ្មោះសិស្ស</label>
+                    <Input defaultValue={selectedStudent?.name} className="rounded-xl h-11 font-bold" />
+                </div>
+                <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 font-khmer-os-battambang">លេខទូរស័ព្ទ</label>
+                    <Input defaultValue={selectedStudent?.phone} className="rounded-xl h-11 font-bold" />
+                </div>
+                <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 font-khmer-os-battambang">វគ្គសិក្សា</label>
+                    <Input defaultValue={selectedStudent?.course} className="rounded-xl h-11" />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button onClick={() => setIsEditOpen(false)} className="w-full bg-[#00B4F6] hover:bg-[#009bd1] text-white rounded-xl font-bold font-khmer-os-battambang h-11">រក្សាទុក (Save Changes)</Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
