@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { quizData } from "../data/quizData";
+import { quizData } from "../../data/quizData";
 import { ChevronLeft, Clock, CheckCircle, Globe, Award, ArrowRight } from "lucide-react";
 
 export default function PlacementTest() {

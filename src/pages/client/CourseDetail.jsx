@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, MoreHorizontal, Play, Lock, FileBadge, CheckCircle, Clock, AlertCircle, X } from "lucide-react"; 
-import { courseDetail } from "../data/courseData";
+import { courseDetail } from "../../data/courseData";
 
 export default function CourseDetail() {
   const navigate = useNavigate();

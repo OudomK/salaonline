@@ -1,9 +1,7 @@
 import { Outlet } from "react-router-dom";
-// import Header from "../components/Header";
-// import Footer from "../components/Footer";
 import BottomNav from "../components/BottomNav";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../components/client/Header";
+import Footer from "../components/client/Footer";
 
 export default function MainLayout() {
   return (

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Bell, Search, User } from "lucide-react";
-import logo from "../assets/logo.jpg";
+import logo from "../../assets/logo.jpg";
 
 export default function Header() {
   return (

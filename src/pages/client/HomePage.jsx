@@ -1,7 +1,6 @@
 import { Search, Bell, SlidersHorizontal } from "lucide-react";
-import { categories, recommendedCourses, bannerImage } from "../data/homeData";
-// import BottomNav from "../components/BottomNav"; <--- លុបចោល (MainLayout មានហើយ)
-import logo from "../assets/logo.jpg";
+import { categories, recommendedCourses, bannerImage } from "../../data/homeData";
+import logo from "../../assets/logo.jpg";
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {

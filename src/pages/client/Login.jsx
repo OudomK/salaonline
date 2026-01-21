@@ -1,7 +1,7 @@
 import { useState } from "react"; // Import useState
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react"; // Import Icons
-import logo from "../assets/logo.jpg"; 
+import logo from "../../assets/logo.jpg";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false); // State សម្រាប់បិទបើកភ្នែក

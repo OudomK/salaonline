@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react"; // Import Icons
-import logo from "../assets/logo.jpg"; 
-import { districts, schools } from "../data/location";
+import logo from "../../assets/logo.jpg";
+import { districts, schools } from "../../data/location";
 
 export default function Register() {
   const [selectedDistrict, setSelectedDistrict] = useState("");
