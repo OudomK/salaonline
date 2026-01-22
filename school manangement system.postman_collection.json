@@ -1,0 +1,2252 @@
+{
+  "info": {
+    "_postman_id": "a00c2e5a-a7d8-4480-8b40-056e481bd4df",
+    "name": "school manangement system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50751527",
+    "_collection_link": "https://go.postman.co/collection/50751527-a00c2e5a-a7d8-4480-8b40-056e481bd4df?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "admin",
+          "item": [
+            {
+              "name": "users list ( admin only )",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/users",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "disabled": true
+                    },
+                    {
+                      "key": "size",
+                      "value": "10",
+                      "disabled": true
+                    },
+                    {
+                      "key": "search",
+                      "value": "000000006",
+                      "description": "phone number | username ",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get user by id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/users/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "users",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "29"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "edit user",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"password\" : \"teacher123\",\n    \"role_id\" : 2,\n    \"email\" : \"hell@gmail.com\",\n    \"phone_number\" : \"0999999\",\n    \"parent_number\" : \"093213213/0321321321\",\n    \"bio\" : \"hello\" ,\n    \"school_type\" : \"university\",\n    \"is_active\" : false,\n    \"classroom\" : \"A3\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/users/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "users",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create users",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\" : \"teacher4\" ,\n    \"password\" : \"teacher123\",\n    \"role_id\" : 4,\n    \"email\" : \"ahaaf2d@gmail.com\",\n    \"phone_number\" : \"032432432\",\n    \"parent_number\" : \"032432434\",\n    \"bio\" : \"bro kak\",  \n    \"school_type\" : \"university\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/users",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete users",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{local}}/users/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "users",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "my test history",
+          "item": [
+            {
+              "name": "my-quiz-history",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/quiz/my-quiz-history",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz",
+                    "my-quiz-history"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"token\", jsonData.token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "console.log(pm.request)"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"phone_number\" : \"000000011\",\r\n    \"password\" : \"student123\"\r\n}\r\n\r\n// {\r\n//     \"phone_number\" : \"0123456789\",\r\n//     \"password\" : \"admin123\"\r\n// }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{local}}/login",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "login",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"phone_number\" : \"000000009\",\r\n    \"password\" : \"student123\"\r\n}\r\n\r\n// {\r\n//     \"phone_number\" : \"0123456789\",\r\n//     \"password\" : \"admin123\"\r\n// }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/login",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "X-RateLimit-Limit-short",
+                  "value": "5"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-short",
+                  "value": "4"
+                },
+                {
+                  "key": "X-RateLimit-Reset-short",
+                  "value": "1"
+                },
+                {
+                  "key": "X-RateLimit-Limit-medium",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-medium",
+                  "value": "58"
+                },
+                {
+                  "key": "X-RateLimit-Reset-medium",
+                  "value": "53"
+                },
+                {
+                  "key": "X-RateLimit-Limit-long",
+                  "value": "1000"
+                },
+                {
+                  "key": "X-RateLimit-Remaining-long",
+                  "value": "998"
+                },
+                {
+                  "key": "X-RateLimit-Reset-long",
+                  "value": "3593"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1029"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"405-cur+PaO5pNk5F3n5hUvXdV35g7U\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sun, 18 Jan 2026 16:08:54 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"data\": {\n        \"id\": 40,\n        \"username\": \"student7\",\n        \"is_active\": true,\n        \"classroom\": \"10A\",\n        \"email\": null,\n        \"phone_number\": \"000000009\",\n        \"parent_number\": \"0942342343\",\n        \"last_active_at\": null,\n        \"avatar\": null,\n        \"role\": {\n            \"id\": 21,\n            \"name\": \"student\",\n            \"permissions\": [],\n            \"createdAt\": \"2026-01-07T17:16:26.395Z\",\n            \"updatedAt\": \"2026-01-07T17:16:26.395Z\"\n        },\n        \"createdAt\": \"2026-01-16T15:08:12.579Z\",\n        \"updatedAt\": \"2026-01-16T15:08:12.579Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDAsInVzZXJuYW1lIjoic3R1ZGVudDciLCJpc19hY3RpdmUiOnRydWUsImNsYXNzcm9vbSI6IjEwQSIsImVtYWlsIjpudWxsLCJwaG9uZV9udW1iZXIiOiIwMDAwMDAwMDkiLCJwYXJlbnRfbnVtYmVyIjoiMDk0MjM0MjM0MyIsImxhc3RfYWN0aXZlX2F0IjpudWxsLCJhdmF0YXIiOm51bGwsInJvbGUiOnsiaWQiOjIxLCJuYW1lIjoic3R1ZGVudCIsInBlcm1pc3Npb25zIjpbXSwiY3JlYXRlZEF0IjoiMjAyNi0wMS0wN1QxNzoxNjoyNi4zOTVaIiwidXBkYXRlZEF0IjoiMjAyNi0wMS0wN1QxNzoxNjoyNi4zOTVaIn0sImNyZWF0ZWRBdCI6IjIwMjYtMDEtMTZUMTU6MDg6MTIuNTc5WiIsInVwZGF0ZWRBdCI6IjIwMjYtMDEtMTZUMTU6MDg6MTIuNTc5WiIsImlhdCI6MTc2ODc1MjUzNCwiZXhwIjoxNzY5MzU3MzM0fQ.OMj7EO32LB5_gp7PXz-jRCJkuGTwnRyr1jucBOe3S1Y\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "heartbeat ( request every 1 min to update active state)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{local}}/users/heartbeat",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "users",
+                "heartbeat"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\" : \"student7\",\r\n    \"password\" : \"student123\",\r\n    \"phone_number\" : \"000000011\",\r\n    \"parent_number\" : \"0942342343\",\r\n    \"classroom\" : \"10A\",\r\n    \"school\" : \"rupp\"\r\n}   ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{local}}/register",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get me",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{local}}/me",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change-your-password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"current_password\" : \"student123\",\r\n    \"new_password\" : \"student\",\r\n    \"confirm_password\" : \"student\"\r\n}   ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{local}}/change-password",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "forgot your password ( not done)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{local}} /auth/forgot-password",
+              "host": [
+                "{{local}} "
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "admin",
+          "item": [
+            {
+              "name": "create role (admin only)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\" : \"yes\"\r\n    // \"permissions\" : [\"\"]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/roles",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update role",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"permissions\": [\"\"]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/roles/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "roles",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "3"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "role list",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\" : \"admin\",\r\n    \"password\" : \"admin123\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{local}}/roles",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "roles"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "permissions (use to assign to role )",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/settings/permissions",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "settings",
+                    "permissions"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete  role",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\" : \"student\",\r\n    \"password\" : \"student123\"\r\n}\r\n\r\n// {\r\n//     \"username\" : \"admin\",\r\n//     \"password\" : \"admin123\"\r\n// }"
+                },
+                "url": {
+                  "raw": "{{local}}/roles/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "roles",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get role by id",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\" : \"student\",\r\n    \"password\" : \"student123\"\r\n}\r\n\r\n// {\r\n//     \"username\" : \"admin\",\r\n//     \"password\" : \"admin123\"\r\n// }"
+                },
+                "url": {
+                  "raw": "{{local}}/roles/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "roles",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "videos",
+      "item": [
+        {
+          "name": "admin",
+          "item": [
+            {
+              "name": "upload video to course",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "uuid": "b8c2e497-5e03-45bf-8645-5924157c3d68",
+                      "src": "/C:/Users/MSI PC/Videos/youtube/funnyclip/Tyler1 driving car green screen.mp4"
+                    },
+                    {
+                      "key": "courseId",
+                      "value": "01e368ee-28e5-4b8c-9418-97e755ede9bb",
+                      "type": "text",
+                      "uuid": "cb836183-1af4-46aa-a4ad-77f87e83a190"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{local}}/videos/upload",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos",
+                    "upload"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "upload video to course ( chunk by chunk)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "type": "file",
+                      "key": "file",
+                      "src": "/C:/Users/MSI PC/Videos/youtube/2025-12-07 20-39-46.mp4"
+                    },
+                    {
+                      "type": "text",
+                      "key": "title",
+                      "value": "Lesson 1"
+                    },
+                    {
+                      "type": "text",
+                      "key": "userId",
+                      "value": "2"
+                    },
+                    {
+                      "type": "text",
+                      "key": "courseId",
+                      "value": "09dafa87-733e-4e31-8fd6-c77fb8abea09"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{local}}/videos/upload-chunk",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos",
+                    "upload-chunk"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "videos list",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/videos",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "videos by course",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/videos/course/:courseId",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos",
+                    "course",
+                    ":courseId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "videos in bunny list",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "type": "file",
+                      "key": "file",
+                      "src": "/C:/Users/MSI PC/Videos/youtube/2025-12-07 21-15-16.mp4"
+                    },
+                    {
+                      "type": "text",
+                      "key": "title",
+                      "value": "Lesson 1"
+                    },
+                    {
+                      "type": "text",
+                      "key": "userId",
+                      "value": "2"
+                    },
+                    {
+                      "type": "text",
+                      "key": "courseId",
+                      "value": "d28c79fb-58b1-4633-8f4b-93f2feef8232"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{local}}/videos/",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "accept-webhook",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/videos/webhook?key=580536",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos",
+                    "webhook"
+                  ],
+                  "query": [
+                    {
+                      "key": "key",
+                      "value": "580536"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete video",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/videos/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "b9324e77-af44-4e37-b9c9-84a67eb7754b"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "your video library",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/videos/library",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos",
+                    "library"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get video details",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "// example\r\n\r\n\r\n// <div style=\"position:relative;padding-top:56.25%;\"><iframe\r\n//                 src=\"https://player.mediadelivery.net/embed/580536/c500ff5f-482d-497b-850c-b30d783f9048?token=6da19f8e607b6e84c993d93c3fee49ced8f6dc8f70595bcc99e2550df86fdb4&expires=176857768&autoplay=true&loop=false&muted=false&preload=true&responsive=true\"\r\n//                 loading=\"lazy\" style=\"border:0;position:absolute;top:0;height:100%;width:100%;\"\r\n//                 allow=\"accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;\"\r\n//                 allowfullscreen=\"true\"></iframe>\r\n// </div>"
+                },
+                "url": {
+                  "raw": "{{local}}/videos/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "99658004-fcf2-4909-aa48-e7b65b2bbd35"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "student",
+          "item": [
+            {
+              "name": "watch video",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "// example\r\n\r\n\r\n// <div style=\"position:relative;padding-top:56.25%;\"><iframe\r\n//                 src=\"https://player.mediadelivery.net/embed/580536/c500ff5f-482d-497b-850c-b30d783f9048?token=6da19f8e607b6e84c993d93c3fee49ced8f6dc8f70595bcc99e2550df86fdb4&expires=176857768&autoplay=true&loop=false&muted=false&preload=true&responsive=true\"\r\n//                 loading=\"lazy\" style=\"border:0;position:absolute;top:0;height:100%;width:100%;\"\r\n//                 allow=\"accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;\"\r\n//                 allowfullscreen=\"true\"></iframe>\r\n// </div>",
+                  "options": {
+                    "raw": {
+                      "language": "text"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/videos/:id/watch",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "videos",
+                    ":id",
+                    "watch"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "f99d6e1b-142e-4fba-9ef9-59b66e66ef21"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update video progress",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"video_id\": \"uuid-of-the-video\",\r\n  \"current_time\": 125.5\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/student-video-progress",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "student-video-progress"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get video progress by id",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{local}}/student-video-progress/:video_id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "student-video-progress",
+                    ":video_id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "video_id",
+                      "value": "f99d6e1b-142e-4fba-9ef9-59b66e66ef21"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "my-progress",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{local}}/student-video-progress/my-progress",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "student-video-progress",
+                    "my-progress"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Course",
+      "item": [
+        {
+          "name": "Student",
+          "item": [
+            {
+              "name": "student",
+              "item": [
+                {
+                  "name": "my course",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{local}}/courses/my-courses",
+                      "host": [
+                        "{{local}}"
+                      ],
+                      "path": [
+                        "courses",
+                        "my-courses"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "course by id",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{local}}/courses/:id",
+                      "host": [
+                        "{{local}}"
+                      ],
+                      "path": [
+                        "courses",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "e8ab3285-569d-4925-bbc6-edcec4fac9da"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "my course",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/courses",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "courses"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "10",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "size",
+                      "value": "",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "search",
+                      "value": "rith",
+                      "description": "course title | teacher name",
+                      "disabled": true
+                    },
+                    {
+                      "key": "",
+                      "value": "",
+                      "type": "text",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "admin",
+          "item": [
+            {
+              "name": "course list / admin",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/courses/admin",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "courses",
+                    "admin"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "10",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "size",
+                      "value": "",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "search",
+                      "value": "hell",
+                      "description": "course title | teacher name",
+                      "disabled": true
+                    },
+                    {
+                      "key": "",
+                      "value": "",
+                      "type": "text",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create course",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\" : \"hello\" ,\n    \"description\" : \"description\",\n    \"thumbnail\" :\"fdsf\",\n    \"category_id\" : 1,\n    \"teacher_name\" : \"rith\" ,\n    \"videos\" : []\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/courses",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "courses"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "edit course",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\" : \"hello\" ,\n    \"description\" : \"description\",\n    \"thumbnail\" :\"fdsf\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/courses/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "courses",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "f13b0da4-8a4b-4989-8150-90af2a4a0a00"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete course",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/courses/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "courses",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "a5fd5c4d-237c-4c74-aa76-93e6695b8809"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "hide course",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/courses/:id/hide",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "courses",
+                    ":id",
+                    "hide"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "e8ab3285-569d-4925-bbc6-edcec4fac9da"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "publish course",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/courses/:id/publish",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "courses",
+                    ":id",
+                    "publish"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "e8ab3285-569d-4925-bbc6-edcec4fac9da"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "category",
+      "item": [
+        {
+          "name": "admin",
+          "item": [
+            {
+              "name": "get category by id",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\" : \"student5\",\r\n    \"password\" : \"student123\",\r\n    \"email\" : \"student5@gmail.com\",\r\n    \"phone_number\" : \"01234567890\",\r\n    \"parent_number\" : \"0942342343\",\r\n    \"classroom\" : \"10A\",\r\n    \"school\" : \"rupp\"\r\n}   "
+                },
+                "url": {
+                  "raw": "{{local}}/category/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "category",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"1\",\r\n    \"description\": \"chinese\",\r\n    \"teacher_name\" :\"rith\",\r\n    \"image\": \"image_url\" \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/category",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "category"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"English\",\r\n    \"description\": \"English\",\r\n    \"teacher_name\" :\"rith\",\r\n    \"image\": \"image_url\" \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/category/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "category",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\" : \"student5\",\r\n    \"password\" : \"student123\",\r\n    \"email\" : \"student5@gmail.com\",\r\n    \"phone_number\" : \"01234567890\",\r\n    \"parent_number\" : \"0942342343\",\r\n    \"classroom\" : \"10A\",\r\n    \"school\" : \"rupp\"\r\n}   "
+                },
+                "url": {
+                  "raw": "{{local}}/category/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "category",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "category list",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\" : \"student5\",\r\n    \"password\" : \"student123\",\r\n    \"email\" : \"student5@gmail.com\",\r\n    \"phone_number\" : \"01234567890\",\r\n    \"parent_number\" : \"0942342343\",\r\n    \"classroom\" : \"10A\",\r\n    \"school\" : \"rupp\"\r\n}   "
+            },
+            "url": {
+              "raw": "{{local}}/category",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "category"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quiz (test)",
+      "item": [
+        {
+          "name": "admin",
+          "item": [
+            {
+              "name": "list quiz",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{local}}/quiz",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz"
+                  ],
+                  "query": [
+                    {
+                      "key": "category_id",
+                      "value": "1",
+                      "disabled": true
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "quiz by id (not done)",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{local}}/quiz?category_id=2&page=1",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz"
+                  ],
+                  "query": [
+                    {
+                      "key": "category_id",
+                      "value": "2"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create quiz (test)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"title\": \"HSK 1 Foundation Exam\",\r\n  \"description\": \"Essential Chinese for beginners including Pinyin readings and basic grammar.\",\r\n  \"total_score\": 100,\r\n  \"is_first_test\": true,\r\n  \"category_id\": 4,\r\n  \"questions\": [\r\n    {\r\n      \"title\": \"How do you say 'Hello' in Chinese?\",\r\n      \"type\": \"single\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"Nǐ hǎo (你好)\", \"is_correct\": true },\r\n        { \"text\": \"Zài jiàn (再见)\", \"is_correct\": false },\r\n        { \"text\": \"Xiè xie (谢谢)\", \"is_correct\": false }\r\n      ]\r\n    },\r\n    {\r\n      \"title\": \"Select the correct Pinyin for 'China' (中国).\",\r\n      \"type\": \"single\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"Zhōng guó\", \"is_correct\": true },\r\n        { \"text\": \"Měi guó\", \"is_correct\": false },\r\n        { \"text\": \"Rì běn\", \"is_correct\": false }\r\n      ]\r\n    },\r\n    {\r\n      \"title\": \"Which of these words are numbers? (Select all that apply)\",\r\n      \"type\": \"multiple\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"Sān (三)\", \"is_correct\": true },\r\n        { \"text\": \"Sì (四)\", \"is_correct\": true },\r\n        { \"text\": \"Wǒ (我)\", \"is_correct\": false },\r\n        { \"text\": \"Shū (书)\", \"is_correct\": false }\r\n      ]\r\n    },\r\n    {\r\n      \"title\": \"What is the correct measure word for 'Person' (人)?\",\r\n      \"type\": \"single\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"Gè (个)\", \"is_correct\": true },\r\n        { \"text\": \"Zhī (只)\", \"is_correct\": false },\r\n        { \"text\": \"Běn (本)\", \"is_correct\": false }\r\n      ]\r\n    },\r\n    {\r\n      \"title\": \"Translate: 'I am not a student.'\",\r\n      \"type\": \"single\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"Wǒ shì xuéshēng (我是学生)\", \"is_correct\": false },\r\n        { \"text\": \"Wǒ bú shì xuéshēng (我不是学生)\", \"is_correct\": true },\r\n        { \"text\": \"Wǒ méiyǒu xuéshēng (我没有学生)\", \"is_correct\": false }\r\n      ]\r\n    },\r\n    {\r\n      \"title\": \"Which character means 'Big'?\",\r\n      \"type\": \"single\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"大 (Dà)\", \"is_correct\": true },\r\n        { \"text\": \"小 (Xiǎo)\", \"is_correct\": false },\r\n        { \"text\": \"太 (Tài)\", \"is_correct\": false }\r\n      ]\r\n    },\r\n    {\r\n      \"title\": \"When asking a yes/no question, which particle is added at the end?\",\r\n      \"type\": \"single\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"Ma (吗)\", \"is_correct\": true },\r\n        { \"text\": \"Ne (呢)\", \"is_correct\": false },\r\n        { \"text\": \"De (的)\", \"is_correct\": false }\r\n      ]\r\n    },\r\n    {\r\n      \"title\": \"Select the correct pronouns.\",\r\n      \"type\": \"multiple\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"Tā (他 - He)\", \"is_correct\": true },\r\n        { \"text\": \"Wǒ (我 - I)\", \"is_correct\": true },\r\n        { \"text\": \"Shuǐ (水 - Water)\", \"is_correct\": false },\r\n        { \"text\": \"Hé (和 - And)\", \"is_correct\": false }\r\n      ]\r\n    },\r\n    {\r\n      \"title\": \"How do you say 'Thank you'?\",\r\n      \"type\": \"single\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"Xiè xie (谢谢)\", \"is_correct\": true },\r\n        { \"text\": \"Bú kè qi (不客气)\", \"is_correct\": false },\r\n        { \"text\": \"Duì bu qǐ (对不起)\", \"is_correct\": false }\r\n      ]\r\n    },\r\n    {\r\n      \"title\": \"Translate: 'Where are you going?'\",\r\n      \"type\": \"single\",\r\n      \"question_score\": 10,\r\n      \"options\": [\r\n        { \"text\": \"Nǐ qù nǎr? (你去哪儿？)\", \"is_correct\": true },\r\n        { \"text\": \"Nǐ zài nǎr? (你在哪儿？)\", \"is_correct\": false },\r\n        { \"text\": \"Nǐ shì sheí? (你是谁？)\", \"is_correct\": false }\r\n      ]\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/quiz",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete quiz",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"432\",\r\n    \"description\": \"chinese\",\r\n    \"total_score\": 100,\r\n    \"is_first_test\": false,\r\n    \"category_id\": 2,\r\n    \"questions\": [{\r\n        \"title\" : \"1 + 1\",\r\n        \"type\" : \"single\",\r\n        \"options\": [{\r\n            \"text\": \"2\",\r\n            \"is_correct\": true\r\n        }]\r\n        \r\n    }]\r\n}"
+                },
+                "url": {
+                  "raw": "{{local}}/quiz/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "9d1edeed-7cd4-4d02-a2e1-921341dc2de0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get user quiz history",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/quiz/user/:user_id/history",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz",
+                    "user",
+                    ":user_id",
+                    "history"
+                  ],
+                  "variable": [
+                    {
+                      "key": "user_id",
+                      "value": "29"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update quiz",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"questions\": [\r\n    {\r\n      \"id\": \"15096764-70fd-475b-b83e-2dc8f2a3985f\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"13502529-86e3-4a2f-a673-68be6147b7a8\",\r\n          \"text\": \"They are playing football.\",\r\n          \"option_score\": 10\r\n        },\r\n        {\r\n          \"id\": \"2c05481a-3438-4d1d-9e69-837695c3ea2d\",\r\n          \"text\": \"They play football.\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"df590788-ba20-4e1a-abae-fa7920007b41\",\r\n          \"text\": \"They played football.\",\r\n          \"option_score\": 0\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"198b2ed7-96f8-4829-95e0-5ee18acccccf\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"c79b8748-d464-4864-a360-c66338cfdda6\",\r\n          \"text\": \"Stop working\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"e17a0ffe-267a-4625-ba4b-fd830c7b2ddd\",\r\n          \"text\": \"Good luck\",\r\n          \"option_score\": 10\r\n        },\r\n        {\r\n          \"id\": \"f9c2164b-a854-43c5-958c-4231156dd080\",\r\n          \"text\": \"Hurt yourself\",\r\n          \"option_score\": 0\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"1d71c635-828d-48f3-806e-0644f4269443\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"68e93991-1663-40fb-88b2-bc9902ecedd3\",\r\n          \"text\": \"Angry\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"914b4f89-b4ab-43ee-ba80-9cc27aa5244c\",\r\n          \"text\": \"Sad\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"bf64dec6-bb9d-4b1e-af77-94b31f023441\",\r\n          \"text\": \"Joyful\",\r\n          \"option_score\": 5\r\n        },\r\n        {\r\n          \"id\": \"e598e3d9-25aa-45a2-9b2a-8fd69f9d2042\",\r\n          \"text\": \"Cheerful\",\r\n          \"option_score\": 5\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"536fe73a-5945-4be8-8786-f4d4d5f084bb\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"2f7d1286-8972-4f2d-8531-bd5e03dde173\",\r\n          \"text\": \"Run\",\r\n          \"option_score\": 10\r\n        },\r\n        {\r\n          \"id\": \"54f0a892-d994-4b7b-8c43-48974422f710\",\r\n          \"text\": \"Ran\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"cfaf74ad-4049-4e24-9a87-6f50d3d425a6\",\r\n          \"text\": \"Running\",\r\n          \"option_score\": 0\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"6674982f-5867-44ef-ab63-d1a4f7f16d16\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"6b50925a-1c02-4175-b15d-7364da13e128\",\r\n          \"text\": \"will stay\",\r\n          \"option_score\": 10\r\n        },\r\n        {\r\n          \"id\": \"c3c739f5-fb91-40d6-80bb-70a31462c946\",\r\n          \"text\": \"stayed\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"f75e0c6f-bbf5-46a1-a1ea-21b0e8b8f9bc\",\r\n          \"text\": \"stay\",\r\n          \"option_score\": 0\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"75cf5a3a-9a50-49e9-9f8b-03a8adbadefe\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"56577e36-7fa3-4e67-ad29-c16d40ae17a8\",\r\n          \"text\": \"speaks\",\r\n          \"option_score\": 10\r\n        },\r\n        {\r\n          \"id\": \"7f31f99b-a33e-4502-b9d5-1dc90f1fc648\",\r\n          \"text\": \"speak\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"c56d1fbc-e312-4dcf-ad4d-e31805177851\",\r\n          \"text\": \"speaking\",\r\n          \"option_score\": 0\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"8d002004-92ad-4036-b316-5b072758fa89\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"4758369c-e9ae-4f98-a150-93e1a24bae0f\",\r\n          \"text\": \"Under\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"7e0d202a-69fd-4897-ba01-6249affe727b\",\r\n          \"text\": \"At (e.g. at 5pm)\",\r\n          \"option_score\": 5\r\n        },\r\n        {\r\n          \"id\": \"bed5486b-7ed1-4f5b-bdca-a53feef61134\",\r\n          \"text\": \"With\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"e6fb6988-141a-46c3-bdcc-7fd55ef7f889\",\r\n          \"text\": \"In (e.g. in 2024)\",\r\n          \"option_score\": 5\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"a1a85393-9f30-4963-956b-9388df546914\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"3aa95488-cd15-474e-bc26-0701ffadfba3\",\r\n          \"text\": \"Children\",\r\n          \"option_score\": 10\r\n        },\r\n        {\r\n          \"id\": \"a01ba2bd-e09a-4aa2-815e-2e05de3d257f\",\r\n          \"text\": \"Childrens\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"f912d2d9-2e8c-43a1-bba9-945f401b1eb5\",\r\n          \"text\": \"Childs\",\r\n          \"option_score\": 0\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"aa435953-e426-489f-9516-36580fee5f6b\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"20432d76-62a5-44c8-bf9a-e69949dadbbe\",\r\n          \"text\": \"A\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"6eeaa0c1-7390-4634-bff2-3de5c8e38b5c\",\r\n          \"text\": \"The\",\r\n          \"option_score\": 10\r\n        },\r\n        {\r\n          \"id\": \"9a674b1d-2da7-4700-9461-428fe1f25e16\",\r\n          \"text\": \"An\",\r\n          \"option_score\": 0\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"id\": \"bc71f8fc-9a7e-48e4-b395-cfca37af5a5c\",\r\n      \"options\": [\r\n        {\r\n          \"id\": \"3e2d86b7-2780-42c1-96d7-25657ef1f7d0\",\r\n          \"text\": \"I go to the market.\",\r\n          \"option_score\": 0\r\n        },\r\n        {\r\n          \"id\": \"467f5c79-1a8b-4240-a7ee-2611f6f7a052\",\r\n          \"text\": \"I went to the market.\",\r\n          \"option_score\": 10\r\n        },\r\n        {\r\n          \"id\": \"84974a80-68b9-4cbb-9229-3b60f8d13546\",\r\n          \"text\": \"I am going to the market.\",\r\n          \"option_score\": 0\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/quiz/:id",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "dfcf672e-85bb-49a0-8be5-63c01e7a4961"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "student",
+          "item": [
+            {
+              "name": "get quiz for new user (can take only one time)",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{local}}/quiz/category/:category_id/first-test",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz",
+                    "category",
+                    ":category_id",
+                    "first-test"
+                  ],
+                  "variable": [
+                    {
+                      "key": "category_id",
+                      "value": "1",
+                      "description": "e.g : english chinese japanese"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "submit quiz (use this)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"quiz_id\": \"dfcf672e-85bb-49a0-8be5-63c01e7a4961\",\r\n  \"answers\": [\r\n    {\r\n      \"question_id\": \"15096764-70fd-475b-b83e-2dc8f2a3985f\",\r\n      \"selected_option_id\": \"13502529-86e3-4a2f-a673-68be6147b7a8\"\r\n    },\r\n    {\r\n      \"question_id\": \"198b2ed7-96f8-4829-95e0-5ee18acccccf\",\r\n      \"selected_option_id\": \"e17a0ffe-267a-4625-ba4b-fd830c7b2ddd\"\r\n    },\r\n    {\r\n      \"question_id\": \"1d71c635-828d-48f3-806e-0644f4269443\",\r\n      \"selected_option_id\": \"bf64dec6-bb9d-4b1e-af77-94b31f023441\"\r\n    },\r\n    {\r\n      \"question_id\": \"1d71c635-828d-48f3-806e-0644f4269443\",\r\n      \"selected_option_id\": \"e598e3d9-25aa-45a2-9b2a-8fd69f9d2042\"\r\n    },\r\n    {\r\n      \"question_id\": \"536fe73a-5945-4be8-8786-f4d4d5f084bb\",\r\n      \"selected_option_id\": \"2f7d1286-8972-4f2d-8531-bd5e03dde173\"\r\n    },\r\n    {\r\n      \"question_id\": \"6674982f-5867-44ef-ab63-d1a4f7f16d16\",\r\n      \"selected_option_id\": \"6b50925a-1c02-4175-b15d-7364da13e128\"\r\n    },\r\n    {\r\n      \"question_id\": \"75cf5a3a-9a50-49e9-9f8b-03a8adbadefe\",\r\n      \"selected_option_id\": \"56577e36-7fa3-4e67-ad29-c16d40ae17a8\"\r\n    },\r\n    {\r\n      \"question_id\": \"8d002004-92ad-4036-b316-5b072758fa89\",\r\n      \"selected_option_id\": \"7e0d202a-69fd-4897-ba01-6249affe727b\"\r\n    },\r\n    {\r\n      \"question_id\": \"8d002004-92ad-4036-b316-5b072758fa89\",\r\n      \"selected_option_id\": \"e6fb6988-141a-46c3-bdcc-7fd55ef7f889\"\r\n    },\r\n    {\r\n      \"question_id\": \"a1a85393-9f30-4963-956b-9388df546914\",\r\n      \"selected_option_id\": \"3aa95488-cd15-474e-bc26-0701ffadfba3\"\r\n    },\r\n    {\r\n      \"question_id\": \"aa435953-e426-489f-9516-36580fee5f6b\",\r\n      \"selected_option_id\": \"6eeaa0c1-7390-4634-bff2-3de5c8e38b5c\"\r\n    },\r\n    {\r\n      \"question_id\": \"bc71f8fc-9a7e-48e4-b395-cfca37af5a5c\",\r\n      \"selected_option_id\": \"467f5c79-1a8b-4240-a7ee-2611f6f7a052\"\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/quiz/submit",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz",
+                    "submit"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "my test history",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{local}}/quiz/my-quiz-history",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "quiz",
+                    "my-quiz-history"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "homework",
+      "item": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "local",
+      "value": "http://localhost:7777"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
