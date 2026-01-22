@@ -1,55 +1,3 @@
-// import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-// import MainLayout from "./layouts/MainLayout"; 
-
-// // Pages Imports
-// import Login from "./pages/client/Login";
-// import Register from "./pages/client/Register";
-
-// import PlacementTest from "./pages/client/PlacementTest";
-// import Profile from "./pages/client/Profile";
-// import CourseDetail from "./pages/client/CourseDetail"; // 2. Import CourseDetail
-// import Homework from "./pages/client/Homework"; // 3. Import Homework
-// import ForgotPassword from "./pages/client/ForgotPassword";
-// import Home from "./pages/client/HomePage";
-// import MyLearning from "./pages/client/MyLearning";
-
-// function App() {
-//   return (  
-//     <BrowserRouter>
-//       <Routes>
-        
-//         {/* --- PUBLIC ROUTES (ពេញអេក្រង់ អត់មាន Header/Footer) --- */}
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/register" element={<Register />} />
-//         <Route path="/forgot-password" element={<ForgotPassword/>} /> {/* ដាក់នៅទីនេះ */}
-        
-//         {/* --- PRIVATE ROUTES (ប្រើ MainLayout មាន Header/Footer/Nav) --- */}
-//         <Route element={<MainLayout />}>
-//            {/* Redirect root "/" to "/home" */}
-//            <Route path="/" element={<Navigate to="/home" />} />
-           
-//            {/* Main Pages */}
-//            <Route path="/home" element={<Home />} />
-//            <Route path="/profile" element={<Profile />} />
-//            <Route path="/placement-test" element={<PlacementTest />} />
-           
-//            {/* Learning Pages */}
-//            <Route path="/course-detail" element={<CourseDetail />} /> {/* ដាក់នៅទីនេះ */}
-//            <Route path="/homework" element={<Homework />} />       {/* ដាក់នៅទីនេះ */}
-//            <Route path="/my-learning" element={<MyLearning />} />
-//         </Route>
-
-//         {/* Catch All - បើវាយ Link ខុស ឱ្យទៅ Login វិញ */}
-//         <Route path="*" element={<Navigate to="/login" />} />
-
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // --- LAYOUTS ---
@@ -65,7 +13,6 @@ import Profile from "./pages/client/Profile";
 import PlacementTest from "./pages/client/PlacementTest";
 import CourseDetail from "./pages/client/CourseDetail";
 import Homework from "./pages/client/Homework";
-import MyLearning from "./pages/client/MyLearning";
 
 // --- ADMIN PAGES ---
 import LoginAdmin from "./pages/admin/LoginAdmin"; // Login របស់ Admin
@@ -76,6 +23,10 @@ import ExamRequest from "./pages/admin/ExamRequest";
 import CourseManager from "./pages/admin/CourseManager";
 import HomeworkManager from "./pages/admin/HomeworkManager";
 import AdminSettings from "./pages/admin/AdminSettings";
+import UserAccount from "./pages/client/UserAccount";
+import ComingSoon from "./pages/client/ComingSoon";
+import MyLearning from "./pages/client/MyLearning";
+import OtpVerification from "./pages/client/OtpVerification";
 
 function App() {
   
@@ -92,13 +43,14 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/otp-verification" element={<OtpVerification />} />
 
 
         {/* =========================================
             2. ADMIN LOGIN (ដាច់ដោយឡែក)
            ========================================= */}
         <Route path="/admin/login" element={<LoginAdmin />} />
-        <Route path="/admin/forgot-password" element={<ForgotPasswordAdmin />} /> {/* ថែមថ្មីត្រង់នេះ */}
+        <Route path="/admin/forgot-password" element={<ForgotPasswordAdmin />} /> 
    
         {/* =========================================
             3. ADMIN SYSTEM ROUTES (Protected)
@@ -126,12 +78,17 @@ function App() {
            {/* Main Pages */}
            <Route path="/home" element={<Home />} />
            <Route path="/profile" element={<Profile />} />
+           <Route path="/account" element={<UserAccount />} />
            <Route path="/placement-test" element={<PlacementTest />} />
            
            {/* Learning Pages */}
            <Route path="/course-detail" element={<CourseDetail />} />
            <Route path="/homework" element={<Homework />} />
            <Route path="/my-learning" element={<MyLearning />} />
+           <Route 
+            path="/certificate" 
+            element={<ComingSoon title="វិញ្ញាបនបត្រ (Certificate)" />} 
+          />
         </Route>
 
 

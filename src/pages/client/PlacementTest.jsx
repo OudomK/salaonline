@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { quizData } from "../../data/quizData";
-import { ChevronLeft, Clock, CheckCircle, Globe, Award, ArrowRight } from "lucide-react";
+import { ChevronLeft, Clock, CheckCircle2, Globe, Award, ArrowRight, RotateCcw } from "lucide-react";
+
+// 🟢 IMPORT SHADCN COMPONENTS
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export default function PlacementTest() {
   const navigate = useNavigate();
@@ -15,9 +22,8 @@ export default function PlacementTest() {
 
   // Functions
   const handleStartQuiz = (lang) => {
-    // Safety Check: ពិនិត្យមើលថាមានសំណួរឬអត់
     if (!quizData[lang]) {
-        alert("Comming Soon!"); // បើអត់មានទិន្នន័យ
+        alert("Comming Soon!"); 
         return;
     }
     setLanguage(lang);
@@ -32,7 +38,6 @@ export default function PlacementTest() {
 
   const handleNext = () => {
     const currentQuestions = quizData[language];
-    // Check answer logic
     if (selectedAnswer === currentQuestions[currentQIndex].correct) {
       setScore(score + 1);
     }
@@ -45,59 +50,76 @@ export default function PlacementTest() {
     }
   };
 
-  // --- UI COMPONENTS ---
+
+
+// ... (រក្សាកូដដើមខាងលើដដែល)
 
   // 1. Screen: Choose Language
   if (step === 1) {
     return (
-      // Update: ដក min-h-screen ចេញ ប្រើ py-12 ជំនួស ដើម្បីកុំឱ្យជាន់ Header/Footer
-      <div className="w-full flex items-center justify-center py-10 px-4">
-        <div className="bg-white w-full max-w-md rounded-[40px] shadow-xl p-8 text-center relative overflow-hidden border border-gray-100">
+      <div className="w-full flex items-center justify-center py-12 px-4 font-khmer-os-battambang">
+        <Card className="w-full max-w-md border-0 shadow-xl rounded-[32px] overflow-hidden relative">
           
-          {/* Decorative Blob */}
-          <div className="absolute -top-20 -left-20 w-40 h-40 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
-          
-          <div className="relative z-10 space-y-6">
-            <div>
-                 <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                    <Globe size={40} className="text-[#00B4F6]" />
-                 </div>
-                 <h1 className="text-2xl font-extrabold text-gray-900">Placement Test</h1>
-                 <p className="text-gray-500 text-sm mt-2">Select a language to check your proficiency level.</p>
-            </div>
+          {/* Decorative Background */}
+          <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-50 to-white -z-10"></div>
 
-            <div className="grid grid-cols-2 gap-4 mt-6">
-                <button 
-                  onClick={() => handleStartQuiz("english")}
-                  className="group relative overflow-hidden bg-white border border-gray-100 p-6 rounded-3xl shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative z-10 flex flex-col items-center">
-                    <span className="text-5xl mb-3 drop-shadow-sm">🇬🇧</span>
-                    <span className="font-bold text-gray-700 group-hover:text-[#00B4F6]">English</span>
-                  </div>
-                </button>
+          <CardHeader className="text-center pt-10 pb-2">
+             <div className="mx-auto bg-white p-4 rounded-full shadow-sm mb-4">
+                <Globe size={40} className="text-[#00B4F6] animate-pulse" />
+             </div>
+             <CardTitle className="text-2xl font-extrabold text-gray-900">តេស្តសមត្ថភាព</CardTitle>
+             <CardDescription className="text-gray-500 font-medium">ជ្រើសរើសភាសាដើម្បីចាប់ផ្តើមតេស្ត</CardDescription>
+          </CardHeader>
 
-                <button 
-                  onClick={() => handleStartQuiz("chinese")}
-                  className="group relative overflow-hidden bg-white border border-gray-100 p-6 rounded-3xl shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  <div className="absolute inset-0 bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative z-10 flex flex-col items-center">
-                    <span className="text-5xl mb-3 drop-shadow-sm">🇨🇳</span>
-                    <span className="font-bold text-gray-700 group-hover:text-red-500">Chinese</span>
-                  </div>
-                </button>
-            </div>
+          <CardContent className="grid grid-cols-2 gap-4 py-6 px-8">
+             
+             {/* 🇺🇸/🇬🇧 English Button */}
+             <Button 
+                variant="outline" 
+                className="h-40 flex flex-col gap-3 rounded-3xl border-2 hover:border-[#00B4F6] hover:bg-blue-50/50 transition-all group shadow-sm hover:shadow-md"
+                onClick={() => handleStartQuiz("english")}
+             >
+                {/* ប្រើរូបភាពទង់ជាតិជំនួស Emoji */}
+                <div className="w-16 h-12 rounded-lg overflow-hidden shadow-sm group-hover:scale-110 transition-transform">
+                    <img 
+                        src="https://flagcdn.com/w160/gb.png" 
+                        alt="English" 
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+                <span className="font-bold text-gray-700 text-lg group-hover:text-[#00B4F6]">English</span>
+             </Button>
 
-            <button onClick={() => navigate(-1)} className="text-sm text-gray-400 font-bold hover:text-gray-600 mt-4">
-                Cancel
-            </button>
-          </div>
-        </div>
+             {/* 🇨🇳 Chinese Button */}
+             <Button 
+                variant="outline" 
+                className="h-40 flex flex-col gap-3 rounded-3xl border-2 hover:border-red-400 hover:bg-red-50/50 transition-all group shadow-sm hover:shadow-md"
+                onClick={() => handleStartQuiz("chinese")}
+             >
+                {/* ប្រើរូបភាពទង់ជាតិជំនួស Emoji */}
+                <div className="w-16 h-12 rounded-lg overflow-hidden shadow-sm group-hover:scale-110 transition-transform">
+                    <img 
+                        src="https://flagcdn.com/w160/cn.png" 
+                        alt="Chinese" 
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+                <span className="font-bold text-gray-700 text-lg group-hover:text-red-500">Chinese</span>
+             </Button>
+
+          </CardContent>
+
+          <CardFooter className="justify-center pb-8">
+             <Button variant="ghost" onClick={() => navigate(-1)} className="text-gray-400 hover:text-gray-600 rounded-xl">
+                បោះបង់ (Cancel)
+             </Button>
+          </CardFooter>
+        </Card>
       </div>
     );
   }
+
+
 
   // 2. Screen: Quiz UI
   if (step === 2) {
@@ -106,81 +128,72 @@ export default function PlacementTest() {
     const progress = ((currentQIndex + 1) / questions.length) * 100;
 
     return (
-      <div className="w-full flex items-center justify-center py-10 px-4">
-        <div className="bg-white w-full max-w-md rounded-[32px] shadow-xl p-6 space-y-6 relative border border-gray-100">
+      <div className="w-full flex items-center justify-center py-12 px-4 font-khmer-os-battambang">
+        <Card className="w-full max-w-md border-0 shadow-2xl rounded-[32px] overflow-hidden">
           
-          {/* Header Bar */}
-          <div className="flex justify-between items-center">
-            <button 
-                onClick={() => setStep(1)} 
-                className="p-2 hover:bg-gray-100 rounded-full transition"
-            >
+          {/* Header */}
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-6 px-6">
+             <Button variant="ghost" size="icon" onClick={() => setStep(1)} className="rounded-full">
                 <ChevronLeft size={24} className="text-gray-600" />
-            </button>
-            <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full">
-                <Clock size={16} className="text-[#00B4F6]" />
-                <span className="text-[#00B4F6] text-sm font-bold">03:31</span>
-            </div>
-          </div>
+             </Button>
+             <Badge variant="secondary" className="bg-blue-50 text-[#00B4F6] hover:bg-blue-100 px-3 py-1 gap-1 text-xs">
+                <Clock size={14} /> 03:00
+             </Badge>
+          </CardHeader>
 
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs font-bold text-gray-400">
-                <span>Question {currentQIndex + 1} of {questions.length}</span>
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-                <div 
-                    className="bg-[#00B4F6] h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_#00B4F6]" 
-                    style={{ width: `${progress}%` }}
-                ></div>
-            </div>
-          </div>
-
-          {/* Question */}
-          <div className="text-center py-2">
-             <div className="w-full h-40 bg-gray-50 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-gray-100">
-                 <img src={currentQ.image} alt="Question" className="h-full object-contain mix-blend-multiply" />
+          <CardContent className="px-6 space-y-6">
+             {/* Progress Bar */}
+             <div className="space-y-2">
+                <div className="flex justify-between text-xs font-bold text-gray-400">
+                   <span>សំណួរទី {currentQIndex + 1}</span>
+                   <span>នៃ {questions.length}</span>
+                </div>
+                <Progress value={progress} className="h-2 bg-gray-100 [&>div]:bg-[#00B4F6]" />
              </div>
-             <h3 className="text-xl font-bold text-gray-800 leading-snug">
-                {currentQ.question}
-             </h3>
-          </div>
 
-          {/* Options */}
-          <div className="space-y-3">
-             {currentQ.options.map((option, index) => (
-                <button
-                    key={index}
-                    onClick={() => handleAnswer(option)}
-                    className={`w-full py-4 px-6 rounded-2xl text-left font-bold border-2 transition-all duration-200 flex justify-between items-center group ${
-                        selectedAnswer === option 
-                        ? "bg-[#00B4F6] text-white border-[#00B4F6] shadow-lg scale-[1.02]" 
-                        : "bg-white text-gray-600 border-gray-100 hover:border-blue-200 hover:bg-blue-50/50"
-                    }`}
-                >
-                    <span>{option}</span>
-                    {selectedAnswer === option && <CheckCircle size={20} fill="white" className="text-[#00B4F6]" />}
-                </button>
-             ))}
-          </div>
+             {/* Question Image & Text */}
+             <div className="text-center space-y-4">
+                {currentQ.image && (
+                    <div className="w-full h-40 bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden border border-gray-100">
+                        <img src={currentQ.image} alt="Question" className="h-full object-contain mix-blend-multiply" />
+                    </div>
+                )}
+                <h3 className="text-lg font-bold text-gray-800 leading-relaxed">
+                   {currentQ.question}
+                </h3>
+             </div>
 
-          {/* Next Button */}
-          <div className="pt-4">
-            <button 
+             {/* Options */}
+             <div className="space-y-3">
+                {currentQ.options.map((option, index) => (
+                   <Button
+                      key={index}
+                      variant="outline"
+                      onClick={() => handleAnswer(option)}
+                      className={`w-full h-auto py-4 px-6 justify-between rounded-xl border-2 text-base font-medium transition-all ${
+                         selectedAnswer === option 
+                         ? "border-[#00B4F6] bg-blue-50 text-[#00B4F6] shadow-md" 
+                         : "border-gray-100 text-gray-600 hover:border-blue-100 hover:bg-white"
+                      }`}
+                   >
+                      <span>{option}</span>
+                      {selectedAnswer === option && <CheckCircle2 size={20} className="fill-[#00B4F6] text-white" />}
+                   </Button>
+                ))}
+             </div>
+          </CardContent>
+
+          <CardFooter className="pt-2 pb-8 px-6">
+             <Button 
                 onClick={handleNext}
                 disabled={!selectedAnswer}
-                className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
-                    selectedAnswer 
-                    ? "bg-[#00B4F6] text-white shadow-lg hover:bg-blue-500 hover:shadow-xl active:scale-95" 
-                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                }`}
-            >
-                {currentQIndex + 1 === questions.length ? "See Result" : "Next Question"}
-                {selectedAnswer && <ArrowRight size={20} />}
-            </button>
-          </div>
-
-        </div>
+                className="w-full h-12 text-md font-bold rounded-xl bg-[#00B4F6] hover:bg-[#009bd1] text-white shadow-lg shadow-blue-200"
+             >
+                {currentQIndex + 1 === questions.length ? "បញ្ចប់តេស្ត (Finish)" : "បន្ត (Next)"}
+                {selectedAnswer && <ArrowRight size={18} className="ml-2" />}
+             </Button>
+          </CardFooter>
+        </Card>
       </div>
     );
   }
@@ -188,43 +201,66 @@ export default function PlacementTest() {
   // 3. Screen: Result
   if (step === 3) {
     const questions = quizData[language];
-    let level = "Beginner";
-    let color = "text-yellow-500";
-    if (score > questions.length / 2) { level = "Intermediate"; color = "text-blue-500"; }
-    if (score === questions.length) { level = "Advanced"; color = "text-green-500"; }
+    let level = "កម្រិតដំបូង (Beginner)";
+    let color = "text-yellow-500 bg-yellow-50 border-yellow-100";
+    
+    if (score > questions.length / 2) { 
+        level = "កម្រិតមធ្យម (Intermediate)"; 
+        color = "text-blue-500 bg-blue-50 border-blue-100"; 
+    }
+    if (score === questions.length) { 
+        level = "កម្រិតខ្ពស់ (Advanced)"; 
+        color = "text-green-500 bg-green-50 border-green-100"; 
+    }
 
     return (
-      <div className="w-full flex items-center justify-center py-10 px-4">
-        <div className="bg-white w-full max-w-md rounded-[40px] shadow-xl p-8 text-center space-y-8 relative overflow-hidden border border-gray-100">
-           
+      <div className="w-full flex items-center justify-center py-12 px-4 font-khmer-os-battambang">
+        <Card className="w-full max-w-md border-0 shadow-2xl rounded-[32px] overflow-hidden text-center relative">
+           {/* Confetti / Decoration Background */}
            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"></div>
 
-           <div className="space-y-2">
-               <div className="w-24 h-24 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
-                  <Award size={48} className="text-yellow-500" />
-               </div>
-               <h1 className="text-3xl font-extrabold text-gray-900">Completed!</h1>
-               <p className="text-gray-500">You have successfully finished the test.</p>
-           </div>
-
-           <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 flex flex-col gap-4">
-              <div className="flex justify-between items-center border-b border-gray-200 pb-4">
-                  <span className="text-gray-500 font-bold">Your Score</span>
-                  <span className="text-2xl font-black text-gray-900">{score} <span className="text-gray-400 text-lg">/ {questions.length}</span></span>
+           <CardContent className="pt-12 pb-8 px-8 space-y-8">
+              <div className="space-y-4">
+                 <div className="w-24 h-24 bg-yellow-50 rounded-full flex items-center justify-center mx-auto border-4 border-white shadow-xl animate-bounce">
+                    <Award size={48} className="text-yellow-500" />
+                 </div>
+                 <div>
+                    <h1 className="text-2xl font-extrabold text-gray-900">ការធ្វើតេស្តជោគជ័យ!</h1>
+                    <p className="text-gray-500 text-sm">អ្នកបានបញ្ចប់ការធ្វើតេស្តសមត្ថភាព។</p>
+                 </div>
               </div>
-              <div className="flex justify-between items-center">
-                  <span className="text-gray-500 font-bold">Level</span>
-                  <span className={`text-xl font-bold ${color}`}>{level}</span>
-              </div>
-           </div>
 
-           <button 
-             onClick={() => navigate("/home")} 
-             className="w-full bg-[#00B4F6] text-white font-bold text-lg py-4 rounded-2xl shadow-lg hover:bg-blue-500 transition-all hover:shadow-blue-200 active:scale-95"
-           >
-             Go to Dashboard
-           </button>
-        </div>
+              <div className="bg-gray-50/80 p-6 rounded-3xl border border-gray-100 space-y-4">
+                 <div className="flex justify-between items-center">
+                    <span className="text-gray-500 font-bold text-sm">ពិន្ទុរបស់អ្នក</span>
+                    <span className="text-2xl font-black text-gray-900">{score} <span className="text-gray-400 text-base">/ {questions.length}</span></span>
+                 </div>
+                 <Separator />
+                 <div className="space-y-2">
+                    <span className="text-gray-500 font-bold text-sm block">កម្រិតបច្ចុប្បន្ន</span>
+                    <Badge variant="outline" className={`text-base py-1 px-4 rounded-lg border ${color}`}>
+                        {level}
+                    </Badge>
+                 </div>
+              </div>
+           </CardContent>
+
+           <CardFooter className="flex flex-col gap-3 pb-10 px-8">
+              <Button 
+                 onClick={() => navigate("/home")} 
+                 className="w-full h-12 rounded-xl text-md font-bold bg-[#00B4F6] hover:bg-[#009bd1] text-white shadow-lg shadow-blue-200"
+              >
+                 ទៅកាន់ទំព័រដើម
+              </Button>
+              <Button 
+                 variant="ghost" 
+                 onClick={() => { setStep(1); setScore(0); }} 
+                 className="w-full text-gray-500 hover:text-gray-700"
+              >
+                 <RotateCcw size={16} className="mr-2"/> ធ្វើតេស្តម្តងទៀត
+              </Button>
+           </CardFooter>
+        </Card>
       </div>
     );
   }
