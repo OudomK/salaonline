@@ -16,6 +16,11 @@ export const courseService = {
   getCourseById: (id) => apiClient.get(`/courses/${id}`),
 
   /**
+   * Get published courses (student view)
+   */
+  getPublishedCourses: (params) => apiClient.get('/courses', { params }),
+
+  /**
    * Get enrolled courses for current user
    */
   getMyCourses: () => apiClient.get('/courses/my-courses'),

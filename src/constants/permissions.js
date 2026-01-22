@@ -1,0 +1,45 @@
+export const PERMISSIONS = {
+  USER: {
+    CREATE: 'CREATE_USER',
+    READ: 'READ_USER',
+    UPDATE: 'UPDATE_USER',
+    DELETE: 'DELETE_USER',
+  },
+  ROLE: {
+    CREATE: 'CREATE_ROLE',
+    READ: 'READ_ROLE',
+    UPDATE: 'UPDATE_ROLE',
+    DELETE: 'DELETE_ROLE',
+  },
+  CLASS: {
+    CREATE: 'CREATE_CLASS',
+    READ: 'READ_CLASS',
+    UPDATE: 'UPDATE_CLASS',
+    DELETE: 'DELETE_CLASS',
+  },
+  COURSE: {
+    CREATE: 'CREATE_COURSE',
+    READ: 'READ_COURSE',
+    UPDATE: 'UPDATE_COURSE',
+    DELETE: 'DELETE_COURSE',
+  },
+  VIDEO: {
+    CREATE: 'CREATE_VIDEO',
+    READ: 'READ_VIDEO',
+    UPDATE: 'UPDATE_VIDEO',
+    DELETE: 'DELETE_VIDEO',
+  },
+  CATEGORY: {
+    CREATE: 'CREATE_CATEGORY',
+    READ: 'READ_CATEGORY',
+    UPDATE: 'UPDATE_CATEGORY',
+    DELETE: 'DELETE_CATEGORY',
+  },
+  DASHBOARD: {
+    READ: 'READ_DASHBOARD',
+  },
+};
+
+export const PERMISSIONS_ARRAY = Object.values(PERMISSIONS).flatMap((obj) =>
+  Object.values(obj),
+);
