@@ -32,7 +32,7 @@
 //   ],
 // })
 
-import path from "path" // 🟢 1. ត្រូវ Import path
+import path from "path"
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -49,15 +49,15 @@ export default defineConfig({
         description: 'School Management System for Cambodia',
         theme_color: '#ffffff',
         background_color: '#ffffff',
-        display: 'standalone', 
+        display: 'standalone',
         icons: [
           {
-            src: 'pwa-192x192.png', 
+            src: 'pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png', 
+            src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png'
           }
@@ -65,7 +65,6 @@ export default defineConfig({
       }
     })
   ],
-  // 🟢 2. បន្ថែមផ្នែកនេះសម្រាប់ Shadcn UI
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
