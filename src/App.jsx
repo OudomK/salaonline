@@ -23,6 +23,7 @@ import UserAccount from "./pages/client/UserAccount";
 import ComingSoon from "./pages/client/ComingSoon";
 import MyLearning from "./pages/client/MyLearning";
 import OtpVerification from "./pages/client/OtpVerification";
+import LessonManager from "./pages/admin/LessonManager/LessonManager";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
           <Route path="requests" element={<ExamRequest />} />
           <Route path="courses" element={<CourseManager />} />
           <Route path="homework" element={<HomeworkManager />} />
+          <Route path="lesson" element={<LessonManager />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
 
