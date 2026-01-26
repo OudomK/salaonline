@@ -104,55 +104,15 @@ export default function VideoManagementModal({ isOpen, onClose, course, onSubmit
     };
 
     const handleUpload = async (e) => {
-        e.preventDefault();
-        if ((!title && pendingFiles.length === 0) && !initialData) return;
 
-        setUploading(true);
-
-        try {
-            if (isFormMode) {
-                // Focus on single lesson submission (usually for editing or single creation in LessonManager)
-                const lessonData = {
-                    title: pendingFiles.length > 0 ? pendingFiles[0].title : title,
-                    course_id: courseId,
-                    video: pendingFiles.length > 0 ? pendingFiles[0].file : null
-                };
-                await onSubmit(lessonData);
-            } else {
-                // Course Manager Mode: Upload all pending files
-                for (const item of pendingFiles) {
-                    const formData = {
-                        title: item.title,
-                        video: item.file,
-                        course_id: course.id
-                    };
-                    await videoService.uploadVideo(formData);
-                }
-                // Reset states
-                setPendingFiles([]);
-                setTitle("");
-                fetchVideos();
-            }
-        } catch (error) {
-            console.error("Operation failed:", error);
-            alert("Operation failed. Please try again.");
-        } finally {
-            setUploading(false);
-        }
     };
 
     const handleDelete = async (videoId) => {
-        if (!window.confirm("Are you sure you want to delete this video?")) return;
-        try {
-            await videoService.deleteVideo(videoId);
-            setVideos(videos.filter(v => v.id !== videoId));
-        } catch (error) {
-            console.error("Delete failed:", error);
-            alert("Failed to delete video.");
-        }
     };
 
     if (!isOpen) return null;
+
+    return null
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">

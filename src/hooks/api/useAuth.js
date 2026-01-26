@@ -44,9 +44,13 @@ export const useChangePassword = () => {
   })
 }
 
-export const useHeartbeat = () => {
-  return useMutation({
-    mutationFn: () => authService.heartbeat(),
+export const useHeartbeat = (options = {}) => {
+  return useQuery({
+    queryKey: ['auth', 'heartbeat'],
+    queryFn: () => authService.heartbeat(),
+    refetchInterval: 60000,
+    refetchIntervalInBackground: true,
+    ...options,
   })
 }
 

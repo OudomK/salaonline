@@ -2,11 +2,13 @@ import { Outlet } from "react-router-dom";
 import BottomNav from "../components/BottomNav";
 import Header from "../components/client/Header";
 import Footer from "../components/client/Footer";
+import { useHeartbeat } from "@/hooks/api";
 
 export default function MainLayout() {
+  useHeartbeat()
   return (
     <div className="min-h-screen flex flex-col bg-[#f8f9fa]">
-      
+
       {/* 1. Header: បង្ហាញតែលើ Desktop (hidden on mobile) */}
       <div className="hidden md:block">
         <Header />

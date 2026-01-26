@@ -9,7 +9,7 @@
     /* 🟢 UPDATED: Background Color is now Light Gray (#f3f4f6) */
     /* HSL value for #f3f4f6 is approx 210 20% 96% */
     --background: 210 20% 96%;
-    
+
     --foreground: 0 0% 3.9%;
 
     /* 🟢 Card Background stays White */
@@ -19,8 +19,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
 
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 196 100% 48%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -36,7 +36,7 @@
 
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --ring: 196 100% 48%;
 
     --radius: 0.5rem;
 
@@ -80,16 +80,16 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     /* 🟢 Use the variable we defined above */
     @apply bg-background text-foreground;
-    
+
     /* 🟢 Font Family Setup */
     font-family: "Kantumruy Pro", system-ui, sans-serif;
-    
+
     /* 🟢 Fix Print Issue (Prevent cutting off content) */
-    display: block; 
+    display: block;
     width: 100%;
     height: 100%;
   }
@@ -97,16 +97,17 @@
 
 /* 🟢 PRINT STYLES (To fix your Dashboard PDF issue) */
 @media print {
+
   /* Hide sidebar and buttons */
-  aside, 
-  button, 
+  aside,
+  button,
   .hidden-print {
     display: none !important;
   }
 
   /* Reset layout for full page printing */
-  body, 
-  #root, 
+  body,
+  #root,
   div {
     height: auto !important;
     overflow: visible !important;
@@ -114,7 +115,9 @@
   }
 
   /* Remove shadows for cleaner print */
-  .shadow-sm, .shadow-md, .shadow-lg {
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg {
     box-shadow: none !important;
     border: 1px solid #ddd !important;
   }

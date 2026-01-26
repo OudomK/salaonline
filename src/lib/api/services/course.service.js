@@ -11,6 +11,11 @@ export const courseService = {
   getAllCourses: (params) => apiClient.get('/courses', { params }),
 
   /**
+   * Get all courses for admin (with pagination and search)
+   */
+  getAdminCourses: (params) => apiClient.get('/courses/admin', { params }),
+
+  /**
    * Get course by ID
    */
   getCourseById: (id) => apiClient.get(`/courses/${id}`),
@@ -55,4 +60,14 @@ export const courseService = {
    */
   getLessonById: (courseId, lessonId) =>
     apiClient.get(`/courses/${courseId}/lessons/${lessonId}`),
+
+  /**
+   * Publish course
+   */
+  publishCourse: (id) => apiClient.patch(`/courses/${id}/publish`),
+
+  /**
+   * Hide course
+   */
+  hideCourse: (id) => apiClient.patch(`/courses/${id}/hide`),
 }

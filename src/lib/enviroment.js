@@ -1,0 +1,1 @@
+export const imgUrl = import.meta.env.VITE_BUNNY_PULLZONE_URL;

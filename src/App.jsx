@@ -16,7 +16,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import StudentList from "./pages/admin/StudentList";
 import ForgotPasswordAdmin from "./pages/admin/ForgotPasswordAdmin";
 import ExamRequest from "./pages/admin/ExamRequest";
-import CourseManager from "./pages/admin/CourseManager";
+import CourseManager from "./pages/admin/CourseManager/CourseManager";
 import HomeworkManager from "./pages/admin/HomeworkManager";
 import AdminSettings from "./pages/admin/AdminSettings";
 import UserAccount from "./pages/client/UserAccount";

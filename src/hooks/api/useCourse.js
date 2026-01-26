@@ -12,6 +12,13 @@ export const useCourses = (params = {}) => {
   })
 }
 
+export const useAdminCourses = (params = {}) => {
+  return useQuery({
+    queryKey: ['courses', 'admin', params],
+    queryFn: () => courseService.getAdminCourses(params).then((res) => res.data),
+  })
+}
+
 export const useCourse = (id) => {
   return useQuery({
     queryKey: ['courses', id],
@@ -59,11 +66,14 @@ export const useCourseLessons = (courseId) => {
   })
 }
 
-export const useLesson = (courseId, lessonId) => {
-  return useQuery({
-    queryKey: ['courses', courseId, 'lessons', lessonId],
-    queryFn: () =>
-      courseService.getLessonById(courseId, lessonId).then((res) => res.data),
-    enabled: !!courseId && !!lessonId,
+export const usePublishCourse = () => {
+  return useMutation({
+    mutationFn: (id) => courseService.publishCourse(id),
+  })
+}
+
+export const useHideCourse = () => {
+  return useMutation({
+    mutationFn: (id) => courseService.hideCourse(id),
   })
 }
