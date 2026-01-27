@@ -16,6 +16,16 @@ export const userService = {
   getAllUsers: (params) => apiClient.get("/users", { params }),
 
   /**
+   * Get students only
+   */
+  getStudents: (params) => apiClient.get("/users/students", { params }),
+
+  /**
+   * Get non-admin students (for user management - teachers only)
+   */
+  getNonAdminStudents: (params) => apiClient.get("/users/non-admin-student", { params }),
+
+  /**
    * Get user by ID
    */
   getUserById: (id) => apiClient.get(`/users/${id}`),
@@ -28,7 +38,7 @@ export const userService = {
   /**
    * Update user by ID (admin)
    */
-  updateUser: (id, userData) => apiClient.put(`/users/${id}`, userData),
+  updateUser: (id, userData) => apiClient.patch(`/users/${id}`, userData),
 
   /**
    * Delete user (admin)

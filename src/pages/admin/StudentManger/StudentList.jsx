@@ -44,6 +44,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useUsers } from "@/hooks/api";
+import { useDebounce } from "@/hooks/useDebounce";
 
 // ... (រក្សាទុក Helper Functions និង Mock Data នៅដដែល) ...
 // --- HELPER: Phone Color ---
@@ -80,7 +81,8 @@ export default function StudentList() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const debouncesearch = useDebounce(searchTerm, 500);
 
   // Edit
   const handleEdit = (student) => {

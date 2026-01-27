@@ -18,6 +18,20 @@ export const useUsers = (params = {}) => {
   });
 };
 
+export const useStudents = (params = {}) => {
+  return useQuery({
+    queryKey: ["users", "students", params],
+    queryFn: () => userService.getStudents(params).then((res) => res.data),
+  });
+};
+
+export const useNonAdminStudents = (params = {}) => {
+  return useQuery({
+    queryKey: ["users", "non-admin-student", params],
+    queryFn: () => userService.getNonAdminStudents(params).then((res) => res.data),
+  });
+};
+
 export const useUser = (id) => {
   return useQuery({
     queryKey: ["users", id],

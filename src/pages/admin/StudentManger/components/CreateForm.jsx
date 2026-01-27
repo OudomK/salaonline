@@ -4,137 +4,212 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { FieldContent, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCreateUser, useRoles, useUpdateUser } from "@/hooks/api";
+import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const userFormSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  thumbnail: z.any().optional(),
-  category_id: z.string().min(1, "Category is required"),
-  teacher_id: z.string().min(1, "Teacher is required"),
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
+  phone_number: z.string().min(1, "Phone number is required"),
+  parent_number: z.string().min(1, "Parent number is required"),
+  password: z.string().min(1, "Password is required"),
+  role: z.string().min(1, "Role is required"),
+  gender: z.string().min(1, "Gender is required"),
 });
 
-const CreateForm = ({ isModalOpen, setIsModalOpen }) => {
-  const {} = useForm({});
-  const currentCourse = false;
+const CreateForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(userFormSchema),
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      phone_number: "",
+      parent_number: "",
+      password: "",
+      role: "",
+    }
+  });
+
+  const createMutation = useCreateUser();
+  const { data: rolesData, isLoading: isLoadingRoles } = useRoles();
+  const updateMutation = useUpdateUser();
+
+  const roles = rolesData?.data || [];
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    reset();
+  };
+
+  const onSubmit = (data) => {
+    createMutation.mutate(data);
+  }
+
+
+
   return (
     <div>
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-medium">
-              {currentCourse ? "កែប្រែវគ្គសិក្សា" : "បង្កើតវគ្គសិក្សាថ្មី"}
+      {/* Create/Edit User Modal */}
+      <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
+        <DialogContent className="sm:max-w-[640px] p-0">
+          {/* HEADER */}
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="text-xl font-semibold">
+              {currentUser ? "Edit User" : "Create New User"}
             </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              {currentUser
+                ? "Update user information and role"
+                : "Fill in the form to create a new user"}
+            </DialogDescription>
           </DialogHeader>
 
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-3 mt-3"
-          >
-            {/* Title */}
-            <FieldGroup className={"flex gap-1"}>
-              <FieldLabel className="text-sm" htmlFor="title">
-                Title
-              </FieldLabel>
-              <FieldContent>
-                <Input
-                  id="title"
-                  {...form.register("title")}
-                  placeholder="Enter title"
-                  className="text-sm"
-                />
-                {form.formState.errors.title && (
-                  <p className="text-red-500 text-xs ">
-                    {form.formState.errors.title.message}
-                  </p>
-                )}
-              </FieldContent>
-            </FieldGroup>
+          {/* FORM */}
+          <form >
+            <div className="px-6 py-4 max-h-[65vh] overflow-y-auto space-y-6">
 
-            {/* Role */}
-            <FieldGroup className={"flex gap-1"}>
-              <FieldLabel htmlFor="role_id">Role</FieldLabel>
-              <FieldContent>
-                <Select
-                  {...form.register("category_id")}
-                  value={form.watch("category_id")}
-                  onValueChange={(val) => form.setValue("category_id", val)}
-                  className="text-sm"
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem
-                      value="1"
-                      className="flex items-center space-x-2"
-                    >
-                      <img
-                        src="/images/category1.jpg"
-                        alt="Category 1"
-                        className="w-6 h-6 rounded-sm"
-                      />
-                      <span>Category 1</span>
-                    </SelectItem>
-                    <SelectItem
-                      value="2"
-                      className="flex items-center space-x-2"
-                    >
-                      <img
-                        src="/images/category2.jpg"
-                        alt="Category 2"
-                        className="w-6 h-6 rounded-sm"
-                      />
-                      <span>Category 2</span>
-                    </SelectItem>
-                    <SelectItem
-                      value="3"
-                      className="flex items-center space-x-2"
-                    >
-                      <img
-                        src="/images/category3.jpg"
-                        alt="Category 3"
-                        className="w-6 h-6 rounded-sm"
-                      />
-                      <span>Category 3</span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                {form.formState.errors.category_id && (
-                  <p className="text-red-500 text-xs ">
-                    {form.formState.errors.category_id.message}
-                  </p>
-                )}
-              </FieldContent>
-            </FieldGroup>
+              {/* ───────── Personal Info ───────── */}
+              <div>
+                <h4 className="mb-3 text-sm font-semibold text-muted-foreground">
+                  Personal Information
+                </h4>
 
-            <DialogFooter className="mt-2 flex justify-end space-x-2">
-              <DialogClose asChild>
-                <Button variant="outline" size="sm">
-                  Cancel
-                </Button>
-              </DialogClose>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* First Name */}
+                  <div className="space-y-1">
+                    <Label>First Name *</Label>
+                    <Input {...register("first_name")} placeholder="John" />
+                    {errors.first_name && (
+                      <p className="text-xs text-red-500">{errors.first_name.message}</p>
+                    )}
+                  </div>
+
+                  {/* Last Name */}
+                  <div className="space-y-1">
+                    <Label>Last Name *</Label>
+                    <Input {...register("last_name")} placeholder="Doe" />
+                    {errors.last_name && (
+                      <p className="text-xs text-red-500">{errors.last_name.message}</p>
+                    )}
+                  </div>
+
+                  {/* Phone */}
+                  <div className="space-y-1">
+                    <Label>Phone Number *</Label>
+                    <Input {...register("phone_number")} placeholder="012 345 678" />
+                    {errors.phone_number && (
+                      <p className="text-xs text-red-500">{errors.phone_number.message}</p>
+                    )}
+                  </div>
+
+                  {/* Parent */}
+                  <div className="space-y-1">
+                    <Label>Parent Number *</Label>
+                    <Input {...register("parent_number")} placeholder="012 345 678" />
+                    {errors.parent_number && (
+                      <p className="text-xs text-red-500">{errors.parent_number.message}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* ───────── Account Info ───────── */}
+              <div>
+                <h4 className="mb-3 text-sm font-semibold text-muted-foreground">
+                  Account Information
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Password */}
+                  <div className="space-y-1 sm:col-span-2">
+                    <Label>Password {!currentUser && "*"}</Label>
+                    <Input
+                      type="password"
+                      {...register("password", { required: !currentUser })}
+                      placeholder={
+                        currentUser
+                          ? "Leave empty to keep current"
+                          : "Enter password (6–30 characters)"
+                      }
+                    />
+                    {errors.password && (
+                      <p className="text-xs text-red-500">{errors.password.message}</p>
+                    )}
+                  </div>
+
+                  {/* Role */}
+                  <div className="space-y-1">
+                    <Label>Role *</Label>
+                    <Select onValueChange={(v) => setValue("role", v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roles.map(role => (
+                          <SelectItem key={role.id} value={role.id.toString()}>
+                            {role.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Gender */}
+                  <div className="space-y-1">
+                    <Label>Gender</Label>
+                    <Select onValueChange={(v) => setValue("gender", v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Optional" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* FOOTER (sticky) */}
+            <DialogFooter className=" bottom-0 bg-background border-t px-6 py-4 flex justify-between">
+              <Button type="button" variant="outline" onClick={handleCloseModal}>
+                Cancel
+              </Button>
+
               <Button
                 type="submit"
-                size="sm"
+                onClick={handleSubmit(onSubmit)}
                 disabled={createMutation.isPending || updateMutation.isPending}
+                className="bg-[#00B4F6] hover:bg-[#0099D6]"
               >
-                {createMutation.isPending || updateMutation.isPending
-                  ? "Saving..."
-                  : "Save"}
+                {(createMutation.isPending || updateMutation.isPending) && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {currentUser ? "Update User" : "Create User"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
+
     </div>
   );
 };

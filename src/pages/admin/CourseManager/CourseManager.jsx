@@ -368,11 +368,10 @@ export default function CourseManager() {
                 <button
                   key={i + 1}
                   onClick={() => paginate(i + 1)}
-                  className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                    currentPage === i + 1
-                      ? "bg-[#00B4F6] text-white shadow-md shadow-blue-200"
-                      : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-100"
-                  }`}
+                  className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${currentPage === i + 1
+                    ? "bg-[#00B4F6] text-white shadow-md shadow-blue-200"
+                    : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-100"
+                    }`}
                 >
                   {i + 1}
                 </button>
