@@ -11,10 +11,11 @@ export const useCreateUser = () => {
   });
 };
 
-export const useUsers = (params = {}) => {
+export const useUsers = ({ params, enabled }) => {
   return useQuery({
     queryKey: ["users", params],
     queryFn: () => userService.getAllUsers(params).then((res) => res.data),
+    enabled: enabled,
   });
 };
 

@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/table";
 import CrateForm from "./components/CrateForm";
 import { useDebounce } from "@/hooks/useDebounce";
-import { imgUrl } from "@/lib/enviroment";
+import { imgUrl } from "@/lib/helper/enviroment";
 
 const CATEGORIES = [
   { id: 1, name: "English" },

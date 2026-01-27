@@ -26,7 +26,7 @@ import { useCreateCourse, useGetTeachers, useUpdateCourse } from "@/hooks/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { FileDropzone } from "@/components/ui/file-dropzone";
 import { toast } from "sonner";
-import { imgUrl } from "@/lib/enviroment";
+import { imgUrl } from "@/lib/helper/enviroment";
 import { fileFolder, fileService } from "@/lib/api/services/file.service";
 
 const courseFormSchema = z.object({
@@ -232,7 +232,7 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
                 value={form.watch("thumbnail")}
                 previewUrl={
                   form.watch("thumbnail") &&
-                  typeof form.watch("thumbnail") === "string"
+                    typeof form.watch("thumbnail") === "string"
                     ? `${imgUrl}${form.watch("thumbnail")}`
                     : null
                 }

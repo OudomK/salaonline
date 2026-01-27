@@ -2,7 +2,7 @@ import { PlayCircle, Star } from "lucide-react";
 import { Card, CardContent } from "./card";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { Badge } from "./badge";
-import { imgUrl } from "@/lib/enviroment";
+import { imgUrl } from "@/lib/helper/enviroment";
 
 const CourseCard = ({ course, handleCourseClick }) => {
     return (

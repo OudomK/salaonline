@@ -38,7 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
 import CreateUserForm from "./components/CreateUserForm";
-import { imgUrl } from "@/lib/enviroment";
+import { imgUrl } from "@/lib/helper/enviroment";
 import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -179,7 +179,7 @@ export default function UserManager() {
                     <div className="flex items-center gap-3">
 
                       <Avatar className="h-10 w-10 rounded-full overflow-hidden  flex items-center justify-center text-white font-bold text-sm">
-                        <AvatarImage src={imgUrl + user.avatar} />
+                        <AvatarImage className="object-cover" src={imgUrl + user.avatar} />
                         <AvatarFallback>{user.first_name?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
                       </Avatar>
 

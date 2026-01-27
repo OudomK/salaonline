@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Search,
   FileSpreadsheet,
@@ -25,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -43,34 +43,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useUsers } from "@/hooks/api";
+import { useRoles, useUsers } from "@/hooks/api";
 import { useDebounce } from "@/hooks/useDebounce";
+import { getCourseColor, getPhoneStyle } from "@/lib/helper/helper";
+import { formatDate } from "@/lib/helper/date";
+import { imgUrl } from "@/lib/helper/enviroment";
 
 // ... (រក្សាទុក Helper Functions និង Mock Data នៅដដែល) ...
 // --- HELPER: Phone Color ---
-const getPhoneStyle = (phone) => {
-  const p = phone.replace(/\s/g, "");
-  if (/^(010|015|016|069|070|081|086|087|093|096|098)/.test(p))
-    return { bg: "bg-[#00C853]", icon: "S" };
-  if (/^(011|012|014|017|061|076|077|078|085|089|092|095|099)/.test(p))
-    return { bg: "bg-[#FF9800]", icon: "C" };
-  return { bg: "bg-blue-500", icon: "M" };
-};
 
-const getCourseColor = (course) => {
-  if (course.includes("English"))
-    return "bg-pink-50 text-pink-600 border-pink-100";
-  if (course.includes("Korean"))
-    return "bg-indigo-50 text-indigo-600 border-indigo-100";
-  if (course.includes("Chinese"))
-    return "bg-orange-50 text-orange-600 border-orange-100";
-  return "bg-gray-50 text-gray-600";
-};
 
 // --- MOCK DATA ---
 export default function StudentList() {
+  const { data: roles, isLoading: isLoadingRoles } = useRoles()
+
+  const studentRoleId = useMemo(() => roles?.data?.find((role) => role.name?.toLowerCase() === "student")?.id, [roles])
   const { data: studentss } = useUsers({
-    role_id: 5,
+    role_id: studentRoleId,
+    enabled: !!studentRoleId,
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -214,28 +204,31 @@ export default function StudentList() {
             </TableHeader>
             <TableBody>
               {studentss?.data.map((student) => {
-                const carrier = getPhoneStyle(student.phone);
-                const online = isOnline(student.lastActive);
+                const carrier = getPhoneStyle(student?.phone_number?.trim() || '');
+                const online = isOnline(student?.last_active);
 
                 return (
                   <TableRow
-                    key={student.id}
+                    key={student?.id}
                     className="border-b-gray-50 hover:bg-gray-50/50 transition-colors"
                   >
                     {/* 1. STUDENT (Name + ID) */}
                     <TableCell className="pl-6 py-4">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10 bg-blue-50 text-[#00B4F6] border border-blue-100">
+
+                          <AvatarImage src={student?.avatar ? imgUrl + student?.avatar : undefined} />
+
                           <AvatarFallback className="font-bold text-sm">
-                            {student.name.charAt(0)}
+                            {student?.first_name?.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                           <span className="font-bold text-gray-800 text-sm font-khmer-os-battambang">
-                            {student.name}
+                            {student?.first_name}
                           </span>
                           <span className="text-[10px] text-gray-400 font-bold tracking-wide">
-                            {student.studentId}
+                            {student?.id}
                           </span>
                         </div>
                       </div>
@@ -250,7 +243,7 @@ export default function StudentList() {
                           <Signal size={10} strokeWidth={3} />
                         </div>
                         <span className="pr-1 tracking-wide font-mono">
-                          {student.phone}
+                          {student?.phone_number}
                         </span>
                       </div>
                     </TableCell>
@@ -259,9 +252,9 @@ export default function StudentList() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={`rounded-lg px-3 py-1 text-[10px] font-bold shadow-none ${getCourseColor(student.course)}`}
+                        className={`rounded-lg px-3 py-1 text-[10px] font-bold shadow-none ${getCourseColor(student?.course)}`}
                       >
-                        {student.course}
+                        {student?.course || "N/A"}
                       </Badge>
                     </TableCell>
 
@@ -269,7 +262,7 @@ export default function StudentList() {
                     <TableCell>
                       <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
                         <Calendar size={14} className="text-gray-300" />{" "}
-                        {student.joinedDate}
+                        {formatDate(student?.createdAt)}
                       </div>
                     </TableCell>
 
@@ -277,14 +270,14 @@ export default function StudentList() {
                     <TableCell className="text-center">
                       {online ? (
                         <Badge className="bg-[#10B981]/10 text-[#10B981] hover:bg-[#10B981]/20 rounded-full px-3 text-[10px] font-bold shadow-none border-0">
-                          ● Active
+                          ● is Online
                         </Badge>
                       ) : (
                         <Badge
                           variant="outline"
                           className="text-gray-400 border-gray-200 rounded-full px-3 text-[10px] font-bold bg-gray-50"
                         >
-                          Offline
+                          ● is Offline
                         </Badge>
                       )}
                     </TableCell>

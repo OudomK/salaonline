@@ -28,7 +28,7 @@ import { toast } from "sonner";
 import { UploadAvatar } from "@/components/ui/upload-avatar";
 import { fileFolder, fileService } from "@/lib/api/services/file.service";
 import { Textarea } from "@/components/ui/textarea";
-import { imgUrl } from "@/lib/enviroment";
+import { imgUrl } from "@/lib/helper/enviroment";
 
 const userFormSchema = z.object({
   first_name: z

@@ -101,17 +101,18 @@ export default function AdminLayout() {
       label: "Exam Requests",
       icon: <FileCheck size={20} />,
     },
-    {
-      path: "/admin/courses",
-      label: "Course Manager",
-      icon: <BookOpen size={20} />,
-    },
+
     {
       path: "/admin/homework",
       label: "Homework",
       icon: <BookCheck size={20} />,
     },
     { path: "/admin/lesson", label: "Lesson", icon: <BookCheck size={20} /> },
+    {
+      path: "/admin/courses",
+      label: "Course Manager",
+      icon: <BookOpen size={20} />,
+    },
     {
       path: "/admin/user",
       label: "User Manager",
@@ -178,11 +179,10 @@ export default function AdminLayout() {
               key={item.path}
               to={item.path}
               onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
-                location.pathname === item.path
-                  ? "bg-[#00B4F6] text-white shadow-lg shadow-blue-900/50"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
-              }`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${location.pathname === item.path
+                ? "bg-[#00B4F6] text-white shadow-lg shadow-blue-900/50"
+                : "text-slate-400 hover:bg-white/5 hover:text-white"
+                }`}
             >
               {item.icon}
               <span className="font-sans">{item.label}</span>
