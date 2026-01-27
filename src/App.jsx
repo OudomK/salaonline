@@ -23,6 +23,8 @@ import UserAccount from "./pages/client/UserAccount";
 import ComingSoon from "./pages/client/ComingSoon";
 import MyLearning from "./pages/client/MyLearning";
 import OtpVerification from "./pages/client/OtpVerification";
+import Contact from "./pages/client/Contact";
+import About from "./pages/client/About";
 import LessonManager from "./pages/admin/LessonManager/LessonManager";
 
 function App() {
@@ -34,7 +36,10 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/otp-verification" element={<OtpVerification />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
-        <Route path="/admin/forgot-password" element={<ForgotPasswordAdmin />} />
+        <Route
+          path="/admin/forgot-password"
+          element={<ForgotPasswordAdmin />}
+        />
 
         <Route
           path="/admin"
@@ -54,24 +59,34 @@ function App() {
           <Route path="settings" element={<AdminSettings />} />
         </Route>
 
-        <Route
-          element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }
-        >
+        {/* =========================================
+            4. USER ROUTES (Protected by MainLayout)
+           ========================================= */}
+        <Route element={<MainLayout />}>
+          {/* Redirect root "/" to "/home" */}
           <Route path="/" element={<Navigate to="/home" replace />} />
+
+          {/* Main Pages */}
           <Route path="/home" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/account" element={<UserAccount />} />
           <Route path="/placement-test" element={<PlacementTest />} />
+
+          {/* Learning Pages */}
           <Route path="/course-detail" element={<CourseDetail />} />
           <Route path="/homework" element={<Homework />} />
           <Route path="/my-learning" element={<MyLearning />} />
-          <Route path="/certificate" element={<ComingSoon title="វិញ្ញាបនបត្រ (Certificate)" />} />
+          <Route
+            path="/certificate"
+            element={<ComingSoon title="វិញ្ញាបនបត្រ (Certificate)" />}
+          />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
         </Route>
 
+        {/* =========================================
+            5. CATCH ALL (Page Not Found)
+           ========================================= */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
