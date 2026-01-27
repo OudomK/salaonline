@@ -1,4 +1,4 @@
-import apiClient from '../client'
+import apiClient from "../client";
 
 /**
  * User Service - Handle user management API calls
@@ -6,9 +6,14 @@ import apiClient from '../client'
 
 export const userService = {
   /**
+   * Create new user (admin only)
+   */
+  createUser: (userData) => apiClient.post("/users", userData),
+
+  /**
    * Get all users (admin only)
    */
-  getAllUsers: (params) => apiClient.get('/users', { params }),
+  getAllUsers: (params) => apiClient.get("/users", { params }),
 
   /**
    * Get user by ID
@@ -18,7 +23,7 @@ export const userService = {
   /**
    * Update user profile
    */
-  updateProfile: (userData) => apiClient.put('/users/profile', userData),
+  updateProfile: (userData) => apiClient.put("/users/profile", userData),
 
   /**
    * Update user by ID (admin)
@@ -34,5 +39,8 @@ export const userService = {
    * Change password
    */
   changePassword: (oldPassword, newPassword) =>
-    apiClient.post('/users/change-password', { oldPassword, newPassword }),
-}
+    apiClient.post("/users/change-password", { oldPassword, newPassword }),
+
+  getAllTeachers: (teacher_name) =>
+    apiClient.get("/users/teachers", { params: { teacher_name } }),
+};

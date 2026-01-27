@@ -13,7 +13,7 @@ import CourseDetail from "./pages/client/CourseDetail";
 import Homework from "./pages/client/Homework";
 import LoginAdmin from "./pages/admin/LoginAdmin";
 import Dashboard from "./pages/admin/Dashboard";
-import StudentList from "./pages/admin/StudentList";
+import StudentList from "./pages/admin/StudentManger/StudentList";
 import ForgotPasswordAdmin from "./pages/admin/ForgotPasswordAdmin";
 import ExamRequest from "./pages/admin/ExamRequest";
 import CourseManager from "./pages/admin/CourseManager/CourseManager";
@@ -26,6 +26,7 @@ import OtpVerification from "./pages/client/OtpVerification";
 import Contact from "./pages/client/Contact";
 import About from "./pages/client/About";
 import LessonManager from "./pages/admin/LessonManager/LessonManager";
+import UserManager from "./pages/admin/UserManger/UserManager";
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
           <Route path="courses" element={<CourseManager />} />
           <Route path="homework" element={<HomeworkManager />} />
           <Route path="lesson" element={<LessonManager />} />
+          <Route path="user" element={<UserManager />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
 
