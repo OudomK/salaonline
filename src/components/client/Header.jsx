@@ -15,7 +15,7 @@ export default function Header() {
         {/* Desktop Menu (លាក់លើ Mobile, បង្ហាញលើ Desktop) */}
         <nav className="hidden md:flex items-center gap-8">
           <Link to="/home" className="font-medium text-gray-700 hover:text-[#00B4F6]">Home</Link>
-          <Link to="/courses" className="font-medium text-gray-700 hover:text-[#00B4F6]">Courses</Link>
+          <Link to="/course-detail" className="font-medium text-gray-700 hover:text-[#00B4F6]">Courses</Link>
           <Link to="/about" className="font-medium text-gray-700 hover:text-[#00B4F6]">About Us</Link>
           <Link to="/contact" className="font-medium text-gray-700 hover:text-[#00B4F6]">Contact</Link>
         </nav>

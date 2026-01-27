@@ -27,6 +27,8 @@ import UserAccount from "./pages/client/UserAccount";
 import ComingSoon from "./pages/client/ComingSoon";
 import MyLearning from "./pages/client/MyLearning";
 import OtpVerification from "./pages/client/OtpVerification";
+import Contact from "./pages/client/Contact";
+import About from "./pages/client/About";
 
 function App() {
   
@@ -89,9 +91,10 @@ function App() {
             path="/certificate" 
             element={<ComingSoon title="វិញ្ញាបនបត្រ (Certificate)" />} 
           />
-        </Route>
-
-
+            <Route path="/contact" element={<Contact />} />
+           <Route path="/about" element={<About />} />
+          </Route>
+        
         {/* =========================================
             5. CATCH ALL (Page Not Found)
            ========================================= */}
