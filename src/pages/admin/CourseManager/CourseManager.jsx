@@ -45,18 +45,16 @@ import {
 import CrateForm from "./components/CrateForm";
 import { useDebounce } from "@/hooks/useDebounce";
 import { imgUrl } from "@/lib/helper/enviroment";
-
-const CATEGORIES = [
-  { id: 1, name: "English" },
-  { id: 2, name: "Chinese" },
-  { id: 3, name: "Korean" },
-];
+import { useCategories } from "@/hooks/api/useCategory";
 
 export default function CourseManager() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const { data: categoriesData, isLoading: isLoadingCategories } =
+    useCategories();
 
   const { data: coursesData, isLoading: isLoadingCourses } = useAdminCourses({
     page: currentPage,
@@ -166,7 +164,7 @@ export default function CourseManager() {
   };
 
   const getCategoryName = (id) => {
-    return CATEGORIES.find((c) => c.id === id)?.name || "N/A";
+    return categoriesData?.data?.find((c) => c.id === id)?.name || "N/A";
   };
 
   const getCategoryColor = (id) => {
@@ -176,36 +174,36 @@ export default function CourseManager() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in-up pb-20">
+    <div className="space-y-6 pb-20 animate-fade-in-up">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="flex md:flex-row flex-col justify-between items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 font-khmer-os-battambang">
+          <h1 className="font-khmer-os-battambang font-bold text-gray-900 text-2xl">
             គ្រប់គ្រងមេរៀន (Course Manager)
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="mt-1 text-gray-500 text-sm">
             Create courses, levels, and upload videos.
           </p>
         </div>
         <button
           onClick={handleAddNew}
-          className="flex items-center gap-2 bg-[#00B4F6] hover:bg-[#00a3df] text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95"
+          className="flex items-center gap-2 bg-[#00B4F6] hover:bg-[#00a3df] shadow-blue-200 shadow-lg px-5 py-2.5 rounded-xl font-bold text-white active:scale-95 transition-all"
         >
           <Plus size={20} /> បង្កើតវគ្គថ្មី (New Course)
         </button>
       </div>
 
       {/* SEARCH */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+      <div className="bg-white shadow-sm p-4 border border-gray-100 rounded-2xl">
         <div className="relative w-full md:w-96">
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="top-1/2 left-3 absolute text-gray-400 -translate-y-1/2"
             size={20}
           />
           <input
             type="text"
             placeholder="ស្វែងរកតាមឈ្មោះគ្រូ ឬ ចំណងជើង..."
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#00B4F6] outline-none transition-all text-sm font-bold text-gray-700 font-khmer-os-battambang"
+            className="bg-gray-50 focus:bg-white py-2.5 pr-4 pl-10 border border-gray-200 rounded-xl outline-none focus:ring-[#00B4F6] focus:ring-2 w-full font-khmer-os-battambang font-bold text-gray-700 text-sm transition-all"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -216,24 +214,24 @@ export default function CourseManager() {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white shadow-sm border border-gray-100 rounded-2xl overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50 border-b border-gray-100 hover:bg-gray-50">
-              <TableHead className="px-6 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-wider">
+            <TableRow className="bg-gray-50 hover:bg-gray-50 border-gray-100 border-b">
+              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs uppercase tracking-wider">
                 THUMBNAIL
               </TableHead>
-              <TableHead className="px-6 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-wider">
+              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs uppercase tracking-wider">
                 COURSE NAME
               </TableHead>
-              <TableHead className="px-6 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-wider">
+              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs uppercase tracking-wider">
                 CATEGORY
               </TableHead>
-              <TableHead className="px-6 py-4 text-xs font-extrabold text-gray-400 uppercase tracking-wider">
+              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs uppercase tracking-wider">
                 STATUS
               </TableHead>
 
-              <TableHead className="px-6 py-4 text-center text-xs font-extrabold text-gray-400 uppercase tracking-wider">
+              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs text-center uppercase tracking-wider">
                 ACTION
               </TableHead>
             </TableRow>
@@ -241,9 +239,9 @@ export default function CourseManager() {
           <TableBody>
             {isLoadingCourses ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-20">
+                <TableCell colSpan={5} className="py-20 text-center">
                   <Loader2
-                    className="animate-spin mx-auto text-[#00B4F6]"
+                    className="mx-auto text-[#00B4F6] animate-spin"
                     size={32}
                   />
                 </TableCell>
@@ -252,7 +250,7 @@ export default function CourseManager() {
               <TableRow>
                 <TableCell
                   colSpan={5}
-                  className="text-center py-10 text-gray-400"
+                  className="py-10 text-gray-400 text-center"
                 >
                   រកមិនឃើញទិន្នន័យទេ
                 </TableCell>
@@ -269,10 +267,10 @@ export default function CourseManager() {
                         <img
                           src={imgUrl + course.thumbnail}
                           alt="Thumbnail"
-                          className="h-12 w-12 rounded-md object-cover border border-border"
+                          className="border border-border rounded-md w-12 h-12 object-cover"
                         />
                       ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-md bg-muted text-muted-foreground text-xs font-medium border border-border">
+                        <div className="flex justify-center items-center bg-muted border border-border rounded-md w-12 h-12 font-medium text-muted-foreground text-xs">
                           No Thumbnail
                         </div>
                       )}
@@ -281,14 +279,14 @@ export default function CourseManager() {
 
                   <TableCell className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-gray-100 rounded-lg text-gray-500">
+                      <div className="bg-gray-100 p-2 rounded-lg text-gray-500">
                         <BookOpen size={20} />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-gray-900">
+                        <p className="font-bold text-gray-900 text-sm">
                           {course.title}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-gray-400 text-xs">
                           {course.teacher_name ||
                             course.teacher?.username ||
                             "No Teacher"}
@@ -304,7 +302,7 @@ export default function CourseManager() {
                     </span>
                   </TableCell>
                   <TableCell className="px-6 py-4">
-                    <span className="text-sm font-bold text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
+                    <span className="bg-gray-100 px-3 py-1 rounded-full font-bold text-gray-700 text-sm">
                       {course.status || "N/A"}
                     </span>
                   </TableCell>
@@ -328,13 +326,13 @@ export default function CourseManager() {
                       </button>
                       <button
                         onClick={() => handleEdit(course)}
-                        className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-[#00B4F6] hover:text-white transition-all"
+                        className="bg-gray-100 hover:bg-[#00B4F6] p-2 rounded-lg text-gray-600 hover:text-white transition-all"
                       >
                         <Edit size={16} />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(course.id)}
-                        className="p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                        className="bg-red-50 hover:bg-red-500 p-2 rounded-lg text-red-500 hover:text-white transition-all"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -348,8 +346,8 @@ export default function CourseManager() {
 
         {/* 🟢 PAGINATION FOOTER */}
         {totalItems > 0 && (
-          <div className="flex flex-col md:flex-row justify-between items-center p-4 border-t border-gray-100 bg-gray-50/50 gap-4">
-            <span className="text-xs font-bold text-gray-500 font-khmer-os-battambang">
+          <div className="flex md:flex-row flex-col justify-between items-center gap-4 bg-gray-50/50 p-4 border-gray-100 border-t">
+            <span className="font-khmer-os-battambang font-bold text-gray-500 text-xs">
               បង្ហាញ {indexOfFirstItem + 1} ដល់ {indexOfLastItem} នៃ{" "}
               {totalItems} វគ្គសិក្សា
             </span>
@@ -358,7 +356,7 @@ export default function CourseManager() {
               <button
                 onClick={() => paginate(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="p-2 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-white hover:bg-gray-100 disabled:opacity-50 p-2 border border-gray-200 rounded-lg text-gray-600 disabled:cursor-not-allowed"
               >
                 <ChevronLeft size={16} />
               </button>
@@ -368,10 +366,11 @@ export default function CourseManager() {
                 <button
                   key={i + 1}
                   onClick={() => paginate(i + 1)}
-                  className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${currentPage === i + 1
-                    ? "bg-[#00B4F6] text-white shadow-md shadow-blue-200"
-                    : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-100"
-                    }`}
+                  className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
+                    currentPage === i + 1
+                      ? "bg-[#00B4F6] text-white shadow-md shadow-blue-200"
+                      : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-100"
+                  }`}
                 >
                   {i + 1}
                 </button>
@@ -380,7 +379,7 @@ export default function CourseManager() {
               <button
                 onClick={() => paginate(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="p-2 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-white hover:bg-gray-100 disabled:opacity-50 p-2 border border-gray-200 rounded-lg text-gray-600 disabled:cursor-not-allowed"
               >
                 <ChevronRight size={16} />
               </button>
@@ -391,23 +390,23 @@ export default function CourseManager() {
 
       {/* SHADCN ALERT DIALOG */}
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent className="bg-white rounded-2xl border-0 shadow-2xl">
+        <AlertDialogContent className="bg-white shadow-2xl border-0 rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-bold text-xl text-gray-900 font-khmer-os-battambang">
+            <AlertDialogTitle className="font-khmer-os-battambang font-bold text-gray-900 text-xl">
               តើអ្នកប្រាកដទេ?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-500 font-khmer-os-battambang">
+            <AlertDialogDescription className="font-khmer-os-battambang text-gray-500">
               សកម្មភាពនេះនឹងលុបវគ្គសិក្សានេះចេញពីប្រព័ន្ធជារៀងរហូត។
               វាមិនអាចត្រឡប់វិញបានទេ។
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl border-0 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">
+            <AlertDialogCancel className="bg-gray-100 hover:bg-gray-200 border-0 rounded-xl font-bold text-gray-700">
               បោះបង់ (Cancel)
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold"
+              className="bg-red-500 hover:bg-red-600 rounded-xl font-bold text-white"
             >
               យល់ព្រមលុប (Delete)
             </AlertDialogAction>

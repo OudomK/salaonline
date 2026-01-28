@@ -45,15 +45,14 @@ const userFormSchema = z.object({
     .max(30, "Password must not exceed 30 characters"),
   role: z.string().min(1, "Role is required"),
   phone_number: z.string().min(1, "Phone number is required"),
-  parent_number: z.string().min(1, "Parent number is required"),
-  gender: z.string(),
+  parent_number: z.string().optional(),
+  gender: z.string().min(1, "Gender is required"),
   address: z.string().optional(),
 });
 
 const editUserSchema = userFormSchema.extend({
   password: z.string().min(0).max(30).optional(),
 });
-
 
 const GENDERS = [
   { value: "male", label: "Male" },
@@ -65,10 +64,17 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
   const createMutation = useCreateUser();
   const updateMutation = useUpdateUser();
 
-  const { data: roles } = useRoles()
+  const { data: roles } = useRoles();
 
-
-  const { handleSubmit, reset, formState: { errors }, setValue, register, watch, formState } = useForm({
+  const {
+    handleSubmit,
+    reset,
+    formState: { errors },
+    setValue,
+    register,
+    watch,
+    formState,
+  } = useForm({
     resolver: zodResolver(currentUser ? editUserSchema : userFormSchema),
     defaultValues: {
       first_name: "",
@@ -78,14 +84,13 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
       phone_number: "",
       parent_number: "",
       gender: "",
-      address: ""
+      address: "",
     },
   });
 
   const [avatarfile, setAvatarFile] = useState(null);
 
   useEffect(() => {
-
     if (currentUser) {
       reset({
         first_name: currentUser.first_name,
@@ -95,9 +100,9 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
         parent_number: currentUser.parent_number,
         gender: currentUser.gender,
         address: currentUser.address,
-        password: ""
+        password: "",
       });
-      return
+      return;
     }
 
     if (isModalOpen && !currentUser) {
@@ -114,11 +119,13 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
     }
   }, [isModalOpen]);
 
-
   const onSubmit = async (values) => {
     try {
       if (avatarfile) {
-        const uploadedAvatar = await fileService.uploadFile(avatarfile, fileFolder.AVATAR);
+        const uploadedAvatar = await fileService.uploadFile(
+          avatarfile,
+          fileFolder.AVATAR,
+        );
         values.avatar = uploadedAvatar.data.url;
       }
 
@@ -129,19 +136,24 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
       };
 
       if (currentUser) {
-        console.log({ id: currentUser.id, payload })
+        console.log({ id: currentUser.id, payload });
         const filteredPayload = Object.fromEntries(
-          Object.entries(payload).filter(([_, value]) => value !== null && value !== "")
+          Object.entries(payload).filter(
+            ([_, value]) => value !== null && value !== "",
+          ),
         );
-        updateMutation.mutate({ id: currentUser.id, userData: filteredPayload }, {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["users"] });
-            setIsModalOpen(false);
-            toast.success("User updated successfully");
-            reset();
-            setAvatarFile(null);
+        updateMutation.mutate(
+          { id: currentUser.id, userData: filteredPayload },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: ["users"] });
+              setIsModalOpen(false);
+              toast.success("User updated successfully");
+              reset();
+              setAvatarFile(null);
+            },
           },
-        });
+        );
       } else {
         createMutation.mutate(payload, {
           onSuccess: () => {
@@ -159,34 +171,37 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
     }
   };
 
-
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-6">
+      <DialogContent className="p-6 sm:max-w-lg max-h-[90vh] overflow-y-auto">
         {/* HEADER */}
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">
+          <DialogTitle className="font-semibold text-lg">
             បង្កើតអ្នកប្រើប្រាស់ថ្មី (Create New User)
           </DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground mt-1">
+          <DialogDescription className="mt-1 text-muted-foreground text-sm">
             Fill out the form to create a new user.
           </DialogDescription>
         </DialogHeader>
 
         {/* FORM */}
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
           {/* ───────── Personal Information ───────── */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-muted-foreground">
+            <h4 className="font-semibold text-muted-foreground text-sm">
               Personal Information
             </h4>
 
-            <UploadAvatar onChange={(file) => setAvatarFile(file)} previewUrl={currentUser?.avatar ? imgUrl + currentUser?.avatar : null} />
+            <UploadAvatar
+              onChange={(file) => setAvatarFile(file)}
+              previewUrl={
+                currentUser?.avatar ? imgUrl + currentUser?.avatar : null
+              }
+            />
 
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="gap-4 grid grid-cols-1 sm:grid-cols-2">
               {/* First Name */}
-              <FieldGroup className={'gap-2'}>
+              <FieldGroup className={"gap-2"}>
                 <FieldLabel className="text-sm" htmlFor="first_name">
                   First Name <span className="text-red-500">*</span>
                 </FieldLabel>
@@ -198,7 +213,7 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
                     className="text-sm"
                   />
                   {errors.first_name && (
-                    <p className="text-xs text-red-500">
+                    <p className="text-red-500 text-xs">
                       {errors.first_name.message}
                     </p>
                   )}
@@ -206,7 +221,7 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
               </FieldGroup>
 
               {/* Last Name */}
-              <FieldGroup className={'gap-2'}>
+              <FieldGroup className={"gap-2"}>
                 <FieldLabel className="text-sm" htmlFor="last_name">
                   Last Name <span className="text-red-500">*</span>
                 </FieldLabel>
@@ -218,7 +233,7 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
                     className="text-sm"
                   />
                   {errors.last_name && (
-                    <p className="text-xs text-red-500">
+                    <p className="text-red-500 text-xs">
                       {errors.last_name.message}
                     </p>
                   )}
@@ -239,7 +254,7 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
                     className="text-sm no-spinner"
                   />
                   {errors.phone_number && (
-                    <p className="text-xs text-red-500">
+                    <p className="text-red-500 text-xs">
                       {errors.phone_number.message}
                     </p>
                   )}
@@ -247,9 +262,9 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
               </FieldGroup>
 
               {/* Parent Number */}
-              <FieldGroup className={'gap-2'}>
+              <FieldGroup className={"gap-2"}>
                 <FieldLabel className="text-sm" htmlFor="parent_number">
-                  Parent Number <span className="text-red-500">*</span>
+                  Parent Number
                 </FieldLabel>
                 <FieldContent>
                   <Input
@@ -258,10 +273,9 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
                     {...register("parent_number")}
                     placeholder="012 345 678"
                     className="text-sm no-spinner"
-
                   />
                   {errors.parent_number && (
-                    <p className="text-xs text-red-500">
+                    <p className="text-red-500 text-xs">
                       {errors.parent_number.message}
                     </p>
                   )}
@@ -272,11 +286,11 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
 
           {/* ───────── Account Information ───────── */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-muted-foreground">
+            <h4 className="font-semibold text-muted-foreground text-sm">
               Account Information
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="gap-4 grid grid-cols-1 sm:grid-cols-2">
               {/* Password */}
               <FieldGroup className="gap-2 sm:col-span-2">
                 <FieldLabel className="text-sm" htmlFor="password">
@@ -292,7 +306,7 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
                     className="text-sm"
                   />
                   {errors.password && (
-                    <p className="text-xs text-red-500">
+                    <p className="text-red-500 text-xs">
                       {errors.password.message}
                     </p>
                   )}
@@ -307,7 +321,9 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
                 <FieldContent>
                   <Select
                     value={watch("role")}
-                    onValueChange={(val) => setValue("role", val, { shouldValidate: true })}
+                    onValueChange={(val) =>
+                      setValue("role", val, { shouldValidate: true })
+                    }
                     className="text-sm"
                   >
                     <SelectTrigger>
@@ -315,17 +331,23 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
                     </SelectTrigger>
                     <SelectContent>
                       {roles?.data?.map((role) => (
-                        <SelectItem className="flex" key={role.id} value={String(role.id)}>
-                          <div className="w-full flex">
+                        <SelectItem
+                          className="flex"
+                          key={role.id}
+                          value={String(role.id)}
+                        >
+                          <div className="flex w-full">
                             <span>{role?.name}</span>
-                            <span className="text-[8px] ms-1 text-muted-foreground">({role?.user_count})</span>
+                            <span className="ms-1 text-[8px] text-muted-foreground">
+                              ({role?.user_count})
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   {formState.errors.role && (
-                    <p className="text-xs text-red-500">
+                    <p className="text-red-500 text-xs">
                       {formState.errors.role.message}
                     </p>
                   )}
@@ -355,7 +377,7 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
                     </SelectContent>
                   </Select>
                   {errors.gender && (
-                    <p className="text-xs text-red-500">
+                    <p className="text-red-500 text-xs">
                       {errors.gender.message}
                     </p>
                   )}
@@ -380,7 +402,7 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
           </div>
 
           {/* ───────── FOOTER ───────── */}
-          <DialogFooter className="mt-6 flex justify-end gap-2">
+          <DialogFooter className="flex justify-end gap-2 mt-6">
             <DialogClose asChild>
               <Button variant="outline" size="sm">
                 Cancel
@@ -389,18 +411,18 @@ const CreateUserForm = ({ isModalOpen, setIsModalOpen, currentUser }) => {
             <Button
               type="submit"
               size="sm"
-              disabled={createMutation.isPending}
-
+              disabled={createMutation.isPending || updateMutation.isPending}
             >
-              {
-                createMutation.isPending ? "loading..." : currentUser ? "Update User" : "Create User"
-              }
+              {createMutation.isPending || updateMutation.isPending
+                ? "loading..."
+                : currentUser
+                  ? "Update User"
+                  : "Create User"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-
   );
 };
 

@@ -28,6 +28,8 @@ import { FileDropzone } from "@/components/ui/file-dropzone";
 import { toast } from "sonner";
 import { imgUrl } from "@/lib/helper/enviroment";
 import { fileFolder, fileService } from "@/lib/api/services/file.service";
+import { useCategories } from "@/hooks/api/useCategory";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const courseFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -42,10 +44,10 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
   const createMutation = useCreateCourse();
   const updateMutation = useUpdateCourse();
   const { data: teachersList } = useGetTeachers();
+  const { data: categoriesData, isLoading: isLoadingCategories } =
+    useCategories();
 
-  // Use ref to track if error has been shown to avoid duplicate toasts
-  const createErrorShown = useRef(false);
-  const updateErrorShown = useRef(false);
+  console.log(categoriesData);
 
   const form = useForm({
     resolver: zodResolver(courseFormSchema),
@@ -80,63 +82,12 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
     }
   }, [currentCourse, isModalOpen, form]);
 
-  // Debug: Watch thumbnail value
-  const thumbnailValue = form.watch("thumbnail");
-  useEffect(() => {
-    console.log("🔍 CrateForm - Thumbnail value:", thumbnailValue);
-    console.log("🔍 CrateForm - imgUrl:", imgUrl);
-    console.log(
-      "🔍 CrateForm - Full preview URL:",
-      thumbnailValue && typeof thumbnailValue === "string"
-        ? `${imgUrl}${thumbnailValue}`
-        : null,
-    );
-  }, [thumbnailValue]);
-
-  // Watch for create mutation errors
-  useEffect(() => {
-    if (createMutation.error && !createErrorShown.current) {
-      console.error("Create mutation error:", createMutation.error);
-      const errorMessage =
-        createMutation.error?.response?.data?.message ||
-        createMutation.error?.message ||
-        createMutation.error?.data?.message ||
-        "Failed to create course";
-      toast.error(errorMessage);
-      createErrorShown.current = true;
-    }
-    // Reset error shown flag when mutation is no longer in error state
-    if (!createMutation.error) {
-      createErrorShown.current = false;
-    }
-  }, [createMutation.error]);
-
-  // Watch for update mutation errors
-  useEffect(() => {
-    if (updateMutation.error && !updateErrorShown.current) {
-      console.error("Update mutation error:", updateMutation.error);
-      const errorMessage =
-        updateMutation.error?.response?.data?.message ||
-        updateMutation.error?.message ||
-        updateMutation.error?.data?.message ||
-        "Failed to update course";
-      toast.error(errorMessage);
-      updateErrorShown.current = true;
-    }
-    if (!updateMutation.error) {
-      updateErrorShown.current = false;
-    }
-  }, [updateMutation.error]);
-
   const onSubmit = async (values) => {
     try {
-      // Reset error flags before submitting
-      createErrorShown.current = false;
-      updateErrorShown.current = false;
-
       console.log("Form values before submit:", values);
 
       const formData = { ...values };
+      formData.teacher_id = values.teacher_id;
 
       if (values.thumbnail) {
         const uploadedThumbnail = await fileService.uploadFile(
@@ -160,7 +111,13 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
 
       if (currentCourse) {
         updateMutation.mutate(
-          { id: currentCourse.id, courseData: formData },
+          {
+            id: currentCourse.id,
+            courseData: {
+              ...formData,
+              thumbnail: formData.thumbnail || currentCourse.thumbnail,
+            },
+          },
           { onSuccess },
         );
       } else {
@@ -176,9 +133,9 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-lg font-medium">
+          <DialogTitle className="font-medium text-lg">
             {currentCourse ? "កែប្រែវគ្គសិក្សា" : "បង្កើតវគ្គសិក្សាថ្មី"}
           </DialogTitle>
         </DialogHeader>
@@ -197,7 +154,7 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
                 className="text-sm"
               />
               {form.formState.errors.title && (
-                <p className="text-red-500 text-xs ">
+                <p className="text-red-500 text-xs">
                   {form.formState.errors.title.message}
                 </p>
               )}
@@ -212,10 +169,10 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
                 id="description"
                 {...form.register("description")}
                 placeholder="Enter description"
-                className="text-sm resize-none h-16"
+                className="h-16 text-sm resize-none"
               />
               {form.formState.errors.description && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="mt-1 text-red-500 text-xs">
                   {form.formState.errors.description.message}
                 </p>
               )}
@@ -232,7 +189,7 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
                 value={form.watch("thumbnail")}
                 previewUrl={
                   form.watch("thumbnail") &&
-                    typeof form.watch("thumbnail") === "string"
+                  typeof form.watch("thumbnail") === "string"
                     ? `${imgUrl}${form.watch("thumbnail")}`
                     : null
                 }
@@ -259,34 +216,29 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1" className="flex items-center space-x-2">
-                    <img
-                      src="/images/category1.jpg"
-                      alt="Category 1"
-                      className="w-6 h-6 rounded-sm"
-                    />
-                    <span>Category 1</span>
-                  </SelectItem>
-                  <SelectItem value="2" className="flex items-center space-x-2">
-                    <img
-                      src="/images/category2.jpg"
-                      alt="Category 2"
-                      className="w-6 h-6 rounded-sm"
-                    />
-                    <span>Category 2</span>
-                  </SelectItem>
-                  <SelectItem value="3" className="flex items-center space-x-2">
-                    <img
-                      src="/images/category3.jpg"
-                      alt="Category 3"
-                      className="w-6 h-6 rounded-sm"
-                    />
-                    <span>Category 3</span>
-                  </SelectItem>
+                  {categoriesData?.data?.data?.map((category) => (
+                    <SelectItem
+                      key={`${category.id} ${category.name}`}
+                      value={category.id.toString()}
+                      className="flex items-center space-x-2"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Avatar className="w-6 h-6">
+                          <AvatarImage
+                            src={`${imgUrl}${category.thumbnail}`}
+                            alt={category.name}
+                            className="rounded-sm w-6 h-6"
+                          />
+                          <AvatarFallback>{category.name?.[0]}</AvatarFallback>
+                        </Avatar>
+                        <span>{category.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {form.formState.errors.category_id && (
-                <p className="text-red-500 text-xs ">
+                <p className="text-red-500 text-xs">
                   {form.formState.errors.category_id.message}
                 </p>
               )}
@@ -303,76 +255,44 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
                 onValueChange={(val) => form.setValue("teacher_id", val)}
                 className="text-sm"
               >
-                {teachersList?.data?.map((teacher) => (
-                  <SelectItem
-                    key={teacher.id}
-                    value={teacher.id.toString()}
-                    className="flex items-center space-x-2"
-                  >
-                    <img
-                      src={teacher.avatar}
-                      alt={teacher.name}
-                      className="w-6 h-6 rounded-sm"
-                    />
-                    <span>{teacher.name}</span>
-                  </SelectItem>
-                ))}
-              </Select>
-
-              {/* <Select
-                {...form.register("teacher_id")}
-                value={form.watch("teacher_id")}
-                onValueChange={(val) => form.setValue("teacher_id", val)}
-                className="text-sm"
-              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select teacher" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    value="31"
-                    className="flex items-center space-x-2"
-                  >
-                    <img
-                      src="/images/teacher31.jpg"
-                      alt="Teacher 31"
-                      className="w-6 h-6 rounded-full"
-                    />
-                    <span>Teacher 31</span>
-                  </SelectItem>
-                  <SelectItem
-                    value="32"
-                    className="flex items-center space-x-2"
-                  >
-                    <img
-                      src="/images/teacher32.jpg"
-                      alt="Teacher 32"
-                      className="w-6 h-6 rounded-full"
-                    />
-                    <span>Teacher 32</span>
-                  </SelectItem>
-                  <SelectItem
-                    value="33"
-                    className="flex items-center space-x-2"
-                  >
-                    <img
-                      src="/images/teacher33.jpg"
-                      alt="Teacher 33"
-                      className="w-6 h-6 rounded-full"
-                    />
-                    <span>Teacher 33</span>
-                  </SelectItem>
+                  {teachersList?.data?.map((teacher) => (
+                    <SelectItem
+                      key={`${teacher.id} ${teacher.first_name}`}
+                      value={teacher?.id.toString()}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Avatar className="w-6 h-6">
+                          <AvatarImage
+                            className="object-cover"
+                            src={`${imgUrl}${teacher.avatar}`}
+                          />
+                          <AvatarFallback>
+                            {teacher.first_name?.[0]}
+                            {teacher.last_name?.[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="truncate">
+                          {teacher.first_name} {teacher.last_name}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
-              </Select> */}
+              </Select>
+
               {form.formState.errors.teacher_id && (
-                <p className="text-red-500 text-xs ">
+                <p className="text-red-500 text-xs">
                   {form.formState.errors.teacher_id.message}
                 </p>
               )}
             </FieldContent>
           </FieldGroup>
 
-          <DialogFooter className="mt-2 flex justify-end space-x-2">
+          <DialogFooter className="flex justify-end space-x-2 mt-2">
             <DialogClose asChild>
               <Button variant="outline" size="sm">
                 Cancel
