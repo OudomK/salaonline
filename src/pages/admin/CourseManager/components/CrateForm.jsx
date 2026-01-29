@@ -21,15 +21,15 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useCreateCourse, useGetTeachers, useUpdateCourse } from "@/hooks/api";
 import { useQueryClient } from "@tanstack/react-query";
-import { FileDropzone } from "@/components/ui/file-dropzone";
 import { toast } from "sonner";
 import { imgUrl } from "@/lib/helper/enviroment";
 import { fileFolder, fileService } from "@/lib/api/services/file.service";
 import { useCategories } from "@/hooks/api/useCategory";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UploadAvatar } from "@/components/ui/upload-avatar";
 
 const courseFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -43,11 +43,11 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
   const queryClient = useQueryClient();
   const createMutation = useCreateCourse();
   const updateMutation = useUpdateCourse();
-  const { data: teachersList } = useGetTeachers();
+  const { data: teachersList } = useGetTeachers(isModalOpen);
   const { data: categoriesData, isLoading: isLoadingCategories } =
-    useCategories();
+    useCategories(isModalOpen);
 
-  console.log(categoriesData);
+  const [thumbnail, setThumbnail] = useState(null);
 
   const form = useForm({
     resolver: zodResolver(courseFormSchema),
@@ -66,9 +66,15 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
         form.reset({
           title: currentCourse.title || "",
           description: currentCourse.description || "",
-          category_id: currentCourse.category_id?.toString() || "",
-          teacher_id: currentCourse.teacher_id?.toString() || "",
-          thumbnail: currentCourse.thumbnail || null,
+          category_id:
+            (
+              currentCourse?.category_id || currentCourse?.category?.id
+            )?.toString() || "",
+          teacher_id:
+            (
+              currentCourse?.teacher_id || currentCourse?.teacher?.id
+            )?.toString() || "",
+          thumbnail: currentCourse?.thumbnail || null,
         });
       } else {
         form.reset({
@@ -87,15 +93,18 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
       console.log("Form values before submit:", values);
 
       const formData = { ...values };
+
       formData.teacher_id = values.teacher_id;
 
-      if (values.thumbnail) {
+      if (thumbnail) {
         const uploadedThumbnail = await fileService.uploadFile(
-          values.thumbnail,
+          thumbnail,
           fileFolder.COURSE_THUMBNAIL,
         );
 
         formData.thumbnail = uploadedThumbnail.data.url;
+      } else {
+        formData.thumbnail = currentCourse?.thumbnail;
       }
 
       const onSuccess = () => {
@@ -128,8 +137,6 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
       toast.error("Unexpected error occurred");
     }
   };
-
-  console.log(teachersList);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -183,21 +190,19 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
           <FieldGroup className={"flex gap-1"}>
             <FieldLabel>Thumbnail</FieldLabel>
             <FieldContent>
-              <FileDropzone
-                multiple={false}
-                accept="image/*"
+              <UploadAvatar
                 value={form.watch("thumbnail")}
+                className={"w-full h-60 rounded-xl"}
                 previewUrl={
-                  form.watch("thumbnail") &&
-                  typeof form.watch("thumbnail") === "string"
-                    ? `${imgUrl}${form.watch("thumbnail")}`
+                  currentCourse?.thumbnail
+                    ? `${imgUrl}${currentCourse.thumbnail}`
                     : null
                 }
-                onChange={(file) =>
-                  form.setValue("thumbnail", file, { shouldValidate: true })
-                }
-                error={form.formState.errors.thumbnail?.message}
-                label="Course thumbnail"
+                onChange={(file) => {
+                  if (file) {
+                    setThumbnail(file);
+                  }
+                }}
               />
             </FieldContent>
           </FieldGroup>
@@ -207,7 +212,6 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
             <FieldLabel htmlFor="category_id">Category</FieldLabel>
             <FieldContent>
               <Select
-                {...form.register("category_id")}
                 value={form.watch("category_id")}
                 onValueChange={(val) => form.setValue("category_id", val)}
                 className="text-sm"
@@ -250,7 +254,6 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
             <FieldLabel htmlFor="teacher_id">Teacher</FieldLabel>
             <FieldContent>
               <Select
-                {...form.register("teacher_id")}
                 value={form.watch("teacher_id")}
                 onValueChange={(val) => form.setValue("teacher_id", val)}
                 className="text-sm"
@@ -261,7 +264,7 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
                 <SelectContent>
                   {teachersList?.data?.map((teacher) => (
                     <SelectItem
-                      key={`${teacher.id} ${teacher.first_name}`}
+                      key={`${teacher.id}  + ${teacher.first_name} + ${teacher.id}`}
                       value={teacher?.id.toString()}
                     >
                       <div className="flex items-center gap-2">

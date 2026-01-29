@@ -56,10 +56,12 @@ export default function CourseManager() {
   const { data: categoriesData, isLoading: isLoadingCategories } =
     useCategories();
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
   const { data: coursesData, isLoading: isLoadingCourses } = useAdminCourses({
     page: currentPage,
     size: itemsPerPage,
-    search: searchTerm,
+    search: debouncedSearchTerm,
   });
 
   const courses = coursesData?.data || [];
@@ -81,20 +83,9 @@ export default function CourseManager() {
   const [teacherSearch, setTeacherSearch] = useState("");
   const debouncedTeacherSearch = useDebounce(teacherSearch, 500);
 
-  // Form State
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    thumbnail: "",
-    category_id: 1,
-    teacher_id: "",
-  });
-
   // Helper for pagination UI
   const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
   const indexOfLastItem = Math.min(currentPage * itemsPerPage, totalItems);
-
-  // Server-side pagination uses data from hooks directly
 
   // Change Page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -102,25 +93,13 @@ export default function CourseManager() {
   // --- ACTIONS ---
   const handleAddNew = () => {
     setCurrentCourse(null);
-    setFormData({
-      title: "",
-      description: "",
-      thumbnail: "",
-      category_id: 1,
-      teacher_id: "",
-    });
+
     setIsModalOpen(true);
   };
 
   const handleEdit = (course) => {
     setCurrentCourse(course);
-    setFormData({
-      title: course.title || "",
-      description: course.description || "",
-      thumbnail: course.thumbnail || "",
-      category_id: course.category_id || 1,
-      teacher_id: course.teacher_id || course.teacher?.id || "",
-    });
+
     setIsModalOpen(true);
   };
 
@@ -135,7 +114,7 @@ export default function CourseManager() {
         onSuccess: () => {
           toast.success("Course deleted successfully");
           setIsAlertOpen(false);
-          queryClient.invalidateQueries({ queryKey: ["courses", "admin"] });
+          queryClient.invalidateQueries({ queryKey: ["courses"] });
         },
         onError: (error) => {
           toast.error(
@@ -152,19 +131,21 @@ export default function CourseManager() {
 
     mutation.mutate(course.id, {
       onSuccess: () => {
-        toast("Course has been created");
-        queryClient.invalidateQueries(["courses", "admin"]);
+        toast.success(
+          isPublished
+            ? "Course hidden successfully"
+            : "Course published successfully",
+        );
+        queryClient.invalidateQueries({ queryKey: ["courses"] });
       },
       onError: (error) => {
-        toast("Event has been created", {
-          description: error.response?.data?.message || "Something went wrong",
-        });
+        toast.error(error.response?.data?.message || "Something went wrong");
       },
     });
   };
 
   const getCategoryName = (id) => {
-    return categoriesData?.data?.find((c) => c.id === id)?.name || "N/A";
+    return categoriesData?.data?.data?.find((c) => c.id === id)?.name || "N/A";
   };
 
   const getCategoryColor = (id) => {
@@ -287,9 +268,10 @@ export default function CourseManager() {
                           {course.title}
                         </p>
                         <p className="text-gray-400 text-xs">
-                          {course.teacher_name ||
-                            course.teacher?.username ||
-                            "No Teacher"}
+                          គ្រូ :{" "}
+                          {course.teacher?.first_name +
+                            " " +
+                            course.teacher?.last_name || "N/A"}
                         </p>
                       </div>
                     </div>

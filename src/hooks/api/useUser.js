@@ -29,7 +29,8 @@ export const useStudents = (params = {}) => {
 export const useNonAdminStudents = (params = {}) => {
   return useQuery({
     queryKey: ["users", "non-admin-student", params],
-    queryFn: () => userService.getNonAdminStudents(params).then((res) => res.data),
+    queryFn: () =>
+      userService.getNonAdminStudents(params).then((res) => res.data),
   });
 };
 
@@ -66,9 +67,10 @@ export const useChangePassword = () => {
   });
 };
 
-export const useGetTeachers = () => {
+export const useGetTeachers = (enable) => {
   return useQuery({
     queryKey: ["teachers"],
     queryFn: () => userService.getAllTeachers().then((res) => res.data),
+    enabled: enable,
   });
 };

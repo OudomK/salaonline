@@ -1,4 +1,4 @@
-import apiClient from '../client'
+import apiClient from "../client";
 
 /**
  * Course Service - Handle course management API calls
@@ -8,12 +8,12 @@ export const courseService = {
   /**
    * Get all courses
    */
-  getAllCourses: (params) => apiClient.get('/courses', { params }),
+  getAllCourses: (params) => apiClient.get("/courses", { params }),
 
   /**
    * Get all courses for admin (with pagination and search)
    */
-  getAdminCourses: (params) => apiClient.get('/courses/admin', { params }),
+  getAdminCourses: (params) => apiClient.get("/courses/admin", { params }),
 
   /**
    * Get course by ID
@@ -23,22 +23,23 @@ export const courseService = {
   /**
    * Get published courses (student view)
    */
-  getPublishedCourses: (params) => apiClient.get('/courses', { params }),
+  getPublishedCourses: (params) => apiClient.get("/courses", { params }),
 
   /**
    * Get enrolled courses for current user
    */
-  getMyCourses: () => apiClient.get('/courses/my-courses'),
+  getMyCourses: () => apiClient.get("/courses/my-courses"),
 
   /**
    * Create new course (admin/teacher)
    */
-  createCourse: (courseData) => apiClient.post('/courses', courseData),
+  createCourse: (courseData) => apiClient.post("/courses", courseData),
 
   /**
    * Update course
    */
-  updateCourse: (id, courseData) => apiClient.put(`/courses/${id}`, courseData),
+  updateCourse: (id, courseData) =>
+    apiClient.patch(`/courses/${id}`, courseData),
 
   /**
    * Delete course
@@ -70,4 +71,4 @@ export const courseService = {
    * Hide course
    */
   hideCourse: (id) => apiClient.patch(`/courses/${id}/hide`),
-}
+};

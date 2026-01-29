@@ -4,6 +4,8 @@ import { useState } from "react";
 export const UploadAvatar = ({ onChange, previewUrl, className }) => {
   const [file, setFile] = useState(null);
 
+  const allowType = ["image/*"];
+
   return (
     <>
       <div
@@ -26,6 +28,7 @@ export const UploadAvatar = ({ onChange, previewUrl, className }) => {
         )}
         <input
           type="file"
+          accept={allowType.join(", ")}
           className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
           onChange={(e) => {
             const file = e.target.files[0];
