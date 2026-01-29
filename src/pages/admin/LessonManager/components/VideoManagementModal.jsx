@@ -13,120 +13,18 @@ import { videoService } from "../../../../lib/api/services/video.service";
 import { courseService } from "../../../../lib/api/services/course.service";
 import { useEffect, useState } from "react";
 import * as tus from "tus-js-client";
+import { useCourses } from "@/hooks/api";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FieldContent, FieldGroup, FieldLabel } from "@/components/ui/field";
+
+
 
 export default function VideoManagementModal({
   isOpen,
   onClose,
   course,
-  onSubmit,
   initialData,
 }) {
-  const isFormMode = !!onSubmit; // Detect if used in LessonManager (as a form)
-
-  const [videos, setVideos] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [courses, setCourses] = useState([]); // For global mode
-  const [loadingCourses, setLoadingCourses] = useState(false);
-
-  // Form State
-  const [title, setTitle] = useState("");
-  const [pendingFiles, setPendingFiles] = useState([]); // Array of { file, title, id }
-  const [courseId, setCourseId] = useState("");
-  const [isDragging, setIsDragging] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      if (isFormMode) {
-        // Pre-fill form for LessonManager
-        setTitle(initialData?.title || "");
-        setCourseId(initialData?.courseId || initialData?.course_id || "");
-        setPendingFiles([]); // Files can't be pre-filled usually
-        fetchCourses();
-      } else if (course?.id) {
-        // Course Manager Mode: Fetch videos for this course
-        setCourseId(course.id);
-        fetchVideos();
-      }
-    }
-  }, [isOpen, course, initialData, isFormMode]);
-
-  const fetchCourses = async () => {
-    if (!isFormMode) return;
-    setLoadingCourses(true);
-    try {
-      const response = await courseService.getAllCourses();
-      // Assuming response.data is the array of courses
-      setCourses(response.data || []);
-    } catch (error) {
-      console.error("Failed to fetch courses:", error);
-    } finally {
-      setLoadingCourses(false);
-    }
-  };
-
-  const fetchVideos = async () => {
-    setIsLoading(true);
-    try {
-      const response = await videoService.getVideosByCourse(course.id);
-      setVideos(response.data || []);
-    } catch (error) {
-      console.error("Failed to fetch videos:", error);
-      setVideos([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    addFiles(selectedFiles);
-  };
-
-  const addFiles = (files) => {
-    const newFiles = files.map((file) => ({
-      file,
-      title: file.name.split(".").slice(0, -1).join(".") || file.name,
-      id: Math.random().toString(36).substr(2, 9),
-    }));
-    setPendingFiles((prev) => [...prev, ...newFiles]);
-    // Reset single title if it was used for the first file
-    if (pendingFiles.length === 0 && newFiles.length === 1) {
-      setTitle(newFiles[0].title);
-    }
-  };
-
-  const removePendingFile = (id) => {
-    setPendingFiles((prev) => prev.filter((f) => f.id !== id));
-  };
-
-  const updatePendingTitle = (id, newTitle) => {
-    setPendingFiles((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, title: newTitle } : f)),
-    );
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const droppedFiles = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith("video/"),
-    );
-    addFiles(droppedFiles);
-  };
-
-  const handleUpload = async (e) => {};
-
-  const handleDelete = async (videoId) => {};
 
   if (!isOpen) return null;
 
@@ -139,20 +37,14 @@ export default function VideoManagementModal({
         <div className="flex justify-between items-center bg-[#6366f1] p-5 text-white shrink-0">
           <div>
             <h3 className="flex items-center gap-2 font-bold text-lg">
-              {isFormMode ? (
-                initialData ? (
-                  <Edit size={20} />
-                ) : (
-                  <Plus size={20} />
-                )
+              {initialData ? (
+                <Edit size={20} />
               ) : (
-                <FileVideo size={20} />
+                <Plus size={20} />
               )}
-              {isFormMode
-                ? initialData
-                  ? "Edit Lesson"
-                  : "Add New Lesson"
-                : "Upload Videos"}
+              {initialData
+                ? "Edit Lesson"
+                : "Add New Lesson"}
             </h3>
             {!isFormMode && (
               <p className="opacity-90 text-indigo-100 text-xs">
@@ -170,7 +62,7 @@ export default function VideoManagementModal({
 
         <div className="flex md:flex-row flex-col h-full overflow-hidden">
           {/* LEFT: VIDEO LIST (Only in Course Manager mode) */}
-          {!isFormMode && (
+          {!initialData && (
             <div className="flex-1 bg-gray-50/50 p-6 border-gray-100 border-r overflow-y-auto">
               <h4 className="flex items-center gap-2 mb-4 font-bold text-gray-700">
                 Existing Videos
@@ -226,31 +118,9 @@ export default function VideoManagementModal({
           <div
             className={`p-6 bg-white shrink-0 overflow-y-auto ${isFormMode ? "w-full" : "w-full md:w-80"}`}
           >
-            <h4 className="mb-1 font-bold text-gray-800">
-              {isFormMode ? "Lesson Details" : "Upload New Video"}
-            </h4>
-            <p className="mb-6 text-gray-400 text-xs">
-              {isFormMode
-                ? "Fill in the information below."
-                : "Add content to this course."}
-            </p>
 
             <form onSubmit={handleUpload} className="space-y-6">
-              {/* 1. Title (Only shown for single edit/add in LessonManager) */}
-              {isFormMode && (
-                <div>
-                  <label className="block mb-2 font-semibold text-gray-500 text-xs uppercase tracking-wider">
-                    Lesson Title
-                  </label>
-                  <input
-                    required
-                    placeholder="Ex: Introduction to Grammar"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="bg-gray-50 p-4 border border-gray-200 focus:border-[#6366f1] rounded-2xl outline-none focus:ring-4 focus:ring-indigo-50 w-full font-bold text-gray-700 transition-all"
-                  />
-                </div>
-              )}
+
 
               {/* 2. Course Selection */}
               <div>
@@ -258,35 +128,43 @@ export default function VideoManagementModal({
                   Target Course
                 </label>
                 <div className="relative">
-                  <select
-                    required
-                    value={courseId}
-                    onChange={(e) => setCourseId(e.target.value)}
-                    disabled={!isFormMode && !!course}
-                    className={`w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:border-[#6366f1] focus:ring-4 focus:ring-indigo-50 font-bold text-gray-700 transition-all appearance-none ${!isFormMode && !!course ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:bg-gray-100/50"}`}
-                  >
-                    {isFormMode ? (
-                      <>
-                        <option value="">-- Select a Course --</option>
-                        {loadingCourses ? (
-                          <option disabled>Loading courses...</option>
-                        ) : courses?.length > 0 ? (
-                          courses?.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.title}
-                            </option>
-                          ))
-                        ) : (
-                          <option disabled>No courses found</option>
-                        )}
-                      </>
-                    ) : (
-                      <option value={course?.id}>{course?.title}</option>
-                    )}
-                  </select>
-                  <div className="top-1/2 right-4 absolute text-gray-400 -translate-y-1/2 pointer-events-none">
-                    <Filter size={18} />
-                  </div>
+                  {/* Role */}
+                  <FieldGroup className="gap-2">
+                    <FieldLabel className="text-sm" htmlFor="role">
+                      Role <span className="text-red-500">*</span>
+                    </FieldLabel>
+                    <FieldContent>
+                      <Select
+                        className="text-sm"
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {coursesData?.data?.data?.map((course) => (
+                            <SelectItem
+                              className="flex"
+                              key={course.id}
+                              value={String(course.id)}
+                            >
+                              <div className="flex w-full">
+                                <span>{course?.name}</span>
+                                <span className="ms-1 text-[8px] text-muted-foreground">
+                                  ({course?.user_count})
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {formState.errors.role && (
+                        <p className="text-red-500 text-xs">
+                          {formState.errors.role.message}
+                        </p>
+                      )}
+                    </FieldContent>
+                  </FieldGroup>
+
                 </div>
               </div>
 
@@ -304,9 +182,6 @@ export default function VideoManagementModal({
                                         relative border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center transition-all cursor-pointer group
                                         ${isDragging ? "border-[#6366f1] bg-indigo-50/50 scale-[0.99]" : "border-gray-200 bg-gray-50/30 hover:border-[#6366f1] hover:bg-indigo-50/20"}
                                     `}
-                  onClick={() =>
-                    document.getElementById("multi-video-input").click()
-                  }
                 >
                   <input
                     id="multi-video-input"
@@ -339,7 +214,6 @@ export default function VideoManagementModal({
                       </p>
                       <button
                         type="button"
-                        onClick={() => setPendingFiles([])}
                         className="font-bold text-[10px] text-red-400 hover:text-red-500"
                       >
                         Clear All
