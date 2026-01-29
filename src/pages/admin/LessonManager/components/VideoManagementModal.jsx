@@ -6,18 +6,23 @@ import {
   Loader2,
   FileVideo,
   Save,
-  Plus,
-  Filter,
+  Plus
 } from "lucide-react";
-import { videoService } from "../../../../lib/api/services/video.service";
-import { courseService } from "../../../../lib/api/services/course.service";
-import { useEffect, useState } from "react";
-import * as tus from "tus-js-client";
-import { useCourses } from "@/hooks/api";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FieldContent, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { useCourses } from "@/hooks/api";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { imgUrl } from "@/lib/helper/enviroment";
+import { useRef, useState } from "react";
+import { useSaveVideosBulk, useUploadVideos } from "@/hooks/api/useVideo";
+import { uploadToBunny } from "@/lib/helper/bunny";
 
-
+const zodSchema = z.object({
+  course_id: z.string().min(1, "Course is required"),
+})
 
 export default function VideoManagementModal({
   isOpen,
@@ -25,13 +30,163 @@ export default function VideoManagementModal({
   course,
   initialData,
 }) {
+  const videos = []
+  const isLoading = false
+  const uploading = false
+  const { data: coursesData } = useCourses()
+  const { mutateAsync: uploadVideos } = useUploadVideos()
+  const { mutateAsync: saveVideosBulk } = useSaveVideosBulk()
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState([]);
+  const fileInputRef = useRef(null);
+
+
+
+
+  const generateId = () => crypto.randomUUID();
+
+
+  const generateVideoThumbnail = (file) => {
+    return new Promise((resolve) => {
+      const video = document.createElement("video");
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      video.preload = "metadata";
+      video.muted = true;
+      video.src = URL.createObjectURL(file);
+
+      video.onloadeddata = () => {
+        video.currentTime = Math.min(1, video.duration || 1);
+      };
+
+      video.onseeked = () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const thumbnail = canvas.toDataURL("image/jpeg", 0.8);
+
+        URL.revokeObjectURL(video.src);
+        resolve(thumbnail);
+      };
+    });
+  };
+
+
+  const handleFiles = async (files) => {
+    const videoFiles = Array.from(files).filter(f =>
+      f.type.startsWith("video/")
+    );
+
+    const mapped = await Promise.all(videoFiles.map(async (file) => ({
+      id: generateId(),
+      file,
+      title: file.name.replace(/\.[^/.]+$/, ""),
+      thumbnail: await generateVideoThumbnail(file),
+    })));
+
+    setPendingFiles(prev => [...prev, ...mapped]);
+  };
+
+  const removePendingFile = (id) => {
+    setPendingFiles(prev => prev.filter(f => f.id !== id));
+  };
+
+  const updatePendingTitle = (id, title) => {
+    setPendingFiles(prev =>
+      prev.map(f => (f.id === id ? { ...f, title } : f))
+    );
+  };
+
+  const clearAll = () => setPendingFiles([]);
+
+  const onDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const onDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files);
+    }
+  };
+
+  const onFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(e.target.files);
+      e.target.value = "";
+    }
+  };
+
+
+  const { formState, handleSubmit, control, reset, setValue, watch } = useForm({
+    resolver: zodResolver(zodSchema),
+    defaultValues: initialData || {
+      course_id: "",
+    },
+  })
+
+  const onSubmit = async (data) => {
+    try {
+      const { course_id } = data;
+
+      const res = await uploadVideos({
+        course_id,
+        files: pendingFiles.map(f => ({ id: f.id, title: f.title }))
+      });
+      const uploadMap = new Map(res.data.map(v => [v.clientId, v]));
+      const filesWithUploadData = pendingFiles.map(f => ({
+        ...f,
+        uploadData: uploadMap.get(f.id)
+      }));
+      setPendingFiles(filesWithUploadData);
+
+      for (const fileItem of filesWithUploadData) {
+        if (!fileItem.uploadData) continue;
+
+        console.log(fileItem.uploadData.upload)
+
+        await uploadToBunny(fileItem.file, fileItem?.uploadData?.upload, progress => {
+          setPendingFiles(prev =>
+            prev.map(f =>
+              f.id === fileItem.id ? { ...f, progress } : f
+            )
+          );
+        });
+      }
+
+      // 4️⃣ Cleanup
+      setPendingFiles([]);
+      console.log("All videos uploaded successfully");
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
+  };
+
+
+
+
+
+
+
+
 
   if (!isOpen) return null;
 
   return (
     <div className="z-50 fixed inset-0 flex justify-center items-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
       <div
-        className={`bg-white w-full rounded-[24px] shadow-2xl animate-scale-in overflow-hidden flex flex-col max-h-[90vh] ${isFormMode ? "max-w-lg" : "max-w-4xl"}`}
+        className={`bg-white w-full rounded-[24px] shadow-2xl animate-scale-in overflow-hidden flex flex-col max-h-[90vh] ${initialData ? "max-w-lg" : "max-w-4xl"}`}
       >
         {/* HEADER */}
         <div className="flex justify-between items-center bg-[#6366f1] p-5 text-white shrink-0">
@@ -46,7 +201,7 @@ export default function VideoManagementModal({
                 ? "Edit Lesson"
                 : "Add New Lesson"}
             </h3>
-            {!isFormMode && (
+            {!initialData && (
               <p className="opacity-90 text-indigo-100 text-xs">
                 Course: {course?.title}
               </p>
@@ -116,10 +271,10 @@ export default function VideoManagementModal({
 
           {/* RIGHT: UPLOAD FORM */}
           <div
-            className={`p-6 bg-white shrink-0 overflow-y-auto ${isFormMode ? "w-full" : "w-full md:w-80"}`}
+            className={`p-6 bg-white shrink-0 overflow-y-auto ${initialData ? "w-full" : "w-full md:w-80"}`}
           >
 
-            <form onSubmit={handleUpload} className="space-y-6">
+            <form className="space-y-6">
 
 
               {/* 2. Course Selection */}
@@ -128,38 +283,42 @@ export default function VideoManagementModal({
                   Target Course
                 </label>
                 <div className="relative">
-                  {/* Role */}
-                  <FieldGroup className="gap-2">
-                    <FieldLabel className="text-sm" htmlFor="role">
-                      Role <span className="text-red-500">*</span>
-                    </FieldLabel>
+                  <FieldGroup className={"flex gap-1"}>
+                    <FieldLabel htmlFor="course_id">Course</FieldLabel>
                     <FieldContent>
                       <Select
+                        value={watch("course_id")}
+                        onValueChange={(val) => setValue("course_id", val)}
                         className="text-sm"
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select role" />
+                          <SelectValue placeholder="Select course" />
                         </SelectTrigger>
                         <SelectContent>
-                          {coursesData?.data?.data?.map((course) => (
+                          {coursesData?.data?.map((course) => (
                             <SelectItem
-                              className="flex"
-                              key={course.id}
-                              value={String(course.id)}
+                              key={`${course.id} ${course.title}`}
+                              value={course.id.toString()}
+                              className="flex items-center space-x-2"
                             >
-                              <div className="flex w-full">
-                                <span>{course?.name}</span>
-                                <span className="ms-1 text-[8px] text-muted-foreground">
-                                  ({course?.user_count})
-                                </span>
+                              <div className="flex justify-center items-center gap-2">
+                                <Avatar className="w-6 h-6">
+                                  <AvatarImage
+                                    src={`${imgUrl}${course.thumbnail}`}
+                                    alt={course.title}
+                                    className="rounded-sm w-6 h-6"
+                                  />
+                                  <AvatarFallback>{course.title?.[0]}</AvatarFallback>
+                                </Avatar>
+                                <span>{course.title}</span>
                               </div>
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      {formState.errors.role && (
+                      {formState.errors.course_id && (
                         <p className="text-red-500 text-xs">
-                          {formState.errors.role.message}
+                          {formState.errors.course_id.message}
                         </p>
                       )}
                     </FieldContent>
@@ -175,22 +334,26 @@ export default function VideoManagementModal({
                 </label>
 
                 <div
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={onDragOver}
+                  onDragLeave={onDragLeave}
+                  onDrop={onDrop}
+
                   className={`
                                         relative border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center transition-all cursor-pointer group
                                         ${isDragging ? "border-[#6366f1] bg-indigo-50/50 scale-[0.99]" : "border-gray-200 bg-gray-50/30 hover:border-[#6366f1] hover:bg-indigo-50/20"}
                                     `}
                 >
                   <input
+                    ref={fileInputRef}
                     id="multi-video-input"
                     type="file"
                     multiple
                     accept="video/*"
+                    onChange={onFileChange}
                     className="hidden"
-                    onChange={handleFileChange}
                   />
+
                   <div
                     className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-all group-hover:scale-110 ${isDragging ? "bg-indigo-500 text-white animate-bounce" : "bg-indigo-50 text-indigo-500"}`}
                   >
@@ -214,10 +377,12 @@ export default function VideoManagementModal({
                       </p>
                       <button
                         type="button"
+                        onClick={clearAll}
                         className="font-bold text-[10px] text-red-400 hover:text-red-500"
                       >
                         Clear All
                       </button>
+
                     </div>
                     <div className="gap-3 grid grid-cols-1">
                       {pendingFiles.map((item) => (
@@ -225,10 +390,18 @@ export default function VideoManagementModal({
                           key={item.id}
                           className="group flex items-center gap-4 bg-white shadow-sm p-3 border border-gray-100 rounded-2xl animate-scale-in"
                         >
-                          <div className="relative flex justify-center items-center bg-gray-900 rounded-xl w-12 h-12 overflow-hidden text-white shrink-0">
-                            <FileVideo size={20} className="z-10 relative" />
-                            <div className="absolute inset-0 bg-indigo-500/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity" />
+                          <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-black">
+                            {item.thumbnail ? (
+                              <img
+                                src={item.thumbnail}
+                                alt="Video thumbnail"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <FileVideo size={20} className="text-white mx-auto" />
+                            )}
                           </div>
+
                           <div className="flex-1 min-w-0">
                             <input
                               className="bg-transparent border-none outline-none w-full font-bold text-gray-800 focus:text-[#6366f1] text-sm"
@@ -258,10 +431,10 @@ export default function VideoManagementModal({
 
               <div className="pt-4">
                 <button
-                  type="submit"
                   disabled={
                     uploading || (pendingFiles.length === 0 && !initialData)
                   }
+                  onClick={handleSubmit(onSubmit)}
                   className={`
                                         w-full py-4 rounded-2xl font-bold text-white shadow-xl flex items-center justify-center gap-3 transition-all active:scale-[0.98]
                                         ${uploading ? "bg-indigo-400" : "bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] hover:shadow-indigo-200"}
@@ -271,14 +444,14 @@ export default function VideoManagementModal({
                   {uploading ? (
                     <>
                       <Loader2 size={20} className="animate-spin" />{" "}
-                      {isFormMode
+                      {initialData
                         ? "Saving Changes..."
                         : "Uploading Everything..."}
                     </>
                   ) : (
                     <>
-                      {isFormMode ? <Save size={20} /> : <Upload size={20} />}{" "}
-                      {isFormMode
+                      {initialData ? <Save size={20} /> : <Upload size={20} />}{" "}
+                      {initialData
                         ? "Apply Changes"
                         : `Upload ${pendingFiles.length} Video${pendingFiles.length !== 1 ? "s" : ""}`}
                     </>

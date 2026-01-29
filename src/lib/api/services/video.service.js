@@ -23,16 +23,8 @@ export const videoService = {
   /**
    * Upload video to course (admin)
    */
-  uploadVideo: (formData) => {
-    const formDataInstance = new FormData()
-    Object.keys(formData).forEach(key => {
-      formDataInstance.append(key, formData[key])
-    })
-    return apiClient.post('/videos/upload', formDataInstance, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+  uploadVideos: (data) => {
+    return apiClient.post('/videos/upload/multi', data)
   },
 
   /**
@@ -49,6 +41,8 @@ export const videoService = {
       },
     })
   },
+
+  saveVideosBulk: (data) => apiClient.post('/videos/save-videos-bulk', data),
 
   /**
    * Delete video (admin)
