@@ -85,11 +85,12 @@ import {
   UserStarIcon,
 } from "lucide-react";
 import { useMe } from "@/hooks/api";
+import UploadingList from "@/pages/admin/LessonManager/components/UploadingList";
 
 export default function AdminLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const {} = useMe();
+  const { } = useMe();
 
   const menuItems = [
     {
@@ -181,11 +182,10 @@ export default function AdminLayout() {
               key={item.path}
               to={item.path}
               onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
-                location.pathname === item.path
-                  ? "bg-[#00B4F6] text-white shadow-lg shadow-blue-900/50"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
-              }`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${location.pathname === item.path
+                ? "bg-[#00B4F6] text-white shadow-lg shadow-blue-900/50"
+                : "text-slate-400 hover:bg-white/5 hover:text-white"
+                }`}
             >
               {item.icon}
               <span className="font-sans">{item.label}</span>
@@ -208,6 +208,7 @@ export default function AdminLayout() {
         <main className="flex-1 bg-gray-50 p-4 md:p-8 pt-20 md:pt-8 overflow-y-auto">
           <Outlet />
         </main>
+        <UploadingList />
       </div>
     </div>
   );

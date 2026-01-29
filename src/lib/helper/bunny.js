@@ -1,43 +1,43 @@
 import * as tus from "tus-js-client";
 
-const uploadToBunny = async ({
+const uploadToBunny = ({
     file,
     uploadData,
     onProgress,
-    onSuccess,
-    onError,
+    onInstance,
 }) => {
-    const upload = new tus.Upload(file, {
-        endpoint: uploadData?.endpoint,
-        headers: {
-            AuthorizationSignature: uploadData?.headers?.AuthorizationSignature,
-            AuthorizationExpire: uploadData?.headers?.AuthorizationExpire,
-            VideoId: uploadData?.headers?.VideoId,
-            LibraryId: uploadData?.headers?.LibraryId,
-        },
-        metadata: {
-            filename: file?.name,
-            filetype: file?.type,
-        },
-        retryDelays: [0, 3000, 5000, 10000],
+    return new Promise((resolve, reject) => {
+        const upload = new tus.Upload(file, {
+            endpoint: uploadData?.endpoint,
+            headers: {
+                AuthorizationSignature: uploadData?.headers?.AuthorizationSignature,
+                AuthorizationExpire: uploadData?.headers?.AuthorizationExpire,
+                VideoId: uploadData?.headers?.VideoId,
+                LibraryId: uploadData?.headers?.LibraryId,
+            },
+            metadata: {
+                filename: file?.name,
+                filetype: file?.type,
+            },
+            onError(error) {
+                console.log(error, 'error');
+                reject(error);
+            },
+            onProgress(bytesUploaded, bytesTotal) {
+                const percentage = (bytesUploaded / bytesTotal) * 100;
+                onProgress?.(percentage);
+            },
+            onSuccess() {
+                resolve();
+            },
+        });
 
-        onError(error) {
-            onError?.(error);
-        },
+        // Pass the instance back to the caller for registration/cancellation
+        onInstance?.(upload);
 
-        onProgress(bytesUploaded, bytesTotal) {
-            const percentage = Math.floor(
-                (bytesUploaded / bytesTotal) * 100
-            );
-            onProgress?.(percentage);
-        },
-
-        onSuccess() {
-            onSuccess?.();
-        },
+        // Start upload
+        upload.start();
     });
-
-    upload.start();
 };
 
 export { uploadToBunny };

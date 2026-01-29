@@ -30,6 +30,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import VideoManagementModal from "./components/VideoManagementModal";
+import { useDeleteVideo, useGetAllVideos } from "@/hooks/api/useVideo";
+import { imgUrl } from "@/lib/helper/enviroment";
 
 // --- MOCK DATA ---
 const initialLessons = [
@@ -88,20 +90,28 @@ const COURSES = [
 ];
 
 export default function LessonManager() {
-  const [lessons, setLessons] = useState(initialLessons);
+  // const [lessons, setLessons] = useState(initialLessons); // Removed mock state
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("All Courses");
   const [viewMode, setViewMode] = useState("table"); // "table" or "grid"
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
 
+  const { data: getAllVideos, isLoading: getAllVideosLoading } = useGetAllVideos()
+  const { mutateAsync: deleteVideo } = useDeleteVideo() // Added delete hook
+
+  const lessons = getAllVideos?.data || [];
+
+  // Derived Courses List
+  const COURSES = ["All Courses", ...new Set(lessons.map(l => l.course?.title).filter(Boolean))];
+
   // Filter Logic
   const filteredLessons = lessons.filter((lesson) => {
     const matchesSearch =
       lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lesson.course.toLowerCase().includes(searchTerm.toLowerCase());
+      lesson.course?.title?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCourse =
-      selectedCourse === "All Courses" || lesson.course === selectedCourse;
+      selectedCourse === "All Courses" || lesson.course?.title === selectedCourse;
     return matchesSearch && matchesCourse;
   });
 
@@ -112,25 +122,27 @@ export default function LessonManager() {
     return "bg-green-50 text-green-600 border-green-100";
   };
 
+  const formatDuration = (seconds) => {
+    if (!seconds) return "00:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const handleSaveLesson = (lessonData) => {
-    if (selectedLesson) {
-      // Update existing lesson
-      setLessons(
-        lessons.map((l) =>
-          l.id === selectedLesson.id ? { ...l, ...lessonData } : l,
-        ),
-      );
-    } else {
-      // Add new lesson
-      const newLesson = {
-        id: Date.now(),
-        ...lessonData,
-        views: 0,
-      };
-      setLessons([...lessons, newLesson]);
-    }
+    // This is handled by the modal now
     setIsModalOpen(false);
     setSelectedLesson(null);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("តើអ្នកប្រាកដជាចង់លុបមេរៀននេះមែនទេ? (Are you sure you want to delete this lesson?)")) {
+      try {
+        await deleteVideo(id);
+      } catch (err) {
+        console.error("Delete failed:", err);
+      }
+    }
   };
 
   return (
@@ -229,7 +241,14 @@ export default function LessonManager() {
       />
 
       {/* 3. LESSON LIST (TABLE VIEW) */}
-      {viewMode === "table" ? (
+      {getAllVideosLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 rounded-full border-4 border-[#00B4F6] border-t-transparent animate-spin"></div>
+            <p className="font-bold text-gray-400 text-sm">កំពុងទាញយកទិន្នន័យ...</p>
+          </div>
+        </div>
+      ) : viewMode === "table" ? (
         <div className="bg-white shadow-sm border border-gray-200 rounded-2xl overflow-hidden">
           <Table>
             <TableHeader className="bg-gray-50/80">
@@ -259,15 +278,19 @@ export default function LessonManager() {
                 >
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="flex justify-center items-center bg-blue-50 rounded-xl w-10 h-10 text-[#00B4F6] group-hover:scale-110 transition-transform">
-                        <PlayCircle size={22} />
+                      <div className="flex justify-center items-center bg-blue-50 rounded-xl w-10 h-10 text-[#00B4F6] group-hover:scale-110 transition-transform overflow-hidden relative">
+                        {lesson.thumbnail ? (
+                          <img src={`${imgUrl}${lesson.thumbnail}`} className="w-full h-full object-cover" />
+                        ) : (
+                          <PlayCircle size={22} />
+                        )}
                       </div>
                       <div>
                         <p className="font-bold text-gray-900 text-sm">
                           {lesson.title}
                         </p>
                         <p className="font-bold text-[10px] text-gray-400">
-                          {lesson.views} views • {lesson.type}
+                          {lesson.video_order ? `Order: ${lesson.video_order}` : 'Video'} • By {lesson.uploadedBy?.username}
                         </p>
                       </div>
                     </div>
@@ -275,17 +298,17 @@ export default function LessonManager() {
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold ${getCategoryColor(lesson.category)} underline decoration-dotted underline-offset-4`}
+                      className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-blue-50 text-blue-600 border-blue-100 underline decoration-dotted underline-offset-4`}
                     >
-                      {lesson.course}
+                      {lesson.course?.title}
                     </Badge>
                   </TableCell>
                   <TableCell className="font-bold text-gray-600 text-sm truncate">
-                    {lesson.duration}
+                    {formatDuration(lesson.duration)}
                   </TableCell>
                   <TableCell>
-                    <Badge className="bg-green-100 border-0 font-bold text-[10px] text-green-700">
-                      Published
+                    <Badge className={`border-0 font-bold text-[10px] ${lesson.status === 'ready' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                      {lesson.status === 'ready' ? 'Ready' : 'Awaiting'}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -302,13 +325,7 @@ export default function LessonManager() {
                         <Edit size={16} />
                       </Button>
                       <Button
-                        onClick={() => {
-                          if (window.confirm("Are you sure?")) {
-                            setLessons(
-                              lessons.filter((l) => l.id !== lesson.id),
-                            );
-                          }
-                        }}
+                        onClick={() => handleDelete(lesson.id)}
                         variant="ghost"
                         size="icon"
                         className="hover:bg-red-50 rounded-lg w-8 h-8 hover:text-red-500"
@@ -343,6 +360,11 @@ export default function LessonManager() {
               className="group bg-white shadow-sm hover:shadow-md border border-gray-100 rounded-2xl overflow-hidden transition-shadow"
             >
               <div className="relative flex justify-center items-center bg-gray-900 aspect-video overflow-hidden">
+                {lesson.thumbnail ? (
+                  <img src={`${imgUrl}${lesson.thumbnail}`} className="w-full h-full object-cover opacity-60" />
+                ) : (
+                  <div className="absolute inset-0 bg-slate-800" />
+                )}
                 <div className="z-10 absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <PlayCircle
                   size={40}
@@ -350,7 +372,7 @@ export default function LessonManager() {
                 />
                 <div className="top-2 right-2 z-20 absolute">
                   <Badge className="bg-black/50 backdrop-blur-md border-0 text-[10px] text-white">
-                    {lesson.duration}
+                    {formatDuration(lesson.duration)}
                   </Badge>
                 </div>
               </div>
@@ -376,15 +398,15 @@ export default function LessonManager() {
                     <BookOpen size={12} />
                   </div>
                   <span className="font-bold text-[11px] text-gray-500">
-                    {lesson.course}
+                    {lesson.course?.title}
                   </span>
                 </div>
                 <div className="flex justify-between items-center pt-2 border-gray-50 border-t">
                   <span className="font-bold text-[10px] text-gray-400 uppercase tracking-tight">
-                    {lesson.views} Students watched
+                    {lesson.video_order ? `Order ${lesson.video_order}` : 'Video'}
                   </span>
-                  <Badge className="bg-blue-50 border-0 text-[#00B4F6] text-[9px]">
-                    {lesson.category}
+                  <Badge className={`border-0 text-[9px] ${lesson.status === 'ready' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}`}>
+                    {lesson.status}
                   </Badge>
                 </div>
               </div>
