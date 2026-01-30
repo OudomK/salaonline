@@ -1,4 +1,4 @@
-import apiClient from '../client'
+import apiClient from "../client";
 
 /**
  * Video Service - Handle video management API calls
@@ -8,7 +8,7 @@ export const videoService = {
   /**
    * Get all videos (admin)
    */
-  getAllVideos: () => apiClient.get('/videos'),
+  getAllVideos: () => apiClient.get("/videos"),
 
   /**
    * Get video by ID
@@ -24,25 +24,27 @@ export const videoService = {
    * Upload video to course (admin)
    */
   uploadVideos: (data) => {
-    return apiClient.post('/videos/upload/multi', data)
+    return apiClient.post("/videos/upload/multi", data);
   },
 
   /**
    * Upload video chunk by chunk (admin)
    */
   uploadVideoChunk: (formData) => {
-    const formDataInstance = new FormData()
-    Object.keys(formData).forEach(key => {
-      formDataInstance.append(key, formData[key])
-    })
-    return apiClient.post('/videos/upload-chunk', formDataInstance, {
+    const formDataInstance = new FormData();
+    Object.keys(formData).forEach((key) => {
+      formDataInstance.append(key, formData[key]);
+    });
+    return apiClient.post("/videos/upload-chunk", formDataInstance, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
-    })
+    });
   },
 
-  saveVideosBulk: (data) => apiClient.post('/videos/save-videos-bulk', data),
+  watchVideoAdmin: (id) => apiClient.get(`/videos/${id}/watch/admin`),
+
+  saveVideosBulk: (data) => apiClient.post("/videos/save-videos-bulk", data),
 
   /**
    * Delete video (admin)
@@ -52,10 +54,10 @@ export const videoService = {
   /**
    * Get video library (admin/teacher)
    */
-  getVideoLibrary: () => apiClient.get('/videos/library'),
+  getVideoLibrary: () => apiClient.get("/videos/library"),
 
   /**
    * Watch video (student)
    */
   watchVideo: (id) => apiClient.get(`/videos/${id}/watch`),
-}
+};

@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  Search,
   PlayCircle,
   BookOpen,
   Edit,
@@ -20,7 +19,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -31,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import VideoManagementModal from "./components/VideoManagementModal";
 import { useDeleteVideo, useGetAllVideos } from "@/hooks/api/useVideo";
-import { imgUrl } from "@/lib/helper/enviroment";
+import EmbededVideoModal from "./components/EmbededVideoModal";
 
 // --- MOCK DATA ---
 const initialLessons = [
@@ -93,17 +91,23 @@ export default function LessonManager() {
   // const [lessons, setLessons] = useState(initialLessons); // Removed mock state
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("All Courses");
-  const [viewMode, setViewMode] = useState("table"); // "table" or "grid"
+  const [viewMode, setViewMode] = useState("grid"); // "table" or "grid"
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewVideo, setPreviewVideo] = useState(null);
 
-  const { data: getAllVideos, isLoading: getAllVideosLoading } = useGetAllVideos()
-  const { mutateAsync: deleteVideo } = useDeleteVideo() // Added delete hook
+  const { data: getAllVideos, isLoading: getAllVideosLoading } =
+    useGetAllVideos();
+  const { mutateAsync: deleteVideo } = useDeleteVideo(); // Added delete hook
 
   const lessons = getAllVideos?.data || [];
 
   // Derived Courses List
-  const COURSES = ["All Courses", ...new Set(lessons.map(l => l.course?.title).filter(Boolean))];
+  const COURSES = [
+    "All Courses",
+    ...new Set(lessons.map((l) => l.course?.title).filter(Boolean)),
+  ];
 
   // Filter Logic
   const filteredLessons = lessons.filter((lesson) => {
@@ -111,7 +115,8 @@ export default function LessonManager() {
       lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lesson.course?.title?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCourse =
-      selectedCourse === "All Courses" || lesson.course?.title === selectedCourse;
+      selectedCourse === "All Courses" ||
+      lesson.course?.title === selectedCourse;
     return matchesSearch && matchesCourse;
   });
 
@@ -126,7 +131,7 @@ export default function LessonManager() {
     if (!seconds) return "00:00";
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleSaveLesson = (lessonData) => {
@@ -136,13 +141,22 @@ export default function LessonManager() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("តើអ្នកប្រាកដជាចង់លុបមេរៀននេះមែនទេ? (Are you sure you want to delete this lesson?)")) {
+    if (
+      window.confirm(
+        "តើអ្នកប្រាកដជាចង់លុបមេរៀននេះមែនទេ? (Are you sure you want to delete this lesson?)",
+      )
+    ) {
       try {
         await deleteVideo(id);
       } catch (err) {
         console.error("Delete failed:", err);
       }
     }
+  };
+
+  const handlePreview = (lesson) => {
+    setPreviewVideo(lesson);
+    setIsPreviewOpen(true);
   };
 
   return (
@@ -202,18 +216,7 @@ export default function LessonManager() {
 
       {/* 2. FILTERS */}
       <div className="flex md:flex-row flex-col gap-4 bg-white shadow-sm p-4 border border-gray-100 rounded-2xl">
-        <div className="relative flex-1">
-          <Search
-            className="top-1/2 left-3 absolute text-gray-400 -translate-y-1/2"
-            size={18}
-          />
-          <Input
-            placeholder="ស្វែងរកតាមចំណងជើងមេរៀន..."
-            className="bg-gray-50 pl-10 border-gray-200 rounded-xl focus-visible:ring-[#00B4F6] font-khmer-os-battambang"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        <div className="relative flex-1"></div>
         <div className="w-full md:w-64">
           <Select value={selectedCourse} onValueChange={setSelectedCourse}>
             <SelectTrigger className="bg-gray-50 border-gray-200 rounded-xl font-bold text-gray-700">
@@ -240,12 +243,21 @@ export default function LessonManager() {
         initialData={selectedLesson}
       />
 
+      <EmbededVideoModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        videoId={previewVideo?.id}
+        title={previewVideo?.title}
+      />
+
       {/* 3. LESSON LIST (TABLE VIEW) */}
       {getAllVideosLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full border-4 border-[#00B4F6] border-t-transparent animate-spin"></div>
-            <p className="font-bold text-gray-400 text-sm">កំពុងទាញយកទិន្នន័យ...</p>
+            <div className="border-[#00B4F6] border-4 border-t-transparent rounded-full w-8 h-8 animate-spin"></div>
+            <p className="font-bold text-gray-400 text-sm">
+              កំពុងទាញយកទិន្នន័យ...
+            </p>
           </div>
         </div>
       ) : viewMode === "table" ? (
@@ -278,11 +290,19 @@ export default function LessonManager() {
                 >
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="flex justify-center items-center bg-blue-50 rounded-xl w-10 h-10 text-[#00B4F6] group-hover:scale-110 transition-transform overflow-hidden relative">
-                        {lesson.thumbnail ? (
-                          <img src={`${imgUrl}${lesson.thumbnail}`} className="w-full h-full object-cover" />
+                      <div className="relative flex justify-center items-center bg-blue-50 rounded-xl w-10 h-10 overflow-hidden text-[#00B4F6] group-hover:scale-110 transition-transform">
+                        {lesson.thumbnail_webp ? (
+                          <img
+                            src={`${lesson.thumbnail_webp}`}
+                            className="hover:opacity-80 w-full h-full object-cover transition-opacity cursor-pointer"
+                            onClick={() => handlePreview(lesson)}
+                          />
                         ) : (
-                          <PlayCircle size={22} />
+                          <PlayCircle
+                            size={22}
+                            className="cursor-pointer"
+                            onClick={() => handlePreview(lesson)}
+                          />
                         )}
                       </div>
                       <div>
@@ -290,7 +310,10 @@ export default function LessonManager() {
                           {lesson.title}
                         </p>
                         <p className="font-bold text-[10px] text-gray-400">
-                          {lesson.video_order ? `Order: ${lesson.video_order}` : 'Video'} • By {lesson.uploadedBy?.username}
+                          {lesson.video_order
+                            ? `Order: ${lesson.video_order}`
+                            : "Video"}{" "}
+                          • By {lesson.uploadedBy?.username}
                         </p>
                       </div>
                     </div>
@@ -307,8 +330,10 @@ export default function LessonManager() {
                     {formatDuration(lesson.duration)}
                   </TableCell>
                   <TableCell>
-                    <Badge className={`border-0 font-bold text-[10px] ${lesson.status === 'ready' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
-                      {lesson.status === 'ready' ? 'Ready' : 'Awaiting'}
+                    <Badge
+                      className={`border-0 font-bold text-[10px] ${lesson.status === "ready" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}
+                    >
+                      {lesson.status === "ready" ? "Ready" : "Awaiting"}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -359,18 +384,24 @@ export default function LessonManager() {
               key={lesson.id}
               className="group bg-white shadow-sm hover:shadow-md border border-gray-100 rounded-2xl overflow-hidden transition-shadow"
             >
-              <div className="relative flex justify-center items-center bg-gray-900 aspect-video overflow-hidden">
-                {lesson.thumbnail ? (
-                  <img src={`${imgUrl}${lesson.thumbnail}`} className="w-full h-full object-cover opacity-60" />
+              <div className="relative bg-gray-900 aspect-video overflow-hidden">
+                {lesson.thumbnail_webp ? (
+                  <img
+                    src={`${lesson.thumbnail_webp}`}
+                    className="absolute inset-0 opacity-60 w-full h-full object-cover"
+                  />
                 ) : (
                   <div className="absolute inset-0 bg-slate-800" />
                 )}
                 <div className="z-10 absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <PlayCircle
-                  size={40}
-                  className="z-20 relative opacity-40 group-hover:opacity-100 text-white group-hover:scale-110 transition-all cursor-pointer"
-                />
-                <div className="top-2 right-2 z-20 absolute">
+                <div className="z-20 absolute inset-0 flex justify-center items-center">
+                  <PlayCircle
+                    size={40}
+                    className="opacity-40 group-hover:opacity-100 text-white group-hover:scale-110 transition-all cursor-pointer"
+                    onClick={() => handlePreview(lesson)}
+                  />
+                </div>
+                <div className="top-2 right-2 z-30 absolute">
                   <Badge className="bg-black/50 backdrop-blur-md border-0 text-[10px] text-white">
                     {formatDuration(lesson.duration)}
                   </Badge>
@@ -403,9 +434,13 @@ export default function LessonManager() {
                 </div>
                 <div className="flex justify-between items-center pt-2 border-gray-50 border-t">
                   <span className="font-bold text-[10px] text-gray-400 uppercase tracking-tight">
-                    {lesson.video_order ? `Order ${lesson.video_order}` : 'Video'}
+                    {lesson.video_order
+                      ? `Order ${lesson.video_order}`
+                      : "Video"}
                   </span>
-                  <Badge className={`border-0 text-[9px] ${lesson.status === 'ready' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}`}>
+                  <Badge
+                    className={`border-0 text-[9px] ${lesson.status === "ready" ? "bg-green-50 text-green-600" : "bg-orange-50 text-orange-600"}`}
+                  >
                     {lesson.status}
                   </Badge>
                 </div>
