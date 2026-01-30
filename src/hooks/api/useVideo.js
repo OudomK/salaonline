@@ -30,6 +30,12 @@ export const useSaveVideosBulk = () => {
   });
 };
 
+export const useReorderVideos = () => {
+  return useMutation({
+    mutationFn: (data) => videoService.reorderVideos(data),
+  });
+};
+
 export const useGetAllVideos = () => {
   return useQuery({
     queryKey: ["videos"],

@@ -46,6 +46,8 @@ export const videoService = {
 
   saveVideosBulk: (data) => apiClient.post("/videos/save-videos-bulk", data),
 
+  reorderVideos: (data) => apiClient.patch("/videos/reorder", data),
+
   /**
    * Delete video (admin)
    */

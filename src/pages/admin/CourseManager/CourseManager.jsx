@@ -14,6 +14,7 @@ import {
   Loader2,
   Eye,
   EyeOff,
+  FolderOpen,
 } from "lucide-react";
 import {
   useAdminCourses,
@@ -43,15 +44,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import CrateForm from "./components/CrateForm";
+import CourseDetail from "./components/CourseDetail";
 import { useDebounce } from "@/hooks/useDebounce";
 import { imgUrl } from "@/lib/helper/enviroment";
 import { useCategories } from "@/hooks/api/useCategory";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function CourseManager() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [viewDetail, setViewDetail] = useState(null); // New state for course detail
+  const itemsPerPage = 12;
 
   const { data: categoriesData, isLoading: isLoadingCategories } =
     useCategories();
@@ -62,6 +67,7 @@ export default function CourseManager() {
     page: currentPage,
     size: itemsPerPage,
     search: debouncedSearchTerm,
+    category_id: selectedCategory === "all" ? undefined : selectedCategory,
   });
 
   const courses = coursesData?.data || [];
@@ -80,9 +86,6 @@ export default function CourseManager() {
   const [deleteId, setDeleteId] = useState(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  const [teacherSearch, setTeacherSearch] = useState("");
-  const debouncedTeacherSearch = useDebounce(teacherSearch, 500);
-
   // Helper for pagination UI
   const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
   const indexOfLastItem = Math.min(currentPage * itemsPerPage, totalItems);
@@ -93,17 +96,17 @@ export default function CourseManager() {
   // --- ACTIONS ---
   const handleAddNew = () => {
     setCurrentCourse(null);
-
     setIsModalOpen(true);
   };
 
-  const handleEdit = (course) => {
+  const handleEdit = (e, course) => {
+    e.stopPropagation();
     setCurrentCourse(course);
-
     setIsModalOpen(true);
   };
 
-  const handleDeleteClick = (id) => {
+  const handleDeleteClick = (e, id) => {
+    e.stopPropagation();
     setDeleteId(id);
     setIsAlertOpen(true);
   };
@@ -125,7 +128,8 @@ export default function CourseManager() {
     }
   };
 
-  const handleToggleStatus = (course) => {
+  const handleToggleStatus = (e, course) => {
+    e.stopPropagation();
     const isPublished = course.status === "published";
     const mutation = isPublished ? hideMutation : publishMutation;
 
@@ -154,244 +158,278 @@ export default function CourseManager() {
     return "bg-green-100 text-green-600";
   };
 
+  if (viewDetail) {
+    return <CourseDetail course={viewDetail} onBack={() => setViewDetail(null)} />;
+  }
+
   return (
     <div className="space-y-6 pb-20 animate-fade-in-up">
       {/* HEADER */}
       <div className="flex md:flex-row flex-col justify-between items-center gap-4">
-        <div>
-          <h1 className="font-khmer-os-battambang font-bold text-gray-900 text-2xl">
-            គ្រប់គ្រងមេរៀន (Course Manager)
-          </h1>
-          <p className="mt-1 text-gray-500 text-sm">
-            Create courses, levels, and upload videos.
-          </p>
+        <div className="flex items-center gap-4">
+          <div className="bg-[#00B4F6]/10 p-3 rounded-2xl text-[#00B4F6]">
+            <FolderOpen size={28} />
+          </div>
+          <div>
+            <h1 className="font-khmer-os-battambang font-bold text-gray-900 text-2xl">
+              Course Manager
+            </h1>
+            <p className="mt-1 text-gray-500 text-sm">
+              Manage your course contents and educational videos.
+            </p>
+          </div>
         </div>
         <button
           onClick={handleAddNew}
-          className="flex items-center gap-2 bg-[#00B4F6] hover:bg-[#00a3df] shadow-blue-200 shadow-lg px-5 py-2.5 rounded-xl font-bold text-white active:scale-95 transition-all"
+          className="flex items-center gap-2 bg-[#00B4F6] hover:bg-[#00a3df] shadow-blue-100 shadow-lg px-6 py-3 rounded-xl font-bold text-white active:scale-95 transition-all text-sm"
         >
-          <Plus size={20} /> បង្កើតវគ្គថ្មី (New Course)
+          <Plus size={20} /> Create New Course
         </button>
       </div>
 
-      {/* SEARCH */}
-      <div className="bg-white shadow-sm p-4 border border-gray-100 rounded-2xl">
-        <div className="relative w-full md:w-96">
-          <Search
-            className="top-1/2 left-3 absolute text-gray-400 -translate-y-1/2"
-            size={20}
-          />
-          <input
-            type="text"
-            placeholder="ស្វែងរកតាមឈ្មោះគ្រូ ឬ ចំណងជើង..."
-            className="bg-gray-50 focus:bg-white py-2.5 pr-4 pl-10 border border-gray-200 rounded-xl outline-none focus:ring-[#00B4F6] focus:ring-2 w-full font-khmer-os-battambang font-bold text-gray-700 text-sm transition-all"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
+      {/* SEARCH & FILTERS */}
+      <div className="bg-white shadow-sm p-4 border border-gray-100 rounded-2xl flex flex-col gap-6">
+        <div className="flex md:flex-row flex-col gap-4">
+          <div className="relative flex-1">
+            <Search
+              className="top-1/2 left-3 absolute text-gray-400 -translate-y-1/2"
+              size={20}
+            />
+            <input
+              type="text"
+              placeholder="ស្វែងរកបណ្ណាល័យ ឬ ឈ្មោះគ្រូ..."
+              className="bg-gray-50 focus:bg-white py-2.5 md:w-96 pr-4 pl-10 border border-gray-100 rounded-xl outline-none focus:ring-[#00B4F6] focus:ring-2 w-full font-khmer-os-battambang font-bold text-gray-600 text-sm transition-all"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+        </div>
+
+        {/* CATEGORY CHIPS */}
+        <div className="flex items-center gap-3 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
+          <button
+            onClick={() => {
+              setSelectedCategory("all");
               setCurrentPage(1);
-            }} // Reset to page 1 on search
-          />
+            }}
+            className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${selectedCategory === "all"
+              ? "bg-[#00B4F6] text-white border-[#00B4F6] shadow-md shadow-blue-100"
+              : "bg-white text-gray-500 border-gray-100 hover:border-gray-200"
+              }`}
+          >
+            All Libraries
+          </button>
+          {categoriesData?.data?.data?.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => {
+                setSelectedCategory(cat.id.toString());
+                setCurrentPage(1);
+              }}
+              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-2 ${selectedCategory === cat.id.toString()
+                ? "bg-[#00B4F6] text-white border-[#00B4F6] shadow-md shadow-blue-100"
+                : "bg-white text-gray-500 border-gray-100 hover:border-gray-200"
+                }`}
+            >
+              {cat.thumbnail && (
+                <img
+                  src={`${imgUrl}${cat.thumbnail}`}
+                  alt=""
+                  className="w-4 h-4 rounded-full object-cover border border-white/20"
+                />
+              )}
+              {cat.name}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* TABLE */}
-      <div className="bg-white shadow-sm border border-gray-100 rounded-2xl overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-50 hover:bg-gray-50 border-gray-100 border-b">
-              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs uppercase tracking-wider">
-                THUMBNAIL
-              </TableHead>
-              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs uppercase tracking-wider">
-                COURSE NAME
-              </TableHead>
-              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs uppercase tracking-wider">
-                CATEGORY
-              </TableHead>
-              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs uppercase tracking-wider">
-                STATUS
-              </TableHead>
+      {/* GRID CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {isLoadingCourses ? (
+          Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm animate-pulse">
+              <div className="bg-gray-200 rounded-xl aspect-video w-full mb-4"></div>
+              <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          ))
+        ) : courses.length === 0 ? (
+          <div className="col-span-full py-20 text-center bg-white rounded-2xl border border-dashed border-gray-200">
+            <p className="text-gray-400 font-khmer-os-battambang">រកមិនឃើញទិន្នន័យទេ</p>
+          </div>
+        ) : (
+          courses.map((course) => (
+            <div
+              key={course.id}
+              onClick={() => setViewDetail(course)}
+              className="group cursor-pointer relative bg-white border border-gray-100 rounded-[24px] shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col"
+            >
+              {/* Folder Tab Effect */}
+              <div className="absolute top-0 left-0 w-24 h-1 bg-[#00B4F6] rounded-tr-full"></div>
 
-              <TableHead className="px-6 py-4 font-extrabold text-gray-400 text-xs text-center uppercase tracking-wider">
-                ACTION
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoadingCourses ? (
-              <TableRow>
-                <TableCell colSpan={5} className="py-20 text-center">
-                  <Loader2
-                    className="mx-auto text-[#00B4F6] animate-spin"
-                    size={32}
+              {/* Thumbnail */}
+              <div className="relative aspect-video overflow-hidden bg-gray-50">
+                {course.thumbnail ? (
+                  <img
+                    src={imgUrl + course.thumbnail}
+                    alt={course.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                </TableCell>
-              </TableRow>
-            ) : courses.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="py-10 text-gray-400 text-center"
-                >
-                  រកមិនឃើញទិន្នន័យទេ
-                </TableCell>
-              </TableRow>
-            ) : (
-              courses.map((course) => (
-                <TableRow
-                  key={course.id}
-                  className="hover:bg-gray-50/80 transition-colors"
-                >
-                  <TableCell className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      {course.thumbnail ? (
-                        <img
-                          src={imgUrl + course.thumbnail}
-                          alt="Thumbnail"
-                          className="border border-border rounded-md w-12 h-12 object-cover"
-                        />
-                      ) : (
-                        <div className="flex justify-center items-center bg-muted border border-border rounded-md w-12 h-12 font-medium text-muted-foreground text-xs">
-                          No Thumbnail
-                        </div>
-                      )}
-                    </div>
-                  </TableCell>
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                    <Video size={48} className="mb-2 opacity-20" />
+                    <span className="text-xs font-medium uppercase tracking-widest text-gray-400">No Content</span>
+                  </div>
+                )}
 
-                  <TableCell className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-gray-100 p-2 rounded-lg text-gray-500">
-                        <BookOpen size={20} />
-                      </div>
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">
-                          {course.title}
-                        </p>
-                        <p className="text-gray-400 text-xs">
-                          គ្រូ :{" "}
-                          {course.teacher?.first_name +
-                            " " +
-                            course.teacher?.last_name || "N/A"}
-                        </p>
-                      </div>
+                <div className="absolute top-3 left-3">
+                  <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase shadow-sm backdrop-blur-md border border-white/20 ${course.status === "published"
+                    ? "bg-green-500/80 text-white"
+                    : "bg-orange-500/80 text-white"
+                    }`}>
+                    {course.status || "Draft"}
+                  </span>
+                </div>
+
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                  <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full font-bold text-[#00B4F6] text-xs flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                    <FolderOpen size={16} /> Enter Course (videos)
+                  </div>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-5 flex-1 flex flex-col">
+                <div className="mb-2 flex justify-between items-center">
+                  <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase ${getCategoryColor(course.category.id || 1)}`}>
+                    {getCategoryName(course.category.id || 1)}
+                  </span>
+                </div>
+
+
+                <div className="flex flex-row justify-between">
+                  <h3 className="font-bold text-gray-800 text-base line-clamp-2 mb-3 font-khmer-os-battambang group-hover:text-[#00B4F6] transition-colors leading-snug">
+                    {course.title}
+                  </h3>
+                  <span className="text-xs font-bold text-gray-600">
+                    {course.video_amount || 0} videos
+                  </span>
+                </div>
+
+                <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="flex items-center justify-center text-[#00B4F6] shrink-0">
+                      <Avatar className="w-8 h-8 border border-gray-100">
+                        <AvatarImage src={imgUrl + course.teacher?.avatar} />
+                        <AvatarFallback className="bg-transparent text-[#00B4F6]">{course.teacher?.first_name[0] + course.teacher?.last_name[0]}</AvatarFallback>
+                      </Avatar>
                     </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <span
-                      className={`px-3 py-1 rounded-lg text-xs font-bold ${getCategoryColor(course.category_id || 1)}`}
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-tight">Teacher</p>
+                      <p className="text-[11px] font-bold text-gray-600 truncate">
+                        {course.teacher?.first_name + " " + course.teacher?.last_name || course.teacher?.username || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={(e) => handleToggleStatus(e, course)}
+                      className="p-1.5 text-gray-300 hover:text-[#00B4F6] transition-colors"
+                      title="Update Status"
                     >
-                      {getCategoryName(course.category_id || 1)}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <span className="bg-gray-100 px-3 py-1 rounded-full font-bold text-gray-700 text-sm">
-                      {course.status || "N/A"}
-                    </span>
-                  </TableCell>
+                      {course.status === "published" ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                    <button
+                      onClick={(e) => handleEdit(e, course)}
+                      className="p-1.5 text-gray-300 hover:text-[#00B4F6] transition-colors"
+                      title="Edit Info"
+                    >
+                      <Edit size={15} />
+                    </button>
+                    <button
+                      onClick={(e) => handleDeleteClick(e, course.id)}
+                      className="p-1.5 text-gray-300 hover:text-red-500 transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
 
-                  <TableCell className="px-6 py-4 text-center">
-                    <div className="flex justify-center gap-2">
-                      <button
-                        onClick={() => handleToggleStatus(course)}
-                        className={`p-2 rounded-lg transition-all ${course.status === "published" ? "bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white" : "bg-green-50 text-green-500 hover:bg-green-500 hover:text-white"}`}
-                        title={
-                          course.status === "published"
-                            ? "Hide Course"
-                            : "Publish Course"
-                        }
-                      >
-                        {course.status === "published" ? (
-                          <EyeOff size={16} />
-                        ) : (
-                          <Eye size={16} />
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleEdit(course)}
-                        className="bg-gray-100 hover:bg-[#00B4F6] p-2 rounded-lg text-gray-600 hover:text-white transition-all"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(course.id)}
-                        className="bg-red-50 hover:bg-red-500 p-2 rounded-lg text-red-500 hover:text-white transition-all"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+      {/* 🟢 PAGINATION FOOTER */}
+      {totalItems > 0 && (
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+          <span className="font-khmer-os-battambang font-bold text-gray-500 text-xs text-center sm:text-left">
+            បង្ហាញ {indexOfFirstItem + 1} ដល់ {indexOfLastItem} នៃ {totalItems} បណ្ណាល័យ
+          </span>
 
-        {/* 🟢 PAGINATION FOOTER */}
-        {totalItems > 0 && (
-          <div className="flex md:flex-row flex-col justify-between items-center gap-4 bg-gray-50/50 p-4 border-gray-100 border-t">
-            <span className="font-khmer-os-battambang font-bold text-gray-500 text-xs">
-              បង្ហាញ {indexOfFirstItem + 1} ដល់ {indexOfLastItem} នៃ{" "}
-              {totalItems} វគ្គសិក្សា
-            </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="w-10 h-10 flex items-center justify-center bg-white hover:bg-gray-50 disabled:opacity-30 border border-gray-100 rounded-xl text-gray-600 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronLeft size={18} />
+            </button>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => paginate(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="bg-white hover:bg-gray-100 disabled:opacity-50 p-2 border border-gray-200 rounded-lg text-gray-600 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft size={16} />
-              </button>
-
-              {/* Page Numbers */}
+            <div className="flex items-center gap-1">
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i + 1}
                   onClick={() => paginate(i + 1)}
-                  className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                    currentPage === i + 1
-                      ? "bg-[#00B4F6] text-white shadow-md shadow-blue-200"
-                      : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-100"
-                  }`}
+                  className={`w-10 h-10 rounded-xl text-xs font-bold transition-all ${currentPage === i + 1
+                    ? "bg-[#00B4F6] text-white shadow-lg shadow-blue-100"
+                    : "bg-white border border-gray-100 text-gray-600 hover:bg-gray-50"
+                    }`}
                 >
                   {i + 1}
                 </button>
               ))}
-
-              <button
-                onClick={() => paginate(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="bg-white hover:bg-gray-100 disabled:opacity-50 p-2 border border-gray-200 rounded-lg text-gray-600 disabled:cursor-not-allowed"
-              >
-                <ChevronRight size={16} />
-              </button>
             </div>
+
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="w-10 h-10 flex items-center justify-center bg-white hover:bg-gray-50 disabled:opacity-30 border border-gray-100 rounded-xl text-gray-600 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronRight size={18} />
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* SHADCN ALERT DIALOG */}
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent className="bg-white shadow-2xl border-0 rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-khmer-os-battambang font-bold text-gray-900 text-xl">
+            <AlertDialogTitle className="font-khmer-os-battambang font-bold text-gray-900 text-xl text-left">
               តើអ្នកប្រាកដទេ?
             </AlertDialogTitle>
-            <AlertDialogDescription className="font-khmer-os-battambang text-gray-500">
+            <AlertDialogDescription className="font-khmer-os-battambang text-gray-500 text-left">
               សកម្មភាពនេះនឹងលុបវគ្គសិក្សានេះចេញពីប្រព័ន្ធជារៀងរហូត។
               វាមិនអាចត្រឡប់វិញបានទេ។
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-100 hover:bg-gray-200 border-0 rounded-xl font-bold text-gray-700">
-              បោះបង់ (Cancel)
-            </AlertDialogCancel>
+          <AlertDialogFooter className="sm:flex-col sm:gap-2">
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-red-500 hover:bg-red-600 rounded-xl font-bold text-white"
+              className="bg-red-500 hover:bg-red-600 rounded-xl font-bold text-white w-full h-12"
             >
               យល់ព្រមលុប (Delete)
             </AlertDialogAction>
+            <AlertDialogCancel className="bg-gray-100 hover:bg-gray-200 border-0 rounded-xl font-bold text-gray-700 w-full h-12">
+              បោះបង់ (Cancel)
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

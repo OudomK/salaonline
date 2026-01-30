@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   PlayCircle,
   BookOpen,
@@ -8,6 +9,7 @@ import {
   Filter,
   LayoutGrid,
   List,
+  RefreshCw,
 } from "lucide-react";
 
 import {
@@ -29,7 +31,8 @@ import {
 } from "@/components/ui/select";
 import VideoManagementModal from "./components/VideoManagementModal";
 import { useDeleteVideo, useGetAllVideos } from "@/hooks/api/useVideo";
-import EmbededVideoModal from "./components/EmbededVideoModal";
+import { useVideoStore } from "@/hooks/useVideoStore";
+import { useUploadStore } from "@/hooks/useUploadStore";
 
 // --- MOCK DATA ---
 const initialLessons = [
@@ -94,12 +97,20 @@ export default function LessonManager() {
   const [viewMode, setViewMode] = useState("grid"); // "table" or "grid"
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [previewVideo, setPreviewVideo] = useState(null);
+  const queryClient = useQueryClient();
+  const playVideo = useVideoStore(s => s.playVideo);
+  const { isUploading } = useUploadStore();
 
   const { data: getAllVideos, isLoading: getAllVideosLoading } =
     useGetAllVideos();
   const { mutateAsync: deleteVideo } = useDeleteVideo(); // Added delete hook
+
+  // Refetch when all uploads complete
+  useEffect(() => {
+    if (!isUploading) {
+      queryClient.invalidateQueries({ queryKey: ["videos"] });
+    }
+  }, [isUploading, queryClient]);
 
   const lessons = getAllVideos?.data || [];
 
@@ -155,8 +166,7 @@ export default function LessonManager() {
   };
 
   const handlePreview = (lesson) => {
-    setPreviewVideo(lesson);
-    setIsPreviewOpen(true);
+    playVideo({ id: lesson.id, title: lesson.title });
   };
 
   return (
@@ -211,6 +221,15 @@ export default function LessonManager() {
           >
             <Plus size={20} /> បង្កើតមេរៀនថ្មី
           </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => queryClient.invalidateQueries({ queryKey: ["videos"] })}
+            className="hover:bg-gray-50 border-gray-200 rounded-xl transition-all"
+            title="Refresh List"
+          >
+            <RefreshCw size={18} className="text-gray-400" />
+          </Button>
         </div>
       </div>
 
@@ -241,13 +260,6 @@ export default function LessonManager() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSaveLesson}
         initialData={selectedLesson}
-      />
-
-      <EmbededVideoModal
-        isOpen={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
-        videoId={previewVideo?.id}
-        title={previewVideo?.title}
       />
 
       {/* 3. LESSON LIST (TABLE VIEW) */}

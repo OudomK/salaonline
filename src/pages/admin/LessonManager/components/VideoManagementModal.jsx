@@ -8,7 +8,9 @@ import {
   Save,
   Plus,
   Edit,
+  GripVertical,
 } from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
   Select,
   SelectContent,
@@ -23,7 +25,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { imgUrl } from "@/lib/helper/enviroment";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useUploadVideos,
   useVideos,
@@ -60,9 +62,15 @@ export default function VideoManagementModal({
     defaultValues: initialData
       ? { course_id: initialData.course_id?.toString() }
       : {
-          course_id: course?.id?.toString() || "",
-        },
+        course_id: course?.id?.toString() || "",
+      },
   });
+
+  useEffect(() => {
+    if (isOpen && course?.id) {
+      setValue("course_id", course.id.toString());
+    }
+  }, [isOpen, course?.id, setValue]);
 
   const selectedCourseId = watch("course_id");
   const { data: videosData = [], isLoading: videosLoading } =
@@ -130,6 +138,14 @@ export default function VideoManagementModal({
       prev.map((f) => (f.id === id ? { ...f, title } : f)),
     );
   const clearAll = () => setPendingFiles([]);
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+    const items = Array.from(pendingFiles);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    setPendingFiles(items);
+  };
 
   const onDragOver = (e) => {
     e.preventDefault();
@@ -399,55 +415,89 @@ export default function VideoManagementModal({
                     </p>
                   </div>
                 ) : (
-                  <div className="gap-3 grid grid-cols-1">
-                    {pendingFiles.map((item) => (
-                      <div
-                        key={item.id}
-                        className="group flex items-center gap-4 bg-white shadow-sm hover:shadow-md p-3 border border-white hover:border-indigo-100 rounded-2xl transition-all animate-scale-in"
-                      >
-                        <div className="relative flex justify-center items-center bg-slate-900 shadow-inner rounded-xl w-16 h-10 overflow-hidden shrink-0">
-                          {item.thumbnail ? (
-                            <img
-                              src={item.thumbnail}
-                              className="opacity-80 w-full h-full object-cover"
-                            />
-                          ) : (
-                            <FileVideo
-                              className="opacity-40 text-white"
-                              size={16}
-                            />
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <input
-                            className="bg-transparent border-none outline-none w-full font-bold text-slate-800 focus:text-indigo-600 text-sm transition-colors"
-                            value={item.title}
-                            onChange={(e) =>
-                              updatePendingTitle(item.id, e.target.value)
-                            }
-                          />
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="font-medium text-[10px] text-slate-400">
-                              Video File
-                            </span>
-                            <span className="bg-slate-200 rounded-full w-1 h-1"></span>
-                            <span className="font-medium text-[10px] text-slate-400 uppercase">
-                              {(item.file.size / (1024 * 1024)).toFixed(1)} MB
-                            </span>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => removePendingFile(item.id)}
-                          className="bg-slate-50 hover:bg-rose-50 opacity-0 group-hover:opacity-100 p-2 rounded-xl text-slate-400 hover:text-rose-500 transition-all"
+                  <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable droppableId="pending-files">
+                      {(provided) => (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          className="gap-3 grid grid-cols-1"
                         >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                          {pendingFiles.map((item, index) => (
+                            <Draggable
+                              key={item.id}
+                              draggableId={item.id}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  className={`group flex items-center gap-4 bg-white shadow-sm p-3 border rounded-2xl transition-all ${snapshot.isDragging
+                                    ? "shadow-lg ring-2 ring-indigo-500/20 border-indigo-200"
+                                    : "hover:shadow-md border-white hover:border-indigo-100"
+                                    }`}
+                                >
+                                  {/* Grip Handle */}
+                                  <div
+                                    {...provided.dragHandleProps}
+                                    className="p-1 text-slate-300 hover:text-indigo-500 cursor-grab active:cursor-grabbing"
+                                  >
+                                    <GripVertical size={16} />
+                                  </div>
+
+                                  <div className="relative flex justify-center items-center bg-slate-900 shadow-inner rounded-xl w-16 h-10 overflow-hidden shrink-0">
+                                    {item.thumbnail ? (
+                                      <img
+                                        src={item.thumbnail}
+                                        className="opacity-80 w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <FileVideo
+                                        className="opacity-40 text-white"
+                                        size={16}
+                                      />
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                  </div>
+
+                                  <div className="flex-1 min-w-0">
+                                    <input
+                                      className="bg-transparent border-none outline-none w-full font-bold text-slate-800 focus:text-indigo-600 text-sm transition-colors"
+                                      value={item.title}
+                                      onChange={(e) =>
+                                        updatePendingTitle(item.id, e.target.value)
+                                      }
+                                    />
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <span className="font-medium text-[10px] text-slate-400">
+                                        Video File
+                                      </span>
+                                      <span className="bg-slate-200 rounded-full w-1 h-1"></span>
+                                      <span className="font-medium text-[10px] text-slate-400 uppercase">
+                                        {(item.file.size / (1024 * 1024)).toFixed(
+                                          1,
+                                        )}
+                                        MB
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <button
+                                    onClick={() => removePendingFile(item.id)}
+                                    className="bg-slate-50 hover:bg-rose-50 opacity-0 group-hover:opacity-100 p-2 rounded-xl text-slate-400 hover:text-rose-500 transition-all"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
                 )}
               </div>
 

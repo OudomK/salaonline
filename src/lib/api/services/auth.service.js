@@ -1,13 +1,13 @@
 import apiClient from '../client'
 
 export const authService = {
-  login: (credentials) => apiClient.post('/login', credentials),
+  login: (credentials) => apiClient.post('/auth/login', credentials),
 
-  register: (userData) => apiClient.post('/register', userData),
+  register: (userData) => apiClient.post('/auth/register', userData),
 
-  getMe: () => apiClient.get('/me'),
+  getMe: () => apiClient.get('/auth/me'),
 
-  changePassword: (data) => apiClient.post('/change-password', data),
+  changePassword: (data) => apiClient.post('/auth/change-password', data),
 
   heartbeat: () => apiClient.post('/users/heartbeat'),
 

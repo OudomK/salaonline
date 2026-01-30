@@ -86,6 +86,7 @@ import {
 } from "lucide-react";
 import { useMe } from "@/hooks/api";
 import UploadingList from "@/pages/admin/LessonManager/components/UploadingList";
+import EmbededVideoModal from "@/pages/admin/LessonManager/components/EmbededVideoModal";
 
 export default function AdminLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -110,7 +111,7 @@ export default function AdminLayout() {
       label: "Homework",
       icon: <BookCheck size={20} />,
     },
-    { path: "/admin/lesson", label: "Lesson", icon: <BookCheck size={20} /> },
+    // { path: "/admin/lesson", label: "Lesson", icon: <BookCheck size={20} /> },
     {
       path: "/admin/courses",
       label: "Course Manager",
@@ -209,6 +210,7 @@ export default function AdminLayout() {
           <Outlet />
         </main>
         <UploadingList />
+        <EmbededVideoModal />
       </div>
     </div>
   );
