@@ -39,13 +39,21 @@ const courseFormSchema = z.object({
   teacher_id: z.string().min(1, "Teacher is required"),
 });
 
-const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
+const CrateForm = ({
+  isModalOpen,
+  setIsModalOpen,
+  currentCourse,
+  categories: passedCategories,
+  defaultCategoryId,
+}) => {
   const queryClient = useQueryClient();
   const createMutation = useCreateCourse();
   const updateMutation = useUpdateCourse();
   const { data: teachersList } = useGetTeachers(isModalOpen);
   const { data: categoriesData, isLoading: isLoadingCategories } =
-    useCategories(isModalOpen);
+    useCategories({}, isModalOpen && !passedCategories);
+
+  const categories = passedCategories || categoriesData?.data?.data || [];
 
   const [thumbnail, setThumbnail] = useState(null);
 
@@ -80,7 +88,7 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
         form.reset({
           title: "",
           description: "",
-          category_id: "",
+          category_id: defaultCategoryId !== "all" ? defaultCategoryId || "" : "",
           teacher_id: "",
           thumbnail: null,
         });
@@ -220,7 +228,7 @@ const CrateForm = ({ isModalOpen, setIsModalOpen, currentCourse }) => {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categoriesData?.data?.data?.map((category) => (
+                  {categories.map((category) => (
                     <SelectItem
                       key={`${category.id} ${category.name}`}
                       value={category.id.toString()}

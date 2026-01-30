@@ -30,79 +30,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import VideoManagementModal from "./components/VideoManagementModal";
-import { useDeleteVideo, useGetAllVideos } from "@/hooks/api/useVideo";
 import { useVideoStore } from "@/hooks/useVideoStore";
 import { useUploadStore } from "@/hooks/useUploadStore";
-
-// --- MOCK DATA ---
-const initialLessons = [
-  {
-    id: 1,
-    title: "Lesson 1: Introduction",
-    course: "General English",
-    category: "English",
-    type: "Video",
-    duration: "10:30",
-    views: 450,
-  },
-  {
-    id: 2,
-    title: "Lesson 2: Tones & Pinyin",
-    course: "Chinese Basic",
-    category: "Chinese",
-    type: "Video",
-    duration: "15:20",
-    views: 320,
-  },
-  {
-    id: 3,
-    title: "Lesson 3: Basic Grammar",
-    course: "General English",
-    category: "English",
-    type: "Video",
-    duration: "12:45",
-    views: 280,
-  },
-  {
-    id: 4,
-    title: "Lesson 1: Alphabet",
-    course: "Korean Level 1",
-    category: "Korean",
-    type: "Video",
-    duration: "08:15",
-    views: 600,
-  },
-  {
-    id: 5,
-    title: "Lesson 4: Vocabulary",
-    course: "Chinese Basic",
-    category: "Chinese",
-    type: "Video",
-    duration: "20:00",
-    views: 150,
-  },
-];
-
-const COURSES = [
-  "All Courses",
-  "General English",
-  "Chinese Basic",
-  "Korean Level 1",
-];
+import { useCategories } from "@/hooks/api/useCategory";
+import { useDebounce } from "@/hooks/useDebounce";
+import { imgUrl } from "@/lib/helper/enviroment";
+import { useDeleteVideo, useGetAllVideos } from "@/hooks/api/useVideo";
 
 export default function LessonManager() {
   // const [lessons, setLessons] = useState(initialLessons); // Removed mock state
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedCourse, setSelectedCourse] = useState("All Courses");
   const [viewMode, setViewMode] = useState("grid"); // "table" or "grid"
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const queryClient = useQueryClient();
   const playVideo = useVideoStore(s => s.playVideo);
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  const { data: categoriesData } = useCategories();
+  const { data: getAllVideos, isLoading: getAllVideosLoading } =
+    useGetAllVideos({
+      category_id: selectedCategory === "all" ? undefined : selectedCategory,
+      search: debouncedSearchTerm,
+    });
   const { isUploading } = useUploadStore();
 
-  const { data: getAllVideos, isLoading: getAllVideosLoading } =
-    useGetAllVideos();
   const { mutateAsync: deleteVideo } = useDeleteVideo(); // Added delete hook
 
   // Refetch when all uploads complete
@@ -120,15 +75,12 @@ export default function LessonManager() {
     ...new Set(lessons.map((l) => l.course?.title).filter(Boolean)),
   ];
 
-  // Filter Logic
+  // Filter Logic (Course filter remains local as it's more specific)
   const filteredLessons = lessons.filter((lesson) => {
-    const matchesSearch =
-      lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lesson.course?.title?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCourse =
       selectedCourse === "All Courses" ||
       lesson.course?.title === selectedCourse;
-    return matchesSearch && matchesCourse;
+    return matchesCourse;
   });
 
   const getCategoryColor = (cat) => {
@@ -234,24 +186,76 @@ export default function LessonManager() {
       </div>
 
       {/* 2. FILTERS */}
-      <div className="flex md:flex-row flex-col gap-4 bg-white shadow-sm p-4 border border-gray-100 rounded-2xl">
-        <div className="relative flex-1"></div>
-        <div className="w-full md:w-64">
-          <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-            <SelectTrigger className="bg-gray-50 border-gray-200 rounded-xl font-bold text-gray-700">
-              <div className="flex items-center gap-2">
-                <Filter size={16} className="text-gray-400" />
-                <SelectValue placeholder="Select Course" />
-              </div>
-            </SelectTrigger>
-            <SelectContent className="bg-white shadow-xl border-gray-100 rounded-xl">
-              {COURSES.map((course) => (
-                <SelectItem key={course} value={course} className="font-medium">
-                  {course}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="bg-white shadow-sm p-4 border border-gray-100 rounded-2xl flex flex-col gap-4">
+        <div className="flex md:flex-row flex-col gap-4">
+          <div className="relative flex-1">
+            <Search
+              className="top-1/2 left-3 absolute text-gray-400 -translate-y-1/2"
+              size={20}
+            />
+            <input
+              type="text"
+              placeholder="ស្វែងរកមេរៀន..."
+              className="bg-gray-50 focus:bg-white py-2.5 md:w-96 pr-4 pl-10 border border-gray-100 rounded-xl outline-none focus:ring-[#00B4F6] focus:ring-2 w-full font-khmer-os-battambang font-bold text-gray-600 text-sm transition-all"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+              }}
+            />
+          </div>
+          <div className="w-full md:w-64">
+            <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+              <SelectTrigger className="bg-gray-50 border-gray-200 rounded-xl font-bold text-gray-700">
+                <div className="flex items-center gap-2">
+                  <Filter size={16} className="text-gray-400" />
+                  <SelectValue placeholder="Select Course" />
+                </div>
+              </SelectTrigger>
+              <SelectContent className="bg-white shadow-xl border-gray-100 rounded-xl">
+                {COURSES.map((course) => (
+                  <SelectItem key={course} value={course} className="font-medium">
+                    {course}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* CATEGORY CHIPS */}
+        <div className="flex items-center gap-3 overflow-x-auto pb-2 custom-scrollbar no-scrollbar border-t border-gray-50 pt-4">
+          <button
+            onClick={() => {
+              setSelectedCategory("all");
+            }}
+            className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${selectedCategory === "all"
+              ? "bg-[#00B4F6] text-white border-[#00B4F6] shadow-md shadow-blue-100"
+              : "bg-white text-gray-500 border-gray-100 hover:border-gray-200"
+              }`}
+          >
+            All Categories
+          </button>
+          {categoriesData?.data?.data?.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => {
+                setSelectedCategory(cat.id.toString());
+              }}
+              className={`px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-2 ${selectedCategory === cat.id.toString()
+                ? "bg-[#00B4F6] text-white border-[#00B4F6] shadow-md shadow-blue-100"
+                : "bg-white text-gray-500 border-gray-100 hover:border-gray-200"
+                }`}
+            >
+              {cat.thumbnail && (
+                <img
+                  src={`${imgUrl}${cat.thumbnail}`}
+                  alt=""
+                  className="w-4 h-4 rounded-full object-cover border border-white/20"
+                />
+              )}
+              {cat.name}
+            </button>
+          ))}
         </div>
       </div>
 

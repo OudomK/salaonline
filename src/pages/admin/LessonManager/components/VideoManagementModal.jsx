@@ -28,8 +28,6 @@ import { imgUrl } from "@/lib/helper/enviroment";
 import { useEffect, useRef, useState } from "react";
 import {
   useUploadVideos,
-  useVideos,
-  useDeleteVideo,
 } from "@/hooks/api/useVideo";
 import { uploadToBunny } from "@/lib/helper/bunny";
 import { useUploadStore } from "@/hooks/useUploadStore";
@@ -73,21 +71,6 @@ export default function VideoManagementModal({
   }, [isOpen, course?.id, setValue]);
 
   const selectedCourseId = watch("course_id");
-  const { data: videosData = [], isLoading: videosLoading } =
-    useVideos(selectedCourseId);
-  const { mutateAsync: deleteVideo } = useDeleteVideo();
-
-  const videos = videosData?.data;
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this video?")) {
-      try {
-        await deleteVideo(id);
-      } catch (err) {
-        console.error("Delete failed:", err);
-      }
-    }
-  };
 
   const generateId = () => crypto.randomUUID();
 
@@ -242,186 +225,210 @@ export default function VideoManagementModal({
           </button>
         </div>
 
-        <div className="flex md:flex-row flex-col flex-1 overflow-hidden">
-          {/* LEFT: UPLOAD CONTROLS */}
-          <div className="flex flex-col bg-white p-8 border-slate-100 border-r md:w-[42%] overflow-y-auto custom-scrollbar">
-            <form className="flex flex-col flex-1 space-y-8">
-              {/* SECTION: TARGET */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 px-1">
-                  <div className="bg-indigo-50 p-1.5 rounded-lg text-indigo-500">
-                    <Save size={14} />
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className="flex md:flex-row flex-col flex-1 overflow-hidden">
+            {/* LEFT: UPLOAD CONTROLS */}
+            <div className="flex flex-col bg-white p-8 border-slate-100 border-r md:w-[42%] overflow-y-auto custom-scrollbar">
+              <form className="flex flex-col flex-1 space-y-8">
+                {/* SECTION: TARGET */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 px-1">
+                    <div className="bg-indigo-50 p-1.5 rounded-lg text-indigo-500">
+                      <Save size={14} />
+                    </div>
+                    <label className="font-bold text-[11px] text-slate-700 uppercase tracking-widest">
+                      Course Destination
+                    </label>
                   </div>
-                  <label className="font-bold text-[11px] text-slate-700 uppercase tracking-widest">
-                    Course Destination
-                  </label>
-                </div>
-                <div className="relative">
-                  <FieldGroup className="flex flex-col gap-2">
-                    <FieldContent>
-                      <Select
-                        value={watch("course_id")}
-                        onValueChange={(val) => setValue("course_id", val)}
-                      >
-                        <SelectTrigger className="bg-slate-50/50 border-slate-200 hover:border-slate-300 focus:border-indigo-500 rounded-2xl ring-0 focus:ring-0 h-12 transition-all">
-                          <SelectValue placeholder="Select target course" />
-                        </SelectTrigger>
-                        <SelectContent className="shadow-xl p-1 border-slate-100 rounded-2xl">
-                          {coursesData?.data?.map((c) => (
-                            <SelectItem
-                              key={c.id}
-                              value={c.id.toString()}
-                              className="hover:bg-slate-50 py-2.5 rounded-xl"
+                  <div className="relative">
+                    <FieldGroup className="flex flex-col gap-2">
+                      <FieldContent>
+                        {course ? (
+                          <div className="bg-slate-50/50 border border-slate-200 rounded-2xl p-3 flex items-center gap-3">
+                            <Avatar className="border border-slate-100 w-10 h-10">
+                              <AvatarImage
+                                src={`${imgUrl}${course.thumbnail}`}
+                                className="object-cover"
+                              />
+                              <AvatarFallback className="bg-indigo-100 font-bold text-indigo-600">
+                                {course.title?.[0]}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col">
+                              <span className="font-bold text-slate-800 text-sm">
+                                {course.title}
+                              </span>
+                              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wide">
+                                Selected Destination
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <Select
+                              value={watch("course_id")}
+                              onValueChange={(val) => setValue("course_id", val)}
                             >
-                              <div className="flex items-center gap-3">
-                                <Avatar className="border border-slate-100 w-7 h-7">
-                                  <AvatarImage
-                                    src={`${imgUrl}${c.thumbnail}`}
-                                    className="object-cover"
-                                  />
-                                  <AvatarFallback className="bg-indigo-100 font-bold text-[10px] text-indigo-600">
-                                    {c.title?.[0]}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="font-semibold text-slate-700 text-sm">
-                                  {c.title}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {formState.errors.course_id && (
-                        <p className="mt-1.5 ml-1 font-medium text-[11px] text-rose-500">
-                          {formState.errors.course_id.message}
-                        </p>
-                      )}
-                    </FieldContent>
-                  </FieldGroup>
-                </div>
-              </div>
-
-              {/* SECTION: DROPZONE */}
-              <div className="flex-1 space-y-4">
-                <div className="flex items-center gap-2 px-1">
-                  <div className="bg-violet-50 p-1.5 rounded-lg text-violet-500">
-                    <Upload size={14} />
+                              <SelectTrigger className="bg-slate-50/50 border-slate-200 hover:border-slate-300 focus:border-indigo-500 rounded-2xl ring-0 focus:ring-0 h-12 transition-all">
+                                <SelectValue placeholder="Select target course" />
+                              </SelectTrigger>
+                              <SelectContent className="shadow-xl p-1 border-slate-100 rounded-2xl">
+                                {coursesData?.data?.map((c) => (
+                                  <SelectItem
+                                    key={c.id}
+                                    value={c.id.toString()}
+                                    className="hover:bg-slate-50 py-2.5 rounded-xl"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <Avatar className="border border-slate-100 w-7 h-7">
+                                        <AvatarImage
+                                          src={`${imgUrl}${c.thumbnail}`}
+                                          className="object-cover"
+                                        />
+                                        <AvatarFallback className="bg-indigo-100 font-bold text-[10px] text-indigo-600">
+                                          {c.title?.[0]}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                      <span className="font-semibold text-slate-700 text-sm">
+                                        {c.title}
+                                      </span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            {formState.errors.course_id && (
+                              <p className="mt-1.5 ml-1 font-medium text-[11px] text-rose-500">
+                                {formState.errors.course_id.message}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </FieldContent>
+                    </FieldGroup>
                   </div>
-                  <label className="font-bold text-[11px] text-slate-700 uppercase tracking-widest">
-                    Media Selector
-                  </label>
                 </div>
 
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragOver={onDragOver}
-                  onDragLeave={onDragLeave}
-                  onDrop={onDrop}
-                  className={`
+                {/* SECTION: DROPZONE */}
+                <div className="flex-1 space-y-4">
+                  <div className="flex items-center gap-2 px-1">
+                    <div className="bg-violet-50 p-1.5 rounded-lg text-violet-500">
+                      <Upload size={14} />
+                    </div>
+                    <label className="font-bold text-[11px] text-slate-700 uppercase tracking-widest">
+                      Media Selector
+                    </label>
+                  </div>
+
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={onDragOver}
+                    onDragLeave={onDragLeave}
+                    onDrop={onDrop}
+                    className={`
                     flex-1 min-h-[220px] border-2 border-dashed rounded-[32px] p-8 flex flex-col items-center justify-center transition-all cursor-pointer group relative
                     ${isDragging ? "border-indigo-500 bg-indigo-50/50 scale-[0.98]" : "border-slate-200 bg-slate-50/30 hover:border-indigo-300 hover:bg-indigo-50/10"}
                   `}
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="video/*"
-                    onChange={onFileChange}
-                    className="hidden"
-                  />
-
-                  <div
-                    className={`w-16 h-16 rounded-[24px] flex items-center justify-center mb-5 transition-all duration-300 ${isDragging ? "bg-indigo-600 text-white shadow-xl translate-y-[-8px]" : "bg-white text-indigo-600 shadow-sm group-hover:shadow-indigo-100 group-hover:scale-105"}`}
                   >
-                    <Upload size={28} />
-                  </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept="video/*"
+                      onChange={onFileChange}
+                      className="hidden"
+                    />
 
-                  <h5 className="mb-1 font-bold text-slate-800 text-base">
-                    Drag video lessons here
-                  </h5>
-                  <p className="max-w-[200px] text-slate-400 text-xs text-center leading-relaxed">
-                    Quickly add multiple lessons to your course. Support for
-                    MP4, MOV, AVI.
-                  </p>
+                    <div
+                      className={`w-16 h-16 rounded-[24px] flex items-center justify-center mb-5 transition-all duration-300 ${isDragging ? "bg-indigo-600 text-white shadow-xl translate-y-[-8px]" : "bg-white text-indigo-600 shadow-sm group-hover:shadow-indigo-100 group-hover:scale-105"}`}
+                    >
+                      <Upload size={28} />
+                    </div>
 
-                  <div className="bg-slate-100 group-hover:bg-indigo-100 mt-6 px-4 py-1.5 rounded-full font-bold text-[10px] text-slate-500 group-hover:text-indigo-600 uppercase tracking-wider transition-colors">
-                    Click to browse
+                    <h5 className="mb-1 font-bold text-slate-800 text-base">
+                      Drag video lessons here
+                    </h5>
+                    <p className="max-w-[200px] text-slate-400 text-xs text-center leading-relaxed">
+                      Quickly add multiple lessons to your course. Support for
+                      MP4, MOV, AVI.
+                    </p>
+
+                    <div className="bg-slate-100 group-hover:bg-indigo-100 mt-6 px-4 py-1.5 rounded-full font-bold text-[10px] text-slate-500 group-hover:text-indigo-600 uppercase tracking-wider transition-colors">
+                      Click to browse
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* ACTION: UPLOAD */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={handleSubmit(onSubmit)}
-                  disabled={
-                    isUploading || (pendingFiles.length === 0 && !initialData)
-                  }
-                  className={`
+                {/* ACTION: UPLOAD */}
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handleSubmit(onSubmit)}
+                    disabled={
+                      isUploading || (pendingFiles.length === 0 && !initialData)
+                    }
+                    className={`
                     w-full py-4 rounded-[20px] font-bold text-white shadow-xl flex items-center justify-center gap-3 transition-all active:scale-[0.97]
                     ${isUploading ? "bg-indigo-400 cursor-not-allowed" : "bg-gradient-to-r from-indigo-600 to-indigo-700 hover:shadow-indigo-200 hover:translate-y-[-2px]"}
                     ${pendingFiles.length === 0 && !initialData ? "opacity-40 grayscale pointer-events-none" : ""}
                   `}
-                >
-                  {isUploading ? (
-                    <Loader2 className="animate-spin" size={20} />
-                  ) : (
-                    <div className="bg-white/20 p-1 rounded-lg">
-                      <Plus size={16} />
-                    </div>
-                  )}
-                  {isUploading
-                    ? "Initializing..."
-                    : `Publish ${pendingFiles.length} Lesson${pendingFiles.length !== 1 ? "s" : ""}`}
-                </button>
-                {isUploading && (
-                  <p className="mt-4 font-bold text-[10px] text-indigo-500 text-center italic uppercase tracking-widest animate-pulse">
-                    Pushing to background queue...
-                  </p>
-                )}
-              </div>
-            </form>
-          </div>
-
-          {/* RIGHT: LISTS */}
-          <div className="flex flex-col flex-1 bg-slate-50/50 p-8 overflow-hidden">
-            <div className="flex-1 space-y-10 pr-2 overflow-y-auto custom-scrollbar">
-              {/* SECTION: SELECTED */}
-              <div className="space-y-5">
-                <div className="flex justify-between items-center bg-white/40 p-1 pr-3 rounded-full">
-                  <div className="flex items-center gap-2 bg-white shadow-sm px-4 py-1.5 rounded-full">
-                    <div className="bg-indigo-500 rounded-full w-1.5 h-1.5 animate-pulse"></div>
-                    <span className="font-bold text-[10px] text-slate-700 uppercase tracking-wider">
-                      Queue ({pendingFiles.length})
-                    </span>
-                  </div>
-                  {pendingFiles.length > 0 && (
-                    <button
-                      onClick={clearAll}
-                      className="font-bold text-[10px] text-slate-400 hover:text-rose-500 transition-colors"
-                    >
-                      Clear All
-                    </button>
+                  >
+                    {isUploading ? (
+                      <Loader2 className="animate-spin" size={20} />
+                    ) : (
+                      <div className="bg-white/20 p-1 rounded-lg">
+                        <Plus size={16} />
+                      </div>
+                    )}
+                    {isUploading
+                      ? "Initializing..."
+                      : `Publish ${pendingFiles.length} Lesson${pendingFiles.length !== 1 ? "s" : ""}`}
+                  </button>
+                  {isUploading && (
+                    <p className="mt-4 font-bold text-[10px] text-indigo-500 text-center italic uppercase tracking-widest animate-pulse">
+                      Pushing to background queue...
+                    </p>
                   )}
                 </div>
+              </form>
+            </div>
 
-                {pendingFiles.length === 0 ? (
-                  <div className="flex flex-col justify-center items-center border-2 border-slate-200 border-dashed rounded-[28px] h-32 text-slate-300">
-                    <FileVideo size={32} className="opacity-30 mb-2" />
-                    <p className="font-medium text-[11px] uppercase tracking-wider">
-                      No lessons selected
-                    </p>
+            {/* RIGHT: LISTS */}
+            <div className="flex flex-col flex-1 bg-slate-50/50 p-8 overflow-hidden">
+              <div className="flex flex-col flex-1 space-y-5 overflow-hidden">
+                {/* SECTION: SELECTED */}
+                <div className="space-y-5">
+                  <div className="flex justify-between items-center bg-white/40 p-1 pr-3 rounded-full">
+                    <div className="flex items-center gap-2 bg-white shadow-sm px-4 py-1.5 rounded-full">
+                      <div className="bg-indigo-500 rounded-full w-1.5 h-1.5 animate-pulse"></div>
+                      <span className="font-bold text-[10px] text-slate-700 uppercase tracking-wider">
+                        Queue ({pendingFiles.length})
+                      </span>
+                    </div>
+                    {pendingFiles.length > 0 && (
+                      <button
+                        onClick={clearAll}
+                        className="font-bold text-[10px] text-slate-400 hover:text-rose-500 transition-colors"
+                      >
+                        Clear All
+                      </button>
+                    )}
                   </div>
-                ) : (
-                  <DragDropContext onDragEnd={onDragEnd}>
+
+                  {pendingFiles.length === 0 ? (
+                    <div className="flex flex-col justify-center items-center border-2 border-slate-200 border-dashed rounded-[28px] h-full border-opacity-50 text-slate-300">
+                      <FileVideo size={32} className="opacity-30 mb-2" />
+                      <p className="font-medium text-[11px] uppercase tracking-wider">
+                        No lessons selected
+                      </p>
+                    </div>
+                  ) : (
                     <Droppable droppableId="pending-files">
                       {(provided) => (
                         <div
                           {...provided.droppableProps}
                           ref={provided.innerRef}
-                          className="gap-3 grid grid-cols-1"
+                          className="gap-3 grid grid-cols-1 overflow-y-auto custom-scrollbar pr-2 max-h-full"
                         >
                           {pendingFiles.map((item, index) => (
                             <Draggable
@@ -497,67 +504,12 @@ export default function VideoManagementModal({
                         </div>
                       )}
                     </Droppable>
-                  </DragDropContext>
-                )}
-              </div>
-
-              {/* SECTION: EXISTING */}
-              <div className="space-y-5">
-                <div className="flex items-center gap-2 bg-indigo-50/50 px-4 py-1.5 rounded-full w-fit">
-                  <PlayCircle size={14} className="text-indigo-500" />
-                  <span className="font-bold text-[10px] text-slate-600 uppercase tracking-wider">
-                    existing videos in course ({videos?.length})
-                  </span>
+                  )}
                 </div>
-
-                {videosLoading ? (
-                  <div className="flex justify-center py-10">
-                    <Loader2 className="text-indigo-400 animate-spin" />
-                  </div>
-                ) : videos?.length === 0 ? (
-                  <div className="bg-white/30 py-12 border border-slate-100 border-dashed rounded-[28px] text-center">
-                    <FileVideo
-                      className="mx-auto mb-3 text-slate-200"
-                      size={40}
-                    />
-                    <p className="font-medium text-slate-400 text-xs">
-                      Course library is empty
-                    </p>
-                  </div>
-                ) : (
-                  <div className="gap-3 grid grid-cols-1">
-                    {videos?.map((video) => (
-                      <div
-                        key={video.id}
-                        className="group flex justify-between items-center bg-white/70 hover:bg-white shadow-sm backdrop-blur-sm p-4 border border-slate-50 hover:border-indigo-100 rounded-2xl transition-all"
-                      >
-                        <div className="flex items-center gap-4 min-w-0">
-                          <div className="flex justify-center items-center bg-gradient-to-br from-slate-50 group-hover:from-indigo-50 to-slate-100 group-hover:to-indigo-100 rounded-xl w-10 h-10 text-slate-400 group-hover:text-indigo-500 transition-all duration-300">
-                            <PlayCircle size={20} />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-slate-800 text-sm truncate leading-tight">
-                              {video.title}
-                            </p>
-                            <p className="mt-0.5 font-medium text-[10px] text-slate-400 truncate uppercase tracking-wide">
-                              Ready to play
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handleDelete(video.id)}
-                          className="bg-slate-50 hover:bg-rose-50 opacity-0 group-hover:opacity-100 p-2.5 rounded-xl text-slate-300 hover:text-rose-500 active:scale-90 transition-all"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           </div>
-        </div>
+        </DragDropContext>
       </div>
     </div>
   );

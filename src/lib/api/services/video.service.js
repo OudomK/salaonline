@@ -8,7 +8,7 @@ export const videoService = {
   /**
    * Get all videos (admin)
    */
-  getAllVideos: () => apiClient.get("/videos"),
+  getAllVideos: (params) => apiClient.get("/videos", { params }),
 
   /**
    * Get video by ID

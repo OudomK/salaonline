@@ -438,6 +438,8 @@ export default function CourseManager() {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         currentCourse={currentCourse}
+        categories={categoriesData?.data?.data}
+        defaultCategoryId={selectedCategory}
       />
     </div>
   );

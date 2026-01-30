@@ -36,11 +36,11 @@ export const useReorderVideos = () => {
   });
 };
 
-export const useGetAllVideos = () => {
+export const useGetAllVideos = (params = {}) => {
   return useQuery({
-    queryKey: ["videos"],
+    queryKey: ["videos", params],
     queryFn: async () => {
-      const res = await videoService.getAllVideos();
+      const res = await videoService.getAllVideos(params);
       console.log(res.data);
       return res.data;
     },
