@@ -12,6 +12,13 @@ export const useCourses = (params = {}) => {
   });
 };
 
+export const useCourseHome = () => {
+  return useQuery({
+    queryKey: ["courses", "home"],
+    queryFn: () => courseService.getCourseHome().then((res) => res.data),
+  });
+};
+
 export const useAdminCourses = (params = {}) => {
   return useQuery({
     queryKey: ["courses", "admin", params],

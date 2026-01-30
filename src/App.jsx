@@ -75,7 +75,7 @@ function App() {
           <Route path="/placement-test" element={<PlacementTest />} />
 
           {/* Learning Pages */}
-          <Route path="/course-detail" element={<CourseDetail />} />
+          <Route path="/course-detail/:id" element={<CourseDetail />} />
           <Route path="/homework" element={<Homework />} />
           <Route path="/my-learning" element={<MyLearning />} />
           <Route

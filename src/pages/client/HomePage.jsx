@@ -11,20 +11,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 // --- MOCK DATA ---
-import { categories, recommendedCourses, bannerImage } from "../../data/homeData";
+import { bannerImage } from "../../data/homeData";
 import logo from "../../assets/logo.jpg";
-import { useCourse, useCourses } from "@/hooks/api";
+import { useCourseHome } from "@/hooks/api";
 import CourseCard from "@/components/ui/course-card";
 
 export default function Home() {
     const navigate = useNavigate();
 
+    const { data: courseHome } = useCourseHome()
+    console.log(courseHome)
+
     // Mock User Status
     const userStatus = { isTested: true };
 
-    const handleCourseClick = () => {
+    const handleCourseClick = (courseId) => {
         if (userStatus.isTested) {
-            navigate("/course-detail");
+            navigate(`/course-detail/${courseId}`);
         } else {
             // ប្រើ Shadcn logic ឬ Alert ធម្មតាក៏បាន
             const confirm = window.confirm("សូមធ្វើតេស្តសមត្ថភាពជាមុនសិន ដើម្បីចូលរៀន!");
@@ -32,8 +35,6 @@ export default function Home() {
         }
     };
 
-    const { data: coursesList } = useCourses()
-    console.log(coursesList)
 
     return (
         <div className="min-h-screen bg-slate-50/50 pb-24 md:pb-10 font-khmer-os-battambang">
@@ -100,51 +101,33 @@ export default function Home() {
                     </div>
                 </div>
 
-                {/* 4. CATEGORIES (Horizontal Scroll) */}
-                <div>
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-lg md:text-xl text-gray-800">ប្រធានបទ (Topics)</h3>
-                    </div>
-
-                    {/* Shadcn ScrollArea សម្រាប់ Mobile Scroll រលូន */}
-                    <ScrollArea className="w-full whitespace-nowrap pb-4">
-                        <div className="flex gap-3">
-                            {categories.map((cat, index) => (
-                                <Button
-                                    key={cat.id}
-                                    variant={index === 0 ? "default" : "outline"}
-                                    className={`rounded-full px-6 h-10 font-bold transition-all ${index === 0
-                                        ? "bg-[#00B4F6] hover:bg-[#009bd1] text-white shadow-md shadow-blue-200 border-0"
-                                        : "border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#00B4F6] hover:border-blue-200"
-                                        }`}
-                                >
-                                    {cat.name}
+                {/* 4. DYNAMIC CATEGORY SECTIONS */}
+                {courseHome?.data?.map((category) => (
+                    category.courses && category.courses.length > 0 && (
+                        <div key={category.id}>
+                            <div className="flex justify-between items-end mb-5">
+                                <div>
+                                    <h3 className="font-bold text-lg md:text-2xl text-gray-800">{category.name}</h3>
+                                    <p className="text-gray-500 text-xs md:text-sm mt-1 hidden md:block">{category.description}</p>
+                                </div>
+                                <Button variant="link" className="text-[#00B4F6] font-bold p-0 h-auto gap-1">
+                                    មើលទាំងអស់ <ChevronRight size={16} />
                                 </Button>
-                            ))}
-                        </div>
-                        <ScrollBar orientation="horizontal" className="invisible" />
-                    </ScrollArea>
-                </div>
+                            </div>
 
-                {/* 5. RECOMMENDED COURSES (Grid System) */}
-                <div>
-                    <div className="flex justify-between items-end mb-5">
-                        <div>
-                            <h3 className="font-bold text-lg md:text-2xl text-gray-800">វគ្គសិក្សាពេញនិយម</h3>
-                            <p className="text-gray-500 text-xs md:text-sm mt-1 hidden md:block">ជ្រើសរើសវគ្គសិក្សាដែលល្អបំផុតសម្រាប់អ្នក</p>
+                            {/* Responsive Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {category.courses.map((course) => (
+                                    <CourseCard
+                                        key={course.id}
+                                        course={{ ...course, category: { name: category.name } }}
+                                        handleCourseClick={() => handleCourseClick(course.id)}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                        <Button variant="link" className="text-[#00B4F6] font-bold p-0 h-auto gap-1">
-                            មើលទាំងអស់ <ChevronRight size={16} />
-                        </Button>
-                    </div>
-
-                    {/* Responsive Grid: Mobile=1col/scroll, Tablet=2col, Desktop=4col */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {coursesList?.data?.map((course) => (
-                            <CourseCard key={course?.id} course={course} />
-                        ))}
-                    </div>
-                </div>
+                    )
+                ))}
 
                 {/* 6. EXTRA SECTION: My Progress (Optional - Makes it look like an App) */}
                 <div className="md:hidden">

@@ -71,4 +71,6 @@ export const courseService = {
    * Hide course
    */
   hideCourse: (id) => apiClient.patch(`/courses/${id}/hide`),
+
+  getCourseHome: () => apiClient.get("/courses/home"),
 };

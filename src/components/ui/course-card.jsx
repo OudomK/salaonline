@@ -36,12 +36,12 @@ const CourseCard = ({ course, handleCourseClick }) => {
 
                 {/* Content Section */}
                 <CardContent className="p-5">
-                    <div className="flex justify-between items-start mb-2">
+                    {/* <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-1 text-orange-400 text-xs font-bold bg-orange-50 px-2 py-1 rounded-lg">
                             <Star size={12} fill="currentColor" /> 4.8
                         </div>
                         <span className="text-[#00B4F6] font-extrabold text-lg">$25.00</span>
-                    </div>
+                    </div> */}
 
                     <h4 className="font-bold text-gray-800 text-base md:text-lg line-clamp-1 mb-3 group-hover:text-[#00B4F6] transition-colors">
                         {course?.title}
@@ -50,12 +50,12 @@ const CourseCard = ({ course, handleCourseClick }) => {
                     {/* Instructor Info */}
                     <div className="flex items-center gap-3 pt-3 border-t border-gray-50">
                         <Avatar className="h-8 w-8 border border-gray-100">
-                            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${course?.teacher_name}`} />
+                            <AvatarImage src={course?.teacher?.avatar ? imgUrl + course.teacher.avatar : `https://api.dicebear.com/7.x/avataaars/svg?seed=${course?.teacher?.first_name}`} />
                             <AvatarFallback>IN</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                             <span className="text-[10px] text-gray-400 font-medium uppercase">បង្រៀនដោយ</span>
-                            <span className="text-xs font-bold text-gray-700">{course?.teacher_name}</span>
+                            <span className="text-xs font-bold text-gray-700">{course?.teacher ? `${course.teacher.first_name} ${course.teacher.last_name}` : course?.teacher_name}</span>
                         </div>
                     </div>
                 </CardContent>
