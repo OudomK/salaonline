@@ -1,0 +1,804 @@
+{
+    "provinces": [
+        {
+            "id": "PP",
+            "name_en": "Phnom Penh",
+            "name_km": "ភ្នំពេញ",
+            "districts": [
+                {
+                    "id": "PP-01",
+                    "name_en": "Chamkar Mon",
+                    "name_km": "ចំការមន"
+                },
+                {
+                    "id": "PP-02",
+                    "name_en": "Doun Penh",
+                    "name_km": "ដូនពេញ"
+                },
+                {
+                    "id": "PP-03",
+                    "name_en": "Prampi Makara",
+                    "name_km": "ប្រាំពីរមករា"
+                },
+                {
+                    "id": "PP-04",
+                    "name_en": "Tuol Kork",
+                    "name_km": "ទួលគោក"
+                },
+                {
+                    "id": "PP-05",
+                    "name_en": "Dangkor",
+                    "name_km": "ដង្កោ"
+                },
+                {
+                    "id": "PP-06",
+                    "name_en": "Mean Chey",
+                    "name_km": "មានជ័យ"
+                },
+                {
+                    "id": "PP-07",
+                    "name_en": "Russey Keo",
+                    "name_km": "ឫស្សីកែវ"
+                },
+                {
+                    "id": "PP-08",
+                    "name_en": "Sen Sok",
+                    "name_km": "សែនសុខ"
+                },
+                {
+                    "id": "PP-09",
+                    "name_en": "Pou Senchey",
+                    "name_km": "ពោធិ៍សែនជ័យ"
+                },
+                {
+                    "id": "PP-10",
+                    "name_en": "Chroy Changvar",
+                    "name_km": "ជ្រោយចង្វារ"
+                },
+                {
+                    "id": "PP-11",
+                    "name_en": "Prek Pnov",
+                    "name_km": "ព្រែកព្នៅ"
+                },
+                {
+                    "id": "PP-12",
+                    "name_en": "Chbar Ampov",
+                    "name_km": "ច្បារអំពៅ"
+                },
+                {
+                    "id": "PP-13",
+                    "name_en": "Boeng Keng Kang",
+                    "name_km": "បឹងកេងកង"
+                }
+            ]
+        },
+        {
+            "id": "SR",
+            "name_en": "Siem Reap",
+            "name_km": "សៀមរាប",
+            "districts": [
+                {
+                    "id": "SR-01",
+                    "name_en": "Siem Reap",
+                    "name_km": "សៀមរាប"
+                },
+                {
+                    "id": "SR-02",
+                    "name_en": "Angkor Chum",
+                    "name_km": "អង្គរជុំ"
+                },
+                {
+                    "id": "SR-03",
+                    "name_en": "Angkor Thom",
+                    "name_km": "អង្គរធំ"
+                },
+                {
+                    "id": "SR-04",
+                    "name_en": "Banteay Srei",
+                    "name_km": "បន្ទាយស្រី"
+                },
+                {
+                    "id": "SR-05",
+                    "name_en": "Chi Kraeng",
+                    "name_km": "ជីក្រែង"
+                },
+                {
+                    "id": "SR-06",
+                    "name_en": "Kralanh",
+                    "name_km": "ក្រឡាញ់"
+                },
+                {
+                    "id": "SR-07",
+                    "name_en": "Puok",
+                    "name_km": "ពួក"
+                },
+                {
+                    "id": "SR-08",
+                    "name_en": "Prasat Bakong",
+                    "name_km": "ប្រាសាទបាគង"
+                },
+                {
+                    "id": "SR-09",
+                    "name_en": "Srei Snam",
+                    "name_km": "ស្រីស្នំ"
+                },
+                {
+                    "id": "SR-10",
+                    "name_en": "Soutr Nikom",
+                    "name_km": "សូទ្រនិគម"
+                },
+                {
+                    "id": "SR-11",
+                    "name_en": "Varin",
+                    "name_km": "វ៉ារិន"
+                }
+            ]
+        },
+        {
+            "id": "BTB",
+            "name_en": "Battambang",
+            "name_km": "បាត់ដំបង",
+            "districts": [
+                {
+                    "id": "BTB-01",
+                    "name_en": "Battambang",
+                    "name_km": "បាត់ដំបង"
+                },
+                {
+                    "id": "BTB-02",
+                    "name_en": "Banan",
+                    "name_km": "បាណន់"
+                },
+                {
+                    "id": "BTB-03",
+                    "name_en": "Thma Koul",
+                    "name_km": "ថ្មគោល"
+                },
+                {
+                    "id": "BTB-04",
+                    "name_en": "Sangkae",
+                    "name_km": "សង្កែ"
+                },
+                {
+                    "id": "BTB-05",
+                    "name_en": "Rotanak Mondol",
+                    "name_km": "រតនមណ្ឌល"
+                },
+                {
+                    "id": "BTB-06",
+                    "name_en": "Moung Ruessei",
+                    "name_km": "មោងឫស្សី"
+                },
+                {
+                    "id": "BTB-07",
+                    "name_en": "Bavel",
+                    "name_km": "បវេល"
+                },
+                {
+                    "id": "BTB-08",
+                    "name_en": "Phnum Proek",
+                    "name_km": "ភ្នំព្រឹក"
+                },
+                {
+                    "id": "BTB-09",
+                    "name_en": "Kamrieng",
+                    "name_km": "កំរៀង"
+                }
+            ]
+        },
+        {
+            "id": "KDL",
+            "name_en": "Kandal",
+            "name_km": "កណ្ដាល",
+            "districts": [
+                {
+                    "id": "KDL-01",
+                    "name_en": "Ta Khmau",
+                    "name_km": "តាខ្មៅ"
+                },
+                {
+                    "id": "KDL-02",
+                    "name_en": "Kien Svay",
+                    "name_km": "កៀនស្វាយ"
+                },
+                {
+                    "id": "KDL-03",
+                    "name_en": "Khsach Kandal",
+                    "name_km": "ខ្សាច់កណ្ដាល"
+                },
+                {
+                    "id": "KDL-04",
+                    "name_en": "Mukh Kampul",
+                    "name_km": "មុខកំពូល"
+                },
+                {
+                    "id": "KDL-05",
+                    "name_en": "Sa Ang",
+                    "name_km": "ស្អាង"
+                },
+                {
+                    "id": "KDL-06",
+                    "name_en": "Leuk Daek",
+                    "name_km": "លើកដែក"
+                },
+                {
+                    "id": "KDL-07",
+                    "name_en": "Lvea Aem",
+                    "name_km": "ល្វាឯម"
+                }
+            ]
+        },
+        {
+            "id": "KPC",
+            "name_en": "Kampong Cham",
+            "name_km": "កំពង់ចាម",
+            "districts": [
+                {
+                    "id": "KPC-01",
+                    "name_en": "Kampong Cham",
+                    "name_km": "កំពង់ចាម"
+                },
+                {
+                    "id": "KPC-02",
+                    "name_en": "Batheay",
+                    "name_km": "បាធាយ"
+                },
+                {
+                    "id": "KPC-03",
+                    "name_en": "Chamkar Leu",
+                    "name_km": "ចំការលើ"
+                },
+                {
+                    "id": "KPC-04",
+                    "name_en": "Cheung Prey",
+                    "name_km": "ជើងព្រៃ"
+                },
+                {
+                    "id": "KPC-05",
+                    "name_en": "Kang Meas",
+                    "name_km": "កងមាស"
+                },
+                {
+                    "id": "KPC-06",
+                    "name_en": "Koh Sotin",
+                    "name_km": "កោះសុទិន"
+                },
+                {
+                    "id": "KPC-07",
+                    "name_en": "Prey Chhor",
+                    "name_km": "ព្រៃឈរ"
+                },
+                {
+                    "id": "KPC-08",
+                    "name_en": "Srei Santhor",
+                    "name_km": "ស្រីសន្ធរ"
+                },
+                {
+                    "id": "KPC-09",
+                    "name_en": "Stueng Trang",
+                    "name_km": "ស្ទឹងត្រែង"
+                }
+            ]
+        },
+        {
+            "id": "KCH",
+            "name_en": "Kampong Chhnang",
+            "name_km": "កំពង់ឆ្នាំង",
+            "districts": [
+                {
+                    "id": "KCH-01",
+                    "name_en": "Kampong Chhnang",
+                    "name_km": "កំពង់ឆ្នាំង"
+                },
+                {
+                    "id": "KCH-02",
+                    "name_en": "Baribour",
+                    "name_km": "បរិបូណ៌"
+                },
+                {
+                    "id": "KCH-03",
+                    "name_en": "Chol Kiri",
+                    "name_km": "ជលគីរី"
+                },
+                {
+                    "id": "KCH-04",
+                    "name_en": "Kampong Leaeng",
+                    "name_km": "កំពង់លែង"
+                },
+                {
+                    "id": "KCH-05",
+                    "name_en": "Rolea B'ier",
+                    "name_km": "រលាប្អៀរ"
+                },
+                {
+                    "id": "KCH-06",
+                    "name_en": "Sameakki Mean Chey",
+                    "name_km": "សាមគ្គីមានជ័យ"
+                }
+            ]
+        },
+        {
+            "id": "KSP",
+            "name_en": "Kampong Speu",
+            "name_km": "កំពង់ស្ពឺ",
+            "districts": [
+                {
+                    "id": "KSP-01",
+                    "name_en": "Chbar Mon",
+                    "name_km": "ច្បារមន"
+                },
+                {
+                    "id": "KSP-02",
+                    "name_en": "Basedth",
+                    "name_km": "បសេដ្ឋ"
+                },
+                {
+                    "id": "KSP-03",
+                    "name_en": "Kong Pisei",
+                    "name_km": "គងពិសី"
+                },
+                {
+                    "id": "KSP-04",
+                    "name_en": "Aoral",
+                    "name_km": "ឱរ៉ាល់"
+                },
+                {
+                    "id": "KSP-05",
+                    "name_en": "Odongk",
+                    "name_km": "ឧដុង្គ"
+                },
+                {
+                    "id": "KSP-06",
+                    "name_en": "Phnom Sruoch",
+                    "name_km": "ភ្នំស្រួច"
+                },
+                {
+                    "id": "KSP-07",
+                    "name_en": "Samraong Tong",
+                    "name_km": "សំរោងទង"
+                }
+            ]
+        },
+        {
+            "id": "KTT",
+            "name_en": "Kampong Thom",
+            "name_km": "កំពង់ធំ",
+            "districts": [
+                {
+                    "id": "KTT-01",
+                    "name_en": "Stueng Saen",
+                    "name_km": "ស្ទឹងសែន"
+                },
+                {
+                    "id": "KTT-02",
+                    "name_en": "Baray",
+                    "name_km": "បារាយណ៍"
+                },
+                {
+                    "id": "KTT-03",
+                    "name_en": "Kampong Svay",
+                    "name_km": "កំពង់ស្វាយ"
+                },
+                {
+                    "id": "KTT-04",
+                    "name_en": "Prasat Ballangk",
+                    "name_km": "ប្រាសាទបល្ល័ង្គ"
+                },
+                {
+                    "id": "KTT-05",
+                    "name_en": "Santuk",
+                    "name_km": "សន្ទុក"
+                },
+                {
+                    "id": "KTT-06",
+                    "name_en": "Sandan",
+                    "name_km": "សណ្ដាន់"
+                },
+                {
+                    "id": "KTT-07",
+                    "name_en": "Stoung",
+                    "name_km": "ស្ទោង"
+                }
+            ]
+        },
+        {
+            "id": "KPT",
+            "name_en": "Kampot",
+            "name_km": "កំពត",
+            "districts": [
+                {
+                    "id": "KPT-01",
+                    "name_en": "Kampot",
+                    "name_km": "កំពត"
+                },
+                {
+                    "id": "KPT-02",
+                    "name_en": "Chhuk",
+                    "name_km": "ឈូក"
+                },
+                {
+                    "id": "KPT-03",
+                    "name_en": "Chum Kiri",
+                    "name_km": "ជុំគីរី"
+                },
+                {
+                    "id": "KPT-04",
+                    "name_en": "Dang Tong",
+                    "name_km": "ដងទង"
+                },
+                {
+                    "id": "KPT-05",
+                    "name_en": "Tuek Chhou",
+                    "name_km": "ទឹកឈូ"
+                }
+            ]
+        },
+        {
+            "id": "KEP",
+            "name_en": "Kep",
+            "name_km": "កែប",
+            "districts": [
+                {
+                    "id": "KEP-01",
+                    "name_en": "Kep",
+                    "name_km": "កែប"
+                },
+                {
+                    "id": "KEP-02",
+                    "name_en": "Damnak Chang'aeur",
+                    "name_km": "ដំណាក់ចង្អើរ"
+                }
+            ]
+        },
+        {
+            "id": "KKG",
+            "name_en": "Koh Kong",
+            "name_km": "កោះកុង",
+            "districts": [
+                {
+                    "id": "KKG-01",
+                    "name_en": "Khemara Phoumin",
+                    "name_km": "ខេមរភូមិន្ទ"
+                },
+                {
+                    "id": "KKG-02",
+                    "name_en": "Botum Sakor",
+                    "name_km": "បុទុមសាគរ"
+                },
+                {
+                    "id": "KKG-03",
+                    "name_en": "Mondol Seima",
+                    "name_km": "មណ្ឌលសីមា"
+                },
+                {
+                    "id": "KKG-04",
+                    "name_en": "Srae Ambel",
+                    "name_km": "ស្រែអំបិល"
+                },
+                {
+                    "id": "KKG-05",
+                    "name_en": "Thma Bang",
+                    "name_km": "ថ្មបាំង"
+                }
+            ]
+        },
+        {
+            "id": "KRT",
+            "name_en": "Kratie",
+            "name_km": "ក្រចេះ",
+            "districts": [
+                {
+                    "id": "KRT-01",
+                    "name_en": "Kratie",
+                    "name_km": "ក្រចេះ"
+                },
+                {
+                    "id": "KRT-02",
+                    "name_en": "Chhlong",
+                    "name_km": "ឆ្លូង"
+                },
+                {
+                    "id": "KRT-03",
+                    "name_en": "Prek Prasab",
+                    "name_km": "ព្រែកប្រសព្វ"
+                },
+                {
+                    "id": "KRT-04",
+                    "name_en": "Sambour",
+                    "name_km": "សំបូរ"
+                },
+                {
+                    "id": "KRT-05",
+                    "name_en": "Snoul",
+                    "name_km": "ស្នួល"
+                }
+            ]
+        },
+        {
+            "id": "MDK",
+            "name_en": "Mondulkiri",
+            "name_km": "មណ្ឌលគិរី",
+            "districts": [
+                {
+                    "id": "MDK-01",
+                    "name_en": "Sen Monorom",
+                    "name_km": "សែនមនោរម្យ"
+                },
+                {
+                    "id": "MDK-02",
+                    "name_en": "Koh Nheaek",
+                    "name_km": "កោះញែក"
+                },
+                {
+                    "id": "MDK-03",
+                    "name_en": "Ou Reang",
+                    "name_km": "អូររាំង"
+                },
+                {
+                    "id": "MDK-04",
+                    "name_en": "Peich Chreada",
+                    "name_km": "ពេជ្រាដា"
+                }
+            ]
+        },
+        {
+            "id": "OMC",
+            "name_en": "Oddar Meanchey",
+            "name_km": "ឧត្ដរមានជ័យ",
+            "districts": [
+                {
+                    "id": "OMC-01",
+                    "name_en": "Samraong",
+                    "name_km": "សំរោង"
+                },
+                {
+                    "id": "OMC-02",
+                    "name_en": "Anlong Veng",
+                    "name_km": "អន្លង់វែង"
+                },
+                {
+                    "id": "OMC-03",
+                    "name_en": "Banteay Ampil",
+                    "name_km": "បន្ទាយអំពិល"
+                },
+                {
+                    "id": "OMC-04",
+                    "name_en": "Trapeang Prasat",
+                    "name_km": "ត្រពាំងប្រាសាទ"
+                }
+            ]
+        },
+        {
+            "id": "PLN",
+            "name_en": "Pailin",
+            "name_km": "ប៉ៃលិន",
+            "districts": [
+                {
+                    "id": "PLN-01",
+                    "name_en": "Pailin",
+                    "name_km": "ប៉ៃលិន"
+                },
+                {
+                    "id": "PLN-02",
+                    "name_en": "Sala Krau",
+                    "name_km": "សាលាក្រៅ"
+                }
+            ]
+        },
+        {
+            "id": "PSH",
+            "name_en": "Preah Sihanouk",
+            "name_km": "ព្រះសីហនុ",
+            "districts": [
+                {
+                    "id": "PSH-01",
+                    "name_en": "Preah Sihanouk",
+                    "name_km": "ព្រះសីហនុ"
+                },
+                {
+                    "id": "PSH-02",
+                    "name_en": "Prey Nob",
+                    "name_km": "ព្រៃនប់"
+                },
+                {
+                    "id": "PSH-03",
+                    "name_en": "Stueng Hav",
+                    "name_km": "ស្ទឹងហាវ"
+                }
+            ]
+        },
+        {
+            "id": "PVH",
+            "name_en": "Preah Vihear",
+            "name_km": "ព្រះវិហារ",
+            "districts": [
+                {
+                    "id": "PVH-01",
+                    "name_en": "Preah Vihear",
+                    "name_km": "ព្រះវិហារ"
+                },
+                {
+                    "id": "PVH-02",
+                    "name_en": "Chey Saen",
+                    "name_km": "ជ័យសែន"
+                },
+                {
+                    "id": "PVH-03",
+                    "name_en": "Chhaeb",
+                    "name_km": "ឆែប"
+                },
+                {
+                    "id": "PVH-04",
+                    "name_en": "Choam Khsant",
+                    "name_km": "ជាំក្សាន្ត"
+                },
+                {
+                    "id": "PVH-05",
+                    "name_en": "Rovieng",
+                    "name_km": "រវៀង"
+                },
+                {
+                    "id": "PVH-06",
+                    "name_en": "Sangkum Thmei",
+                    "name_km": "សង្គមថ្មី"
+                },
+                {
+                    "id": "PVH-07",
+                    "name_en": "Tbaeng Mean Chey",
+                    "name_km": "ត្បែងមានជ័យ"
+                }
+            ]
+        },
+        {
+            "id": "PVG",
+            "name_en": "Prey Veng",
+            "name_km": "ព្រៃវែង",
+            "districts": [
+                {
+                    "id": "PVG-01",
+                    "name_en": "Prey Veng",
+                    "name_km": "ព្រៃវែង"
+                },
+                {
+                    "id": "PVG-02",
+                    "name_en": "Ba Phnum",
+                    "name_km": "បាភ្នំ"
+                },
+                {
+                    "id": "PVG-03",
+                    "name_en": "Kamchay Mear",
+                    "name_km": "កំចាយមារ"
+                },
+                {
+                    "id": "PVG-04",
+                    "name_en": "Kanhchriech",
+                    "name_km": "កញ្ច្រៀច"
+                },
+                {
+                    "id": "PVG-05",
+                    "name_en": "Me Sang",
+                    "name_km": "មេសាង"
+                },
+                {
+                    "id": "PVG-06",
+                    "name_en": "Peam Chor",
+                    "name_km": "ពាមជរ"
+                },
+                {
+                    "id": "PVG-07",
+                    "name_en": "Peam Ro",
+                    "name_km": "ពាមរក៍"
+                },
+                {
+                    "id": "PVG-08",
+                    "name_en": "Pea Reang",
+                    "name_km": "ពារាំង"
+                },
+                {
+                    "id": "PVG-09",
+                    "name_en": "Preah Sdach",
+                    "name_km": "ព្រះស្តេច"
+                },
+                {
+                    "id": "PVG-10",
+                    "name_en": "Pur Rieng",
+                    "name_km": "ពួករៀង"
+                },
+                {
+                    "id": "PVG-11",
+                    "name_en": "Sithor Kandal",
+                    "name_km": "ស៊ីធរកណ្ដាល"
+                }
+            ]
+        },
+        {
+            "id": "PST",
+            "name_en": "Pursat",
+            "name_km": "ពោធិ៍សាត់",
+            "districts": [
+                {
+                    "id": "PST-01",
+                    "name_en": "Pursat",
+                    "name_km": "ពោធិ៍សាត់"
+                },
+                {
+                    "id": "PST-02",
+                    "name_en": "Bakan",
+                    "name_km": "បាកាន"
+                },
+                {
+                    "id": "PST-03",
+                    "name_en": "Kandieng",
+                    "name_km": "កណ្ដៀង"
+                },
+                {
+                    "id": "PST-04",
+                    "name_en": "Krakor",
+                    "name_km": "ក្រាករ"
+                },
+                {
+                    "id": "PST-05",
+                    "name_en": "Phnum Kravanh",
+                    "name_km": "ភ្នំក្រវាញ"
+                },
+                {
+                    "id": "PST-06",
+                    "name_en": "Veal Veaeng",
+                    "name_km": "វាលវែង"
+                }
+            ]
+        },
+        {
+            "id": "RTK",
+            "name_en": "Ratanakiri",
+            "name_km": "រតនគិរី",
+            "districts": [
+                {
+                    "id": "RTK-01",
+                    "name_en": "Banlung",
+                    "name_km": "បានលុង"
+                },
+                {
+                    "id": "RTK-02",
+                    "name_en": "Andoung Meas",
+                    "name_km": "អណ្ដូងមាស"
+                },
+                {
+                    "id": "RTK-03",
+                    "name_en": "Bar Kaev",
+                    "name_km": "បរកែវ"
+                },
+                {
+                    "id": "RTK-04",
+                    "name_en": "Koun Mom",
+                    "name_km": "កូនមុំ"
+                },
+                {
+                    "id": "RTK-05",
+                    "name_en": "Lumphat",
+                    "name_km": "លំផាត់"
+                },
+                {
+                    "id": "RTK-06",
+                    "name_en": "Ou Chum",
+                    "name_km": "អូរជុំ"
+                },
+                {
+                    "id": "RTK-07",
+                    "name_en": "Ou Ya Dav",
+                    "name_km": "អូរយ៉ាដាវ"
+                },
+                {
+                    "id": "RTK-08",
+                    "name_en": "Ta Veaeng",
+                    "name_km": "តាវែង"
+                },
+                {
+                    "id": "RTK-09",
+                    "name_en": "Veun Sai",
+                    "name_km": "វឺនសៃ"
+                }
+            ]
+        }
+    ]
+}

@@ -18,7 +18,7 @@ export const videoService = {
   /**
    * Get videos by course ID
    */
-  getVideosByCourse: (courseId) => apiClient.get(`/videos/course/${courseId}`),
+  getVideosByCourse: (courseId, params) => apiClient.get(`/videos/course/${courseId}`, { params }),
 
   /**
    * Upload video to course (admin)

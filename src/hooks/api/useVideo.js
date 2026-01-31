@@ -15,11 +15,11 @@ export const useUploadVideos = () => {
   });
 };
 
-export const useVideos = (courseId) => {
+export const useVideos = (courseId, params = {}) => {
   return useQuery({
-    queryKey: ["videos", "course", courseId],
+    queryKey: ["videos", "course", courseId, params],
     queryFn: () =>
-      videoService.getVideosByCourse(courseId).then((res) => res.data),
+      videoService.getVideosByCourse(courseId, params).then((res) => res.data),
     enabled: !!courseId,
   });
 };
@@ -63,5 +63,15 @@ export const useDeleteVideo = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["videos"] });
     },
+  });
+};
+
+
+export const useWatchVideo = (videoId) => {
+  return useQuery({
+    queryKey: ["watch-video", videoId],
+    queryFn: () =>
+      videoService.watchVideo(videoId).then((res) => res.data),
+    enabled: !!videoId,
   });
 };

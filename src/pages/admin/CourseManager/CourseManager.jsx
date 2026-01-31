@@ -149,7 +149,7 @@ export default function CourseManager() {
   };
 
   const getCategoryName = (id) => {
-    return categoriesData?.data?.data?.find((c) => c.id === id)?.name || "N/A";
+    return categoriesData?.data?.find((c) => c.id === id)?.name || "N/A";
   };
 
   const getCategoryColor = (id) => {
@@ -197,7 +197,7 @@ export default function CourseManager() {
             />
             <input
               type="text"
-              placeholder="ស្វែងរកបណ្ណាល័យ ឬ ឈ្មោះគ្រូ..."
+              placeholder="ស្វែងរក course ឬ ឈ្មោះគ្រូ..."
               className="bg-gray-50 focus:bg-white py-2.5 md:w-96 pr-4 pl-10 border border-gray-100 rounded-xl outline-none focus:ring-[#00B4F6] focus:ring-2 w-full font-khmer-os-battambang font-bold text-gray-600 text-sm transition-all"
               value={searchTerm}
               onChange={(e) => {
@@ -222,7 +222,7 @@ export default function CourseManager() {
           >
             All Libraries
           </button>
-          {categoriesData?.data?.data?.map((cat) => (
+          {categoriesData?.data?.map((cat) => (
             <button
               key={cat.id}
               onClick={() => {
@@ -370,7 +370,7 @@ export default function CourseManager() {
       {totalItems > 0 && (
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <span className="font-khmer-os-battambang font-bold text-gray-500 text-xs text-center sm:text-left">
-            បង្ហាញ {indexOfFirstItem + 1} ដល់ {indexOfLastItem} នៃ {totalItems} បណ្ណាល័យ
+            បង្ហាញ {indexOfFirstItem + 1} ដល់ {indexOfLastItem} សរុប {totalItems}
           </span>
 
           <div className="flex items-center gap-2">
@@ -438,7 +438,7 @@ export default function CourseManager() {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         currentCourse={currentCourse}
-        categories={categoriesData?.data?.data}
+        categories={categoriesData?.data}
         defaultCategoryId={selectedCategory}
       />
     </div>

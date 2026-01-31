@@ -199,7 +199,7 @@ export default function VideoManagementModal({
     <div className="z-50 fixed inset-0 flex justify-center items-center bg-slate-900/60 backdrop-blur-[6px] p-4 animate-fade-in">
       <div className="flex flex-col bg-white shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] rounded-[32px] w-full max-w-5xl max-h-[92vh] overflow-hidden animate-scale-in">
         {/* HEADER */}
-        <div className="flex justify-between items-center bg-gradient-to-r from-indigo-600 to-violet-600 p-4 text-white shrink-0">
+        <div className="flex justify-between items-center bg-[#00a3df] p-4 text-white shrink-0">
           <div>
             <h3 className="flex items-center gap-3 font-bold text-xl tracking-tight">
               <div className="bg-white/20 backdrop-blur-md p-2 rounded-xl">
@@ -233,7 +233,7 @@ export default function VideoManagementModal({
                 {/* SECTION: TARGET */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 px-1">
-                    <div className="bg-indigo-50 p-1.5 rounded-lg text-indigo-500">
+                    <div className="bg-[#00a3df]/20 p-1.5 rounded-lg text-[#00a3df]">
                       <Save size={14} />
                     </div>
                     <label className="font-bold text-[11px] text-slate-700 uppercase tracking-widest">
@@ -250,7 +250,7 @@ export default function VideoManagementModal({
                                 src={`${imgUrl}${course.thumbnail}`}
                                 className="object-cover"
                               />
-                              <AvatarFallback className="bg-indigo-100 font-bold text-indigo-600">
+                              <AvatarFallback className="bg-[#00a3df]/20 font-bold text-[#00a3df]">
                                 {course.title?.[0]}
                               </AvatarFallback>
                             </Avatar>

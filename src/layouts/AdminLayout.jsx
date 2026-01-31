@@ -84,14 +84,12 @@ import {
   Settings,
   UserStarIcon,
 } from "lucide-react";
-import { useMe } from "@/hooks/api";
 import UploadingList from "@/pages/admin/LessonManager/components/UploadingList";
 import EmbededVideoModal from "@/pages/admin/LessonManager/components/EmbededVideoModal";
 
 export default function AdminLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { } = useMe();
 
   const menuItems = [
     {

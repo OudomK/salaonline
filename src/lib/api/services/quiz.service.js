@@ -18,7 +18,10 @@ export const quizService = {
   /**
    * Get first test/placement quiz for new user by category
    */
-  getFirstTest: (categoryId) => apiClient.get(`/quiz/category/${categoryId}/first-test`),
+  getFirstTest: async (categoryId) => {
+    const res = await apiClient.get(`/quiz/category/${categoryId}/first-test`)
+    return res.data
+  },
 
   /**
    * Create new quiz (admin)
